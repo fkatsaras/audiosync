@@ -1,0 +1,1023 @@
+openapi: 3.0.3
+info:
+  title: Swagger AudioSync - OpenAPI 3.0
+  description: |-
+    Some useful links:
+    - [The AudioSync repository](https://github.com/fkatsaras/SE-II-AudioSync.git)
+  termsOfService: http://swagger.io/terms/
+  contact:
+    email: apiteam@swagger.io
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  version: 1.0.11
+externalDocs:
+  description: Find out more about Swagger
+  url: http://swagger.io
+servers:
+- url: https://virtserver.swaggerhub.com/KATSARASFOTIS99/swagger-audio_sync_open_api_3_0/1.0.11
+  description: Main Production Server
+tags:
+- name: users
+  description: Operations about a user
+- name: search
+  description: Search the AudioSync Music Database
+- name: home
+  description: Navigate to the App Homepage
+- name: songs
+  description: Operations about songs
+- name: artists
+  description: Operations about artists
+paths:
+  /home:
+    get:
+      tags:
+      - home
+      summary: Get Home Page GUI
+      description: Retrieve the home page GUI data
+      operationId: home_get
+      responses:
+        "200":
+          description: Home page data retrieved sucessfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HomePageResponse'
+        "500":
+          description: Server error
+      x-openapi-router-controller: app.controllers.home_controller
+  /search/artists:
+    get:
+      tags:
+      - search
+      summary: Search for artists
+      description: Retrieve search results for artists based on query
+      operationId: search_artists_get
+      parameters:
+      - name: q
+        in: query
+        description: Search query string for artists
+        required: true
+        style: form
+        explode: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: Search results retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SearchResult'
+        "400":
+          description: Bad request
+        "404":
+          description: Artist not found
+        "500":
+          description: Server error
+      x-openapi-router-controller: app.controllers.search_controller
+  /search/songs:
+    get:
+      tags:
+      - search
+      summary: Search for songs
+      description: Retrieve search results for songs based on query
+      operationId: search_songs_get
+      parameters:
+      - name: q
+        in: query
+        description: Search query string for songs
+        required: true
+        style: form
+        explode: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: Search results retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SearchResult'
+        "400":
+          description: Bad request
+        "404":
+          description: Song not found
+        "500":
+          description: Server error
+      x-openapi-router-controller: app.controllers.search_controller
+  /users/login:
+    get:
+      tags:
+      - users
+      summary: Logs user into the system
+      description: ""
+      operationId: login_user
+      parameters:
+      - name: username
+        in: query
+        description: The user name for login
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
+      - name: password
+        in: query
+        description: The password for login in clear text
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: successful operation
+          headers:
+            X-Rate-Limit:
+              description: calls per hour allowed by the user
+              style: simple
+              explode: false
+              schema:
+                type: integer
+                format: int32
+            X-Expires-After:
+              description: date in UTC when token expires
+              style: simple
+              explode: false
+              schema:
+                type: string
+                format: date-time
+          content:
+            application/xml:
+              schema:
+                type: string
+                x-content-type: application/xml
+            application/json:
+              schema:
+                type: string
+        "400":
+          description: Invalid username/password supplied
+      x-openapi-router-controller: app.controllers.users_controller
+  /users/logout:
+    get:
+      tags:
+      - users
+      summary: Logs out current logged in user session
+      description: ""
+      operationId: logout_user
+      parameters: []
+      responses:
+        default:
+          description: successful operation
+      x-openapi-router-controller: app.controllers.users_controller
+  /artists/{artist-id}:
+    get:
+      tags:
+      - artists
+      summary: Get artist by id
+      description: Retrieve information about a specific artist
+      operationId: gett_artist_by_id
+      parameters:
+      - name: artist_id
+        in: path
+        description: The ID of the artist to fetch
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Artist'
+        "400":
+          description: Invalid ID supplied
+        "404":
+          description: Artist not found
+      x-openapi-router-controller: app.controllers.artists_controller
+  /users/{user-id}/my-artists:
+    get:
+      tags:
+      - users
+      summary: Get followed artists
+      description: Retrieve the list of artists followed by the user
+      operationId: get_user_followed_artists
+      parameters:
+      - name: user_id
+        in: path
+        description: The ID of the user
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Artist'
+                x-content-type: application/json
+        "400":
+          description: Invalid ID supplied
+        "404":
+          description: User not found
+      x-openapi-router-controller: app.controllers.users_controller
+    post:
+      tags:
+      - users
+      summary: Follow an artist
+      description: Add an artist to the user's followed artists
+      operationId: follow_artist
+      parameters:
+      - name: user_id
+        in: path
+        description: The ID of the user
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+      requestBody:
+        description: Artist object that needs to be followed
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Artist'
+        required: true
+      responses:
+        "201":
+          description: Artist followed successfully
+        "400":
+          description: Invalid input
+      x-openapi-router-controller: app.controllers.users_controller
+    delete:
+      tags:
+      - users
+      summary: Unfollow an artist
+      description: Remove an artist from the user's followed artists
+      operationId: unfollow_artist
+      parameters:
+      - name: user_id
+        in: path
+        description: The ID of the user
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+      - name: artist_id
+        in: query
+        description: The ID of the artist to unfollow
+        required: true
+        style: form
+        explode: true
+        schema:
+          type: integer
+      responses:
+        "200":
+          description: Artist unfollowed successfully
+        "400":
+          description: Invalid input
+      x-openapi-router-controller: app.controllers.users_controller
+  /artists/{artist-id}/songs:
+    get:
+      tags:
+      - artists
+      summary: Get artist songs
+      description: Retrieve the list of songs by a specific artist
+      operationId: get_artist_songs
+      parameters:
+      - name: artist_id
+        in: path
+        description: The ID of the artist
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Song'
+                x-content-type: application/json
+        "400":
+          description: Invalid ID supplied
+        "404":
+          description: Artist not found
+      x-openapi-router-controller: app.controllers.artists_controller
+  /songs/{song-id}:
+    get:
+      tags:
+      - songs
+      summary: Get song by ID
+      description: Retrieve information about a specific song
+      operationId: get_song_by_id
+      parameters:
+      - name: song_id
+        in: path
+        description: The ID of the song to fetch
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Song'
+        "400":
+          description: Invalid ID supplied
+        "404":
+          description: Song not found
+      x-openapi-router-controller: app.controllers.songs_controller
+  /users/{user-id}/liked-songs:
+    get:
+      tags:
+      - users
+      summary: Get liked songs of a user
+      description: Retrieve the list of songs liked by a specific user
+      operationId: get_liked_songs
+      parameters:
+      - name: user_id
+        in: path
+        description: ID of the user whose liked songs are to be fetched
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+      responses:
+        "200":
+          description: List of liked songs retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Song'
+                x-content-type: application/json
+        "404":
+          description: User not found or no liked songs found
+      x-openapi-router-controller: app.controllers.users_controller
+    post:
+      tags:
+      - users
+      summary: User likes a song
+      description: Add a new song to the list of liked songs for a specific user
+      operationId: add_liked_song
+      parameters:
+      - name: user_id
+        in: path
+        description: ID of the user to add the liked song
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+      requestBody:
+        description: Song object to be added to liked songs
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Song'
+        required: true
+      responses:
+        "201":
+          description: Liked song added successfully
+        "400":
+          description: Invalid request body
+        "404":
+          description: User not found
+      x-openapi-router-controller: app.controllers.users_controller
+    delete:
+      tags:
+      - users
+      summary: User unlikes a song
+      description: Remove a specific song from the list of liked songs for a user
+      operationId: remove_liked_song
+      parameters:
+      - name: user_id
+        in: path
+        description: ID of the user to remove the liked song from
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+      - name: song_id
+        in: query
+        description: ID of the song to be removed from liked songs
+        required: true
+        style: form
+        explode: true
+        schema:
+          type: integer
+      responses:
+        "204":
+          description: Liked song removed successfully
+        "404":
+          description: User or song not found
+      x-openapi-router-controller: app.controllers.users_controller
+  /users/{user-id}/playlists/{playlist-id}:
+    get:
+      tags:
+      - users
+      summary: Get details of a specific playlist
+      description: Retrieve details of a specific playlist created by a user
+      operationId: get_playlist_by_id
+      parameters:
+      - name: user_id
+        in: path
+        description: ID of the user who owns the playlist
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+      - name: playlist_id
+        in: path
+        description: ID of the playlist to fetch details for
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+      responses:
+        "200":
+          description: Playlist details retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Playlist'
+        "404":
+          description: User or playlist not found
+      x-openapi-router-controller: app.controllers.users_controller
+    put:
+      tags:
+      - users
+      summary: Update details of a specific playlist
+      description: Update details of a specific playlist owned by a user
+      operationId: update_playlist_by_id
+      parameters:
+      - name: user_id
+        in: path
+        description: ID of the user who owns the playlist
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+      - name: playlist_id
+        in: path
+        description: ID of the playlist to update
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+      requestBody:
+        description: Updated playlist object
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Playlist'
+        required: true
+      responses:
+        "200":
+          description: Playlist updated successfully
+        "400":
+          description: Invalid request body
+        "404":
+          description: User or playlist not found
+      x-openapi-router-controller: app.controllers.users_controller
+    delete:
+      tags:
+      - users
+      summary: Delete a specific playlist
+      description: Delete a specific playlist created by a user
+      operationId: delete_playlist_by_id
+      parameters:
+      - name: user_id
+        in: path
+        description: ID of the user who owns the playlist
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+      - name: playlist_id
+        in: path
+        description: ID of the playlist to delete
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+      responses:
+        "204":
+          description: Playlist deleted successfully
+        "404":
+          description: User or playlist not found
+      x-openapi-router-controller: app.controllers.users_controller
+  /users/{user-id}/my-playlists:
+    get:
+      tags:
+      - users
+      summary: Get user's playlists
+      description: Retrieve the playlists created by a specific user
+      operationId: get_user_playlists
+      parameters:
+      - name: user_id
+        in: path
+        description: ID of the user whose playlists are to be fetched
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+      responses:
+        "200":
+          description: List of user's playlists retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Playlist'
+                x-content-type: application/json
+        "404":
+          description: User not found or no playlists found
+      x-openapi-router-controller: app.controllers.users_controller
+    post:
+      tags:
+      - users
+      summary: Create a new playlist
+      description: Create a new playlist for a specific user
+      operationId: create_user_playlist
+      parameters:
+      - name: user_id
+        in: path
+        description: ID of the user to create the playlist for
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+      requestBody:
+        description: Playlist object to be created
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Playlist'
+        required: true
+      responses:
+        "201":
+          description: Playlist created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Playlist'
+        "400":
+          description: Invalid request body
+        "404":
+          description: User not found
+      x-openapi-router-controller: app.controllers.users_controller
+    delete:
+      tags:
+      - users
+      summary: Delete a user's playlist
+      description: Delete a specific playlist created by a user
+      operationId: delete_user_playlist
+      parameters:
+      - name: user_id
+        in: path
+        description: ID of the user who owns the playlist to delete
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+      - name: playlist_id
+        in: query
+        description: ID of the playlist to delete
+        required: true
+        style: form
+        explode: true
+        schema:
+          type: integer
+      responses:
+        "204":
+          description: Playlist deleted successfully
+        "404":
+          description: User or playlist not found
+      x-openapi-router-controller: app.controllers.users_controller
+  /songs/{song-id}/play:
+    get:
+      tags:
+      - songs
+      summary: Get play status of a song
+      description: Retrieve the current play status (playing or paused) of a specific
+        song
+      operationId: get_song_play_status
+      parameters:
+      - name: song_id
+        in: path
+        description: ID of the song to retrieve play status for
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+      responses:
+        "200":
+          description: Play status retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_200'
+        "404":
+          description: Song not found
+      x-openapi-router-controller: app.controllers.songs_controller
+    put:
+      tags:
+      - songs
+      summary: Toggle play/pause of a song
+      description: Start or pause playback of a specific song
+      operationId: toggle_song_playback
+      parameters:
+      - name: song_id
+        in: path
+        description: ID of the song to toggle play/pause
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+      responses:
+        "204":
+          description: Play/pause action performed successfully
+        "404":
+          description: Song not found
+      x-openapi-router-controller: app.controllers.songs_controller
+  /users/{user-id}/recommended:
+    get:
+      tags:
+      - users
+      summary: Get recommended songs for a user
+      description: Retrieve recommended songs for a specific user based on their preferences
+      operationId: get_recommended_songs
+      parameters:
+      - name: user_id
+        in: path
+        description: ID of the user to fetch recommended songs for
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+      responses:
+        "200":
+          description: List of recommended songs retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Song'
+                x-content-type: application/json
+        "404":
+          description: User not found or no recommended songs found
+      x-openapi-router-controller: app.controllers.users_controller
+components:
+  schemas:
+    HomePageResponse:
+      type: object
+      properties:
+        links:
+          $ref: '#/components/schemas/HomePageResponse_links'
+      example:
+        links:
+          search: /search
+          myArtists: "/users/{user-id}/my-artists"
+          myPlaylists: "/users/{user-id}/my-playlists"
+          likedSongs: "/users/{user-id}/liked-songs"
+          recommended: "/users/{user-id}/recommended"
+    UserEntity:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Unique identifier for the user
+          format: int64
+          example: 123
+        likedSongs:
+          type: array
+          description: List of songs that the user has liked
+          items:
+            $ref: '#/components/schemas/Song'
+        followedArtists:
+          type: array
+          description: List of artists that the user follows
+          items:
+            $ref: '#/components/schemas/Artist'
+        recommendedSongs:
+          type: array
+          description: List of recommended songs for the user
+          items:
+            $ref: '#/components/schemas/Song'
+        createdPlaylists:
+          type: array
+          description: List of playlists created by the user
+          items:
+            $ref: '#/components/schemas/Playlist'
+      xml:
+        name: userEntity
+    Playlist:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Unique identifier for the playlist
+          format: int64
+          example: 123
+        title:
+          type: string
+          description: Title of the playlist
+          example: My Favorite Songs
+        songs:
+          type: array
+          description: List of Song objects that the playlist contains
+          items:
+            $ref: '#/components/schemas/Song'
+        editMode:
+          type: boolean
+          description: Flag indicating if the user can edit the playlist
+          example: true
+      example:
+        songs:
+        - null
+        - null
+        editMode: true
+        id: 123
+        title: My Favorite Songs
+      xml:
+        name: playlist
+    Song:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Unique identifier for the song
+          format: int64
+          example: 456
+        title:
+          type: string
+          description: Title or name of the song
+          example: Aces High
+        artist:
+          type: string
+          description: Name of the artist who created the song
+          example: Iron Maiden
+        album:
+          type: string
+          description: Name of the album containing the song
+          example: Powerslave
+        duration:
+          type: integer
+          description: Duration of the song in seconds
+          format: int32
+          example: 300
+        cover:
+          type: string
+          description: Album cover image URL associated with the song
+          example: https://1.bp.blogspot.com/-e2j5SK7JAC8/XmHhBKZJyEI/AAAAAAAABto/A1cfumUwHuA_8MFlAEtdpN5rLHlpVOd6ACLcBGAsYHQ/s1600/Iron%2BMaiden%2B-%2BPowerslave%2B%25281984%2529%2Bfront%2Bback%2Balbum%2Bcovers.jpg
+        liked:
+          type: boolean
+          description: Flag indicating if the user has liked the song
+          example: true
+        playlists:
+          type: array
+          description: List of Playlist objects to which the user has added the song
+          items:
+            $ref: '#/components/schemas/Playlist'
+        is_playing:
+          type: boolean
+          description: Boolean flag indicating if the song is currently playing
+          example: false
+      example:
+        duration: 300
+        cover: https://1.bp.blogspot.com/-e2j5SK7JAC8/XmHhBKZJyEI/AAAAAAAABto/A1cfumUwHuA_8MFlAEtdpN5rLHlpVOd6ACLcBGAsYHQ/s1600/Iron%2BMaiden%2B-%2BPowerslave%2B%25281984%2529%2Bfront%2Bback%2Balbum%2Bcovers.jpg
+        artist: Iron Maiden
+        album: Powerslave
+        playlists:
+        - songs:
+          - null
+          - null
+          editMode: true
+          id: 123
+          title: My Favorite Songs
+        - songs:
+          - null
+          - null
+          editMode: true
+          id: 123
+          title: My Favorite Songs
+        is_playing: false
+        id: 456
+        title: Aces High
+        liked: true
+      xml:
+        name: song
+    Artist:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Unique identifier for the artist
+          format: int64
+          example: 1
+        name:
+          type: string
+          description: Name of the artist or band
+          example: Iron Maiden
+        songs:
+          type: array
+          description: List of Song objects that belong to the artist
+          items:
+            $ref: '#/components/schemas/Song'
+        followers:
+          type: integer
+          description: Number of followers of the artist
+          format: int32
+          example: 5000
+        is_followed:
+          type: boolean
+          description: Flag indicating if the user follows the artist
+          example: true
+      example:
+        followers: 5000
+        songs:
+        - null
+        - null
+        name: Iron Maiden
+        is_followed: true
+        id: 1
+      xml:
+        name: artist
+    SearchResult:
+      type: object
+      properties:
+        songs:
+          type: array
+          description: List of Song objects that are search results
+          items:
+            $ref: '#/components/schemas/Song'
+        artists:
+          type: array
+          description: List of Artist objects that are search results
+          items:
+            $ref: '#/components/schemas/Artist'
+      example:
+        artists:
+        - followers: 5000
+          songs:
+          - null
+          - null
+          name: Iron Maiden
+          is_followed: true
+          id: 1
+        - followers: 5000
+          songs:
+          - null
+          - null
+          name: Iron Maiden
+          is_followed: true
+          id: 1
+        songs:
+        - duration: 300
+          cover: https://1.bp.blogspot.com/-e2j5SK7JAC8/XmHhBKZJyEI/AAAAAAAABto/A1cfumUwHuA_8MFlAEtdpN5rLHlpVOd6ACLcBGAsYHQ/s1600/Iron%2BMaiden%2B-%2BPowerslave%2B%25281984%2529%2Bfront%2Bback%2Balbum%2Bcovers.jpg
+          artist: Iron Maiden
+          album: Powerslave
+          playlists:
+          - songs:
+            - null
+            - null
+            editMode: true
+            id: 123
+            title: My Favorite Songs
+          - songs:
+            - null
+            - null
+            editMode: true
+            id: 123
+            title: My Favorite Songs
+          is_playing: false
+          id: 456
+          title: Aces High
+          liked: true
+        - duration: 300
+          cover: https://1.bp.blogspot.com/-e2j5SK7JAC8/XmHhBKZJyEI/AAAAAAAABto/A1cfumUwHuA_8MFlAEtdpN5rLHlpVOd6ACLcBGAsYHQ/s1600/Iron%2BMaiden%2B-%2BPowerslave%2B%25281984%2529%2Bfront%2Bback%2Balbum%2Bcovers.jpg
+          artist: Iron Maiden
+          album: Powerslave
+          playlists:
+          - songs:
+            - null
+            - null
+            editMode: true
+            id: 123
+            title: My Favorite Songs
+          - songs:
+            - null
+            - null
+            editMode: true
+            id: 123
+            title: My Favorite Songs
+          is_playing: false
+          id: 456
+          title: Aces High
+          liked: true
+      xml:
+        name: searchResult
+    ApiResponse:
+      type: object
+      properties:
+        code:
+          type: integer
+          format: int32
+        type:
+          type: string
+        message:
+          type: string
+      xml:
+        name: '##default'
+    inline_response_200:
+      type: object
+      properties:
+        is_playing:
+          type: boolean
+          description: Indicates whether the song is currently playing or paused
+      example:
+        is_playing: true
+    HomePageResponse_links:
+      type: object
+      properties:
+        likedSongs:
+          type: string
+          description: URL to navigate to the liked songs page of the user
+          example: "/users/{user-id}/liked-songs"
+        recommended:
+          type: string
+          description: URL to navigate to the recommended songs page of the user
+          example: "/users/{user-id}/recommended"
+        myArtists:
+          type: string
+          description: URL to navigate to the followed artists page of the user
+          example: "/users/{user-id}/my-artists"
+        search:
+          type: string
+          description: URL to navigate to the search page
+          example: /search
+        myPlaylists:
+          type: string
+          description: URL to navigate to My Playlists page
+          example: "/users/{user-id}/my-playlists"
+      example:
+        search: /search
+        myArtists: "/users/{user-id}/my-artists"
+        myPlaylists: "/users/{user-id}/my-playlists"
+        likedSongs: "/users/{user-id}/liked-songs"
+        recommended: "/users/{user-id}/recommended"
+  securitySchemes:
+    AudioSync_auth:
+      type: oauth2
+      flows:
+        authorizationCode:
+          authorizationUrl: https://example.com/oauth/authorize
+          tokenUrl: https://example.com/oauth/token
+          scopes:
+            read: Grants read access
+            write: Grants write access
+      x-tokenInfoFunc: app.controllers.authorization_controller.check_AudioSync_auth
+      x-scopeValidateFunc: app.controllers.authorization_controller.validate_scope_AudioSync_auth
+    api_key:
+      type: apiKey
+      name: api_key
+      in: header
+      x-apikeyInfoFunc: app.controllers.authorization_controller.check_api_key
+
