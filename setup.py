@@ -31,6 +31,6 @@ setup(
     entry_points={
         'console_scripts': ['swagger_server=app.__main__:main']},
     long_description="""\
-    Some useful links: - [The AudioSync repository](https://github.com/fkatsaras/SE-II-AudioSync.git)
+    Some useful links: - [The AudioSync repository](https://github.com/fkatsaras/audiosync.git)
     """
 )
