@@ -1,11 +1,19 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
     <title>{% block title %}AudioSync{% endblock %}</title>
+    <header>
+        <!-- Logo -->
+        <img src="{{ url_for('static', filename='images/logo.png') }}" alt="App Logo" width="100" height="100">
+    </header>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
     <script src="{{ url_for('static', filename='js/scripts.js') }}"></script>
 </head>
 <body>
-    {% block content %}{% endblock %}
+
+    <div id="content">
+        {% block content %}{% endblock %}
+    </div>
 </body>
 </html>
