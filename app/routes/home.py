@@ -11,7 +11,7 @@ def index():
         recommended='/recommended',
         my_artists='my_artists',
         search='/search',
-        my_playlists='my_playlists'
+        my_playlists='/my_playlists'
     )
 
     # Create an instance of HomePageResponse using the links data

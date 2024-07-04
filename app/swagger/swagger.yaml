@@ -3,7 +3,7 @@ info:
   title: Swagger AudioSync - OpenAPI 3.0
   description: |-
     Some useful links:
-    - [The AudioSync repository](https://github.com/fkatsaras/SE-II-AudioSync.git)
+    - [The AudioSync repository](https://github.com/fkatsaras/audiosync.git)
   termsOfService: http://swagger.io/terms/
   contact:
     email: apiteam@swagger.io
