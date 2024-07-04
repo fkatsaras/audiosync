@@ -2,7 +2,7 @@ import connexion
 import six
 
 from app.models.search_result import SearchResult  # noqa: E501
-from swagger_server import util
+from app import util
 
 
 def search_artists_get(q):  # noqa: E501

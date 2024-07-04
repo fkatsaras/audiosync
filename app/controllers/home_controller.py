@@ -2,7 +2,7 @@ import connexion
 import six
 
 from app.models.home_page_response import HomePageResponse  # noqa: E501
-from swagger_server import util
+from app import util
 
 
 def home_get():  # noqa: E501

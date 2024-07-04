@@ -3,7 +3,7 @@ import six
 
 from app.models.artist import Artist  # noqa: E501
 from app.models.song import Song  # noqa: E501
-from swagger_server import util
+from app import util
 
 
 def get_artist_songs(artist_id):  # noqa: E501

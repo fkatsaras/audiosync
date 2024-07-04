@@ -3,7 +3,7 @@ import six
 
 from app.models.inline_response200 import InlineResponse200  # noqa: E501
 from app.models.song import Song  # noqa: E501
-from swagger_server import util
+from app import util
 
 
 def get_song_by_id(song_id):  # noqa: E501

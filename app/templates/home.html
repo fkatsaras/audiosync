@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+
+{% block title %}Home - AudioSync{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1>Welcome to AudioSync!</h1>
+    <p>Liked Songs: <a href="{{ data.links.liked_songs }}">{{ data.links.liked_songs }}</a></p>
+    <p>Recommended: <a href="{{ data.links.recomended }}">{{ data.links.recomended }}</a><
+    <p>My Artists: <a href="{{ data.links.my_artists }}">{{ data.links.my_artists }}</a></p>
+    <p>Search: <a href="{{ data.links.search }}">{{ data.links.search }}</a></p>
+    <p>My Playlists: <a href="{{ data.links.my_playlists }}">{{ data.links.my_playlists }}</a></p>
+</div>
+{% endblock %}

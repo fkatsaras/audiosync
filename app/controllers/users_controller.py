@@ -4,7 +4,7 @@ import six
 from app.models.artist import Artist  # noqa: E501
 from app.models.playlist import Playlist  # noqa: E501
 from app.models.song import Song  # noqa: E501
-from swagger_server import util
+from app import util
 
 
 def add_liked_song(body, user_id):  # noqa: E501
