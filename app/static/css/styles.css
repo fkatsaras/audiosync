@@ -1,0 +1,66 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px;
+    background-color: #333;
+    color: white;
+}
+
+header .logo {
+    width: 100px;
+    height: auto;
+}
+
+nav ul li {
+    margin-left: 20px ;
+}
+
+nav ul li a {
+    color: white;
+    text-decoration: none;
+}
+
+.hero {
+    background: url("{{ url_for('static', filename='images/hero.jpg') }}") no-repeat center center;
+    background-size: cover;
+    color: white;
+    text-align: center;
+    padding: 100px 20px;
+}
+
+.features {
+    display: flex;
+    justify-content:  space-around;
+    padding:  20px;
+    background-color:  #f4f4f4;
+}
+
+.features {
+    text-align: center;
+    padding: 20px;
+}
+
+.content {
+    padding: 20px;
+    text-align: center;
+}
+
+footer {
+    background-color: #333;
+    color: white;
+    text-align: center;
+    padding: 10px 20px;
+}
+
+footer .social-media img {
+    width: 30px;
+    height: 30px;
+    margin: 0 10px;
+}
