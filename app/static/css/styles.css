@@ -1,16 +1,22 @@
-body {
-    font-family: Arial, sans-serif;
+/* Basic Reset */
+* {
     margin: 0;
     padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f5f5f5;
+    color: #333;
+    line-height: 1.6;
 }
 
 header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 10px 20px;
-    background-color: #333;
-    color: white;
+    background-color: #4CAF50;
+    color: #fff;
+    padding: 20px 0;
+    text-align: center;
 }
 
 header .logo {
@@ -18,49 +24,39 @@ header .logo {
     height: auto;
 }
 
-nav ul li {
-    margin-left: 20px ;
+.container {
+    max-width: 800px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #fff;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
 }
 
-nav ul li a {
-    color: white;
-    text-decoration: none;
-}
-
-.hero {
-    background: url("{{ url_for('static', filename='images/hero.jpg') }}") no-repeat center center;
-    background-size: cover;
-    color: white;
+h1 {
+    margin-bottom: 20px;
+    font-size: 24px;
     text-align: center;
-    padding: 100px 20px;
 }
 
-.features {
+.links {
     display: flex;
-    justify-content:  space-around;
-    padding:  20px;
-    background-color:  #f4f4f4;
+    flex-direction: column;
+    gap: 10px;
 }
 
-.features {
+.links .link {
+    display: block;
+    padding: 10px;
+    background-color: #e0e0e0;
+    color: #333;
+    text-decoration: none;
+    border-radius: 4px;
     text-align: center;
-    padding: 20px;
+    transition: background-color 0.3s;
 }
 
-.content {
-    padding: 20px;
-    text-align: center;
-}
-
-footer {
-    background-color: #333;
-    color: white;
-    text-align: center;
-    padding: 10px 20px;
-}
-
-footer .social-media img {
-    width: 30px;
-    height: 30px;
-    margin: 0 10px;
+.links .link:hover {
+    background-color: #4CAF50;
+    color: #fff;
 }

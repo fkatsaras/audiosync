@@ -5,10 +5,12 @@
 {% block content %}
 <div class="container">
     <h1>Welcome to AudioSync!</h1>
-    <p>Liked Songs: <a href="{{ links_data.links.liked_songs }}">{{ links_data.links.liked_songs }}</a></p>
-    <p>Recommended: <a href="{{ links_data.links.recommended }}">{{ links_data.links.recommended }}</a></p>
-    <p>My Artists: <a href="{{ links_data.links.my_artists }}">{{ links_data.links.my_artists }}</a></p>
-    <p>Search: <a href="{{ links_data.links.search }}">{{ links_data.links.search }}</a></p>
-    <p>My Playlists: <a href="{{ links_data.links.my_playlists }}">{{ links_data.links.my_playlists }}</a></p>
+    <div class="links">
+        <p><a href="{{ links_data.links.liked_songs }}" class="link">Liked Songs</a></p>
+        <p><a href="{{ links_data.links.recommended }}" class="link">Recommended</a></p>
+        <p><a href="{{ links_data.links.my_artists }}" class="link">My Artists</a></p>
+        <p><a href="{{ links_data.links.search }}" class="link">Search</a></p>
+        <p><a href="{{ links_data.links.my_playlists }}" class="link">My Playlists</a></p>
+    </div>
 </div>
 {% endblock %}

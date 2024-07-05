@@ -7,57 +7,12 @@
 </head>
 <body>
     <header>
+        <!-- Logo -->
         <img src="{{ url_for('static', filename='images/logo.png') }}" alt="App Logo" class="logo">
-        <nav>
-            <ul>
-                <li><a href="{{ url_for('home') }}">Home</a></li>
-                <li><a href="{{ url_for('about') }}">About</a></li>
-                <li><a href="{{ url_for('services') }}">Services</a></li>
-                <li><a href="{{ url_for('contact') }}">Contact</a></li>
-            </ul>
-        </nav>
     </header>
-
-    <main>
-        <section class="hero">
-            <h1>Welcome to AudioSync</h1>
-            <p>Your tagline goes here</p>
-        </section>
-
-        <section class="features">
-            <div class="feature">
-                <img src="{{ url_for('static', filename='images/feature1.png') }}" alt="Feature 1">
-                <h2>Feature 1</h2>
-                <p>Description of Feature 1</p>
-            </div>
-            <div class="feature">
-                <img src="{{ url_for('static', filename='images/feature2.png') }}" alt="Feature 2">
-                <h2>Feature 2</h2>
-                <p>Description of Feature 2</p>
-            </div>
-            <div class="feature">
-                <img src="{{ url_for('static', filename='images/feature3.png') }}" alt="Feature 3">
-                <h2>Feature 3</h2>
-                <p>Description of Feature 3</p>
-            </div>
-        </section>
-
-        <section class="content">
-            <h2>About Us</h2>
-            <p>Some text</p>
-            <img src="{{ url_for('static', filename='images/about.png') }}" alt="About Us">
-        </section>
-    </main>
-
-    <footer>
-        <p>Contact us: info@audiosync.com</p>
-        <div class="social-media">
-            <a href="#"><img src="{{ url_for('static', filename='images/facebook.png') }}" alt="Facebook"></a>
-            <a href="#"><img src="{{ url_for('static', filename='images/twitter.png') }}" alt="Twitter"></a>
-            <a href="#"><img src="{{ url_for('static', filename='images/instagram.png') }}" alt="Instagram"></a>
-        </div>
-    </footer>
-
+    <div id="content">
+        {% block content %}{% endblock %}
+    </div>
     <script src="{{ url_for('static', filename='js/scripts.js') }}"></script>
 </body>
 </html>
