@@ -9,6 +9,8 @@
     <header>
         <!-- Logo -->
         <img src="{{ url_for('static', filename='images/logo.png') }}" alt="App Logo" class="logo">
+        <p><a href="{{ links_data.links.search }}" class="link">Search</a></p>
+
     </header>
     <div id="content">
         {% block content %}{% endblock %}

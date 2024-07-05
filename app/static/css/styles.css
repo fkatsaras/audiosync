@@ -17,11 +17,15 @@ header {
     color: #fff;
     padding: 10px 0;
     text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
 }
 
 header .logo {
     width: 50px;
     height: auto;
+    
 }
 
 .container {
