@@ -3,14 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <title>{% block title %}AudioSync{% endblock %}</title>
+    <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
 </head>
 <body>
     <header>
-        <!-- Logo -->
-        <img src="{{ url_for('static', filename='images/logo.png') }}" alt="App Logo" class="logo">
-        <p><a href="{{ links_data.links.search }}" class="link">Search</a></p>
-
+        <div class="header-content">
+            <!-- Logo -->
+            <img src="{{ url_for('static', filename='images/logo.png') }}" alt="App Logo" class="logo">
+            <!-- Search Link-->
+            <a href="{{ links_data.links.search }}" class="link">Search</a>
+            <!-- AudioSync Title-->
+            <span class="header-title">AudioSync</span>
+        </div>
     </header>
     <div id="content">
         {% block content %}{% endblock %}
