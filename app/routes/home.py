@@ -2,7 +2,7 @@ from flask import Blueprint, render_template
 from app.models.home_page_response import HomePageResponse
 from app.models.home_page_response_links import HomePageResponseLinks
 
-home_bp = Blueprint('home', __name__)
+home_bp = Blueprint('home', __name__, template_folder='../templates', static_folder='../static')
 
 @home_bp.route('/')
 def index():
@@ -21,4 +21,4 @@ def index():
     response_data = HomePageResponse(links=links_data)
 
     # Convert the response_data to a dictionary and jsonify it
-    return render_template('home.html', links_data=response_data.to_dict())
+    return render_template('index.html', links_data=response_data.to_dict())
