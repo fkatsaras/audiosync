@@ -321,24 +321,24 @@
 }
 
 .function .playback .upper img.pause {
-  width: 32px; /* Larger size for pause button */
-  height: 32px; /* Larger size for pause button */
+  width: 35px; 
+  height: 35px; 
 }
 
 .function .playback .lower {
   display: flex;
   align-items: center;
   color: white;
-  font-size: 12px; /* Adjusted font size */
+  font-size: 12px; 
   margin-top: 4px;
 }
 
 .function .playback .lower .line {
-  width: 100px; /* Adjusted width */
-  height: 4px; /* Adjusted height */
-  background-color: white;
+  width: 500px;
+  height: 4px;
+  background-color: gray;
   border-radius: 2px;
-  margin: 0 8px;
+  margin: 0px 8px;
 }
 
 .function .control {
