@@ -25,7 +25,7 @@ def check_api_key(api_key, required_scopes):
 # Secret key for JWT (use an environment variable in production)
 SECRET_KEY = "fotis"
 
-def login():
+def login(users):
     if request.method == 'POST':
         if request.is_json:
             # Handle JSON data
@@ -37,23 +37,29 @@ def login():
             username = request.form.get("username")
             password = request.form.get("password")
 
-        try:
-            # Query the user from the database
-            user = UserEntity.query.filter_by(username=username).first()
+        print(f"D> Login attemp - Username: {username}, Password: {password}")
 
-            if not user or not check_password_hash(user.password, password):
-                return jsonify({'message': 'Invalid credentials'}), 401
-
+        # Check credentials against in-memory user store
+        stored_password_hash = users.get(username)
+        print(f"D> Stored password hash for {username}: {stored_password_hash}")
+        if stored_password_hash and check_password_hash(stored_password_hash, password):
+            print("D> Credentials are valid")
             # Generate a JWT token
             token = jwt.encode({
-                'user.id': user.id,
+                'username': username,
                 'exp': datetime.datetime.utcnow() + datetime.timedelta(hours=1)
             }, SECRET_KEY, algorithm="HS256")
 
-            return jsonify({'token': token}), 200
+            # Store user ID in session
+            session['user.id'] = username
+            print(f"D> Session user ID set to: {session.get('user.id')}")
+            print(f"D> Generated token: {token}")
 
-        except Exception as e:
-            return jsonify({'error': str(e)}), 500
+
+            return jsonify({'token': token}), 200
+        else:
+            print("D> Invalid credentials")
+            return jsonify({'message': 'Invalid credentials'}), 401
 
     # For GET requests or other methods
     return render_template('login.html')

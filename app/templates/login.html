@@ -5,17 +5,21 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Welcome to AudioSync</title>
         <link rel="stylesheet" href="../static/css/styles.css">
+        <link rel="shortcut icon" href="../static/favicon.ico">
     </head>
     <body>
         <div class="login-container">
             <h1>Welcome to AudioSync</h1>
-            <form action="home.html" method="post">
+            <form id="loginForm" action="/login" method="post">
                 <label for="username">Username:</label>
                 <input type="text" id="username" name="username" required>
                 <label for="password">Password:</label>
                 <input type="password" id="password" name="password" required>
                 <button type="submit">Login</button>
-            </form>
+            </form>            
         </div>
+
+        <!-- Link to the external login js file-->
+        <script src="../static/js/login.js"></script>
     </body>
 </html>

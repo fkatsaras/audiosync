@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home</title>
+    <link rel="stylesheet" href="../static/css/styles.css">
+    <link rel="shortcut icon" href="../static/favicon.ico">
+</head>
+<body>
+    <h1>Welcome to Your Home Page</h1>
+    <nav>
+        <ul>
+            <li><a href="{{ links.liked_songs }}">Liked Songs</a></li>
+            <li><a href="{{ links.recommended }}">Recommended</a></li>
+            <li><a href="{{ links.my_artists }}">My Artists</a></li>
+            <li><a href="{{ links.search }}">Search</a></li>
+            <li><a href="{{ links.my_playlists }}">My Playlists</a></li>
+        </ul>
+    </nav>
+    <footer>
+        <p><a href="#" id="logoutLink">Logout</a></p>
+    </footer>
+
+    <script src="../static/js/logout.js"></script>
+</body>
+</html>

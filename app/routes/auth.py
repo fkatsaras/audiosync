@@ -1,18 +1,19 @@
 from flask import Blueprint
 from app.controllers.authorization_controller import *
+from werkzeug.security import generate_password_hash, check_password_hash
 
 # TEST : In-memory user store for demonstration
 users = {
-    "testuser": "testpassword" 
+    "testuser": generate_password_hash("testpassword") 
 }
 
 auth_bp = Blueprint('auth', __name__)
 
 @auth_bp.route('/login', methods=['GET', 'POST'])
 def login_route():
-    return login()
+    return login(users)
 
-@auth_bp.route('/logout', methods=['POST'])
+@auth_bp.route('/logout', methods=['POST']) # Using only POST method for avoiding CSRF attacks
 def logout_route():
     return logout()
 
