@@ -3,10 +3,13 @@ import connexion
 
 from app import encoder
 from flask import Flask
+from dotenv import load_dotenv
+from flask_cors import CORS
+
 from app.routes.home import home_bp
 from app.routes.auth import auth_bp
 from app.routes.landing import landing_bp
-from dotenv import load_dotenv
+from app.routes.api import api
 
 load_dotenv()
 
@@ -17,10 +20,13 @@ def create_app():
 
     flask_app = app.app
 
+    CORS()
+
     # Register blueprints
     flask_app.register_blueprint(home_bp)
     flask_app.register_blueprint(auth_bp)
     flask_app.register_blueprint(landing_bp)
+    flask_app.register_blueprint(api)
 
     # Configure the session (needed for session management)
     flask_app.secret_key = 'fotis'
