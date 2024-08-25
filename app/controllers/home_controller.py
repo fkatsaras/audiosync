@@ -1,9 +1,4 @@
-import connexion
-import six
-
-from app.models.home_page_response import HomePageResponse  # noqa: E501
-from app import util
-
+from flask import request, jsonify, session, redirect, url_for, flash, render_template
 
 def home_get():  # noqa: E501
     """Get Home Page GUI
@@ -13,4 +8,7 @@ def home_get():  # noqa: E501
 
     :rtype: HomePageResponse
     """
-    return 'do some magic!'
+
+    if 'user.id' not in session:
+        return redirect(url_for('landing.landing'))
+    return render_template('home.html')
