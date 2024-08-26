@@ -2,7 +2,7 @@
 import connexion
 
 from app import encoder
-from flask import Flask
+from flask import Flask, send_from_directory
 from dotenv import load_dotenv
 from flask_cors import CORS
 
@@ -10,6 +10,7 @@ from app.routes.home import home_bp
 from app.routes.auth import auth_bp
 from app.routes.landing import landing_bp
 from app.routes.api import api
+import os
 
 load_dotenv()
 
@@ -20,7 +21,8 @@ def create_app():
 
     flask_app = app.app
 
-    CORS()
+    # Specify allowed origin 
+    CORS(flask_app, resources={r"/*": {"origins": "http://localhost:3000"}})
 
     # Register blueprints
     flask_app.register_blueprint(home_bp)
@@ -30,6 +32,15 @@ def create_app():
 
     # Configure the session (needed for session management)
     flask_app.secret_key = 'fotis'
+
+    # Serve React build files 
+    @flask_app.route('/', defaults={'path': ''})
+    @flask_app.route('/<path:path>')
+    def serve_react(path):
+        if path != "" and os.path.exists(os.path.join('../frontend/build', path)):
+            return send_from_directory('../frontend/build', path)
+        else: 
+            return send_from_directory('../frontend/build', 'index.html')
 
     return flask_app
 

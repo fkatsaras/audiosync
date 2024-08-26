@@ -1,23 +1,20 @@
-import logo from './logo.svg';
-import './App.css';
-
-import React, { useEffect, useState } from 'react';
+import React from 'react';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import Landing from './components/Landing/Landing';
+import Login from './components/Login/Login';
+import Home from './components/Home/Home';
+// import './styles/App.css' // App wide styles
 
 function App() {
-  const [data, setData] = useState('');
-
-  useEffect(() => {
-    fetch('/api/data')
-      .then(response => response.json())
-      .then(data => setData(data.message));
-  }, []);
-
   return (
-    <div>
-      <h1>React and Flask Integration</h1>
-      <p>{data}</p>
-    </div>
-  );
+    <Router>
+      <Routes>
+        <Route path='/' element={<Landing />}></Route>
+        <Route path='/login' element={<Login />}></Route>
+        <Route path='/home' element={<Home />}></Route>
+      </Routes>
+    </Router>
+  )
 }
 
 export default App;
