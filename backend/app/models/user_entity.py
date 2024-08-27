@@ -17,11 +17,13 @@ class UserEntity(Model):
 
     Do not edit the class manually.
     """
-    def __init__(self, id: int=None, liked_songs: List[Song]=None, followed_artists: List[Artist]=None, recommended_songs: List[Song]=None, created_playlists: List[Playlist]=None):  # noqa: E501
+    def __init__(self, id: int=None, username: str=None, liked_songs: List[Song]=None, followed_artists: List[Artist]=None, recommended_songs: List[Song]=None, created_playlists: List[Playlist]=None):  # noqa: E501
         """UserEntity - a model defined in Swagger
 
         :param id: The id of this UserEntity.  # noqa: E501
         :type id: int
+        :param username: The Username of the user.  # noqa: E501
+        :type: username: str
         :param liked_songs: The liked_songs of this UserEntity.  # noqa: E501
         :type liked_songs: List[Song]
         :param followed_artists: The followed_artists of this UserEntity.  # noqa: E501
@@ -33,6 +35,7 @@ class UserEntity(Model):
         """
         self.swagger_types = {
             'id': int,
+            'username': str,
             'liked_songs': List[Song],
             'followed_artists': List[Artist],
             'recommended_songs': List[Song],
@@ -41,12 +44,14 @@ class UserEntity(Model):
 
         self.attribute_map = {
             'id': 'id',
+            'username':'username',
             'liked_songs': 'likedSongs',
             'followed_artists': 'followedArtists',
             'recommended_songs': 'recommendedSongs',
             'created_playlists': 'createdPlaylists'
         }
         self._id = id
+        self._username = username
         self._liked_songs = liked_songs
         self._followed_artists = followed_artists
         self._recommended_songs = recommended_songs
@@ -85,6 +90,29 @@ class UserEntity(Model):
         """
 
         self._id = id
+
+    @property
+    def username(self) -> str:
+        """Gets the username of this UserEntity.
+
+        Username of the user  # noqa: E501
+
+        :return: The username of this UserEntity.
+        :rtype: str
+        """
+        return self._username
+
+    @username.setter
+    def username(self, username: str):
+        """Sets the id of this UserEntity.
+
+        Username for the user  # noqa: E501
+
+        :param id: The username of this UserEntity.
+        :type id: str
+        """
+
+        self._username = username
 
     @property
     def liked_songs(self) -> List[Song]:

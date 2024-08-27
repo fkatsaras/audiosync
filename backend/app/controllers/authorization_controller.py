@@ -4,7 +4,6 @@ from flask import request, jsonify, session, redirect, url_for, render_template
 from werkzeug.security import check_password_hash
 from app.models.user_entity import UserEntity
 import jwt
-import datetime
 from functools import wraps
 
 """
@@ -47,47 +46,6 @@ def token_required(f):
         return f(current_user, *args, **kwargs)
 
     return decorator
-
-def login(users):
-    if request.method == 'POST':
-        if request.is_json:
-            # Handle JSON data
-            data = request.get_json()
-        else:
-            # Handle form data
-            data = request.form
-        
-        username = data.get("username")
-        password = data.get("password")
-
-        print(f"D> Login attempt - Username: {username}, Password: {password}")
-
-        # Check credentials against in-memory user store
-        stored_password_hash = users.get(username)
-        print(f"D> Stored password hash for {username}: {stored_password_hash}")
-        
-        if stored_password_hash and check_password_hash(stored_password_hash, password):
-            print("D> Credentials are valid")
-            
-            # Generate a JWT token
-            token = jwt.encode({
-                'username': username,
-                'exp': datetime.datetime.utcnow() + datetime.timedelta(hours=1)
-            }, SECRET_KEY, algorithm="HS256")
-
-            # Store user ID in session
-            session['user.id'] = username
-            print(f"D> Session user ID set to: {session.get('user.id')}")
-            print(f"D> Generated token: {token}")
-
-            # Return the token as a JSON response
-            return jsonify({'token': token}), 200
-        else:
-            print("D> Invalid credentials")
-            return jsonify({'message': 'Invalid credentials'}), 401
-
-    # Return a 405 Method Not Allowed response for non-POST methods
-    return jsonify({'message': 'Method Not Allowed'}), 405
 
 def logout():
     session.pop('username', None)

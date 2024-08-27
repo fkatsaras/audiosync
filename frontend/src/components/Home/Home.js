@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom'; // Import useNavigate
 import './Home.css';
 
 function Home() {
   const [links, setLinks] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const navigate = useNavigate(); // Initialize useNavigate
 
   useEffect(() => {
     const fetchData = async () => {
@@ -25,14 +27,15 @@ function Home() {
       } catch (error) {
         console.error('Error during fetch:', error);
         setError('You need to log in');
-        window.location.href = '/login'; // Redirect to login page if unauthorized
+        localStorage.removeItem('token');  // Clear token on error
+        navigate('/login');  // Redirect to login using navigate
       } finally {
         setLoading(false); // Stop loading indicator
       }
     };
 
     fetchData();
-  }, []);
+  }, [navigate]);
 
   if (loading) {
     return <div>Loading...</div>; // Show a loading indicator
@@ -57,7 +60,10 @@ function Home() {
       <footer>
         <button onClick={() => {
           localStorage.removeItem('token');
-          window.location.href = '/login'; // Redirect to login after logout
+          setLinks({});  // Clear links
+          setError(null);  // Clear any errors
+          setLoading(false);  // Stop loading
+          navigate('/login');  // Redirect to login
         }}>Logout</button>
       </footer>
     </div>

@@ -761,6 +761,10 @@ components:
           description: Unique identifier for the user
           format: int64
           example: 123
+        username:
+          type: string
+          description: Username of the user
+          example: johnDoe
         likedSongs:
           type: array
           description: List of songs that the user has liked
