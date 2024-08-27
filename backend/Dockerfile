@@ -1,16 +1,22 @@
-FROM python:3.6-alpine
+# Use an official Python runtime as a parent image
+FROM python:3.10-slim
 
-RUN mkdir -p /usr/src/app
-WORKDIR /usr/src/app
+# Set environment variables
+ENV PYTHONDONTWRITEBYTECODE 1
+ENV PYTHONBUFFERED 1
 
-COPY requirements.txt /usr/src/app/
+# Set the working directory in the container
+WORKDIR /app
 
+# Copy the requirements file and install dependencies
+COPY requirements.txt /app/
 RUN pip3 install --no-cache-dir -r requirements.txt
 
-COPY . /usr/src/app
+# Copy the rest of the application code
+COPY . /app/
 
-EXPOSE 8080
+# Expose the apps port
+EXPOSE 5000
 
-ENTRYPOINT ["python3"]
-
-CMD ["-m", "swagger_server"]
+# Set the command to run the application
+CMD ["gunicorn", "--bind", "0.0.0.0:5000", "wsgi:app"]
