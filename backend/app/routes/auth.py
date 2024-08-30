@@ -1,6 +1,5 @@
 from flask import Blueprint
 from app.controllers.authorization_controller import *
-from werkzeug.security import generate_password_hash, check_password_hash
 from app.controllers.users_controller import login_user, logout_user
 
 from flask import request, jsonify, session
