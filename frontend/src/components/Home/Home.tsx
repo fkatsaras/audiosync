@@ -2,10 +2,18 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom'; // Import useNavigate
 import './Home.css';
 
+type links = {
+  liked_songs?: string;
+  recommended?: string;
+  my_artists?: string;
+  search?: string;
+  my_playlists?: string;
+};
+
 function Home() {
-  const [links, setLinks] = useState({});
+  const [links, setLinks] = useState<links>({});
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate(); // Initialize useNavigate
 
   useEffect(() => {

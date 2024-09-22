@@ -19,7 +19,7 @@ def get_artist_songs(artist_id):  # noqa: E501
     return 'do some magic!'
 
 
-def gett_artist_by_id(artist_id):  # noqa: E501
+def get_artist_by_id(artist_id):  # noqa: E501
     """Get artist by id
 
     Retrieve information about a specific artist # noqa: E501
