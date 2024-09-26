@@ -15,44 +15,8 @@ import os
 
 load_dotenv()
 
-# Set up color coding for different log levels
-class ColoredFormatter(logging.Formatter):
-    COLORS = {
-        "DEBUG": "\033[90m",    # Grey
-        "INFO": "\033[92m",     # Green
-        "WARNING": "\033[93m",  # Yellow
-        "ERROR": "\033[91m",    # Red
-        "CRITICAL": "\033[95m", # Magenta
-    }
-    RESET = "\033[0m"
-
-    def format(self, record):
-        log_msg = super().format(record)
-        color = self.COLORS.get(record.levelname, self.RESET)
-        return f"{color}{log_msg}{self.RESET}"
-
-# Configure the root logger
-def setup_logging():
-    logger = logging.getLogger()
-    logger.setLevel(logging.DEBUG)  # Adjust as needed
-
-    # Create a console handler
-    console_handler = logging.StreamHandler()
-    console_handler.setLevel(logging.DEBUG)
-
-    # Define the log message format
-    formatter = ColoredFormatter(
-        "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-    )
-    console_handler.setFormatter(formatter)
-
-    # Add the handler to the root logger
-    logger.addHandler(console_handler)
-
 def create_app():
 
-    # Initialize loggin 
-    setup_logging()
     app = connexion.App(__name__, specification_dir='./swagger/')
     app.app.json_encoder = encoder.JSONEncoder
     app.add_api('swagger.yaml', arguments={'title': 'Swagger AudioSync - OpenAPI 3.0'}, pythonic_params=True)

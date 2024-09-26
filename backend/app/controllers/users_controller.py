@@ -6,6 +6,7 @@ from app.models.artist import Artist  # noqa: E501
 from app.models.playlist import Playlist  # noqa: E501
 from app.models.song import Song  # noqa: E501
 from app import util
+from app.utils.logging_config import get_logger
 
 from app.controllers.authorization_controller import SECRET_KEY, token_required
 
@@ -18,6 +19,9 @@ from flask import request, jsonify, session
 user = {
     "testuser": generate_password_hash("testpassword") 
 }
+
+logger = get_logger(__name__)
+
 
 def add_liked_song(body, user_id):  # noqa: E501
     """User likes a song
@@ -180,14 +184,13 @@ def login_user(username=None, password=None):  # noqa: E501
     :rtype: str
     """
 
-    print(f"D> Login attempt - Username: {username}, Password: {password}")
+    logger.info(f"Login attempt - Username: {username}")
 
     # Check credentials against in-memory user store
     stored_password_hash = user.get(username) # FIX This checks against a test user defined here - In the future use a db for storing user data
-    print(f"D> Stored password hash for {username}: {stored_password_hash}")
     
     if stored_password_hash and check_password_hash(stored_password_hash, password):
-        print("D> Credentials are valid")
+        logger.debug("Credentials are valid")
         
         # Generate a JWT token
         token = jwt.encode({
@@ -196,12 +199,12 @@ def login_user(username=None, password=None):  # noqa: E501
         }, SECRET_KEY, algorithm="HS256")
         # Store user ID in session
         session['user.id'] = username
-        print(f"D> Session user ID set to: {session.get('user.id')}")
-        print(f"D> Generated token: {token}")
+        logger.debug(f"Session user ID set to: {session.get('user.id')}")
+        logger.debug(f"Generated token: {token}")
         # Return the token as a JSON response
         return jsonify({'token': token}), 200
     else:
-        print("D> Invalid credentials")
+        logger.error("Invalid credentials")
         return jsonify({'message': 'Invalid credentials'}), 401
 
 

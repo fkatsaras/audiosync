@@ -41,7 +41,6 @@ function Login() {
     return (
         <div className="login-container">
             <h1>Welcome to AudioSync</h1>
-            {errorMessage && <p className="error-message">{errorMessage}</p>}
             <form id="loginForm" onSubmit={handleLogin}>
                 <label htmlFor="username">Username:</label>
                 <input 
@@ -61,6 +60,7 @@ function Login() {
                 />
                 <button type="submit">Login</button>
             </form>
+            {errorMessage && <p className="error-message">{errorMessage}</p>}
         </div>
     );
 }
