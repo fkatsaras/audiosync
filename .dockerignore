@@ -1,3 +1,42 @@
+# Git repo files
+.git/
+.gitignore
+
+# Node modules and Python cache
+node_modules/
+__pycache__/
+
+# Environment variables
+.env
+
+# Test files and logs
+tests/
+*.log
+
+# Distribution/build directories
+build/
+dist/
+eggs/
+*.egg-info/
+develop-eggs/
+downloads/
+sdist/
+var/
+docs/
+
+# Byte-compiled Python files
+*.pyc
+*.pyo
+*.pyd
+
+# Docker config and volumes
+docker-compose.override.yml
+volumes/
+
+# Miscellaneous
+.vscode/
+.idea/
+
 .travis.yaml
 .swagger-codegen-ignore
 README.md

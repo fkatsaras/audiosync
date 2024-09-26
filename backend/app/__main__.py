@@ -63,10 +63,9 @@ def create_app():
     CORS(flask_app, resources={r"/*": {"origins": "http://localhost:3000"}})
 
     # Register blueprints
-    flask_app.register_blueprint(home_bp)
-    flask_app.register_blueprint(auth_bp)
-    flask_app.register_blueprint(landing_bp)
-    flask_app.register_blueprint(api)
+    blueprints = [home_bp, auth_bp, landing_bp, api]
+    for blueprint in blueprints:
+        flask_app.register_blueprint(blueprint=blueprint)
 
     # Configure the session (needed for session management)
     flask_app.secret_key = 'fotis'

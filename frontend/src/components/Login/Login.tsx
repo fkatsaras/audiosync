@@ -4,9 +4,10 @@ import { useNavigate } from 'react-router-dom';
 function Login() {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
+    const [errorMessage, setErrorMessage] = useState('');
     const navigate = useNavigate();
 
-    const handleLogin = async (event) => {
+    const handleLogin = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
     
         try {
@@ -19,6 +20,8 @@ function Login() {
             });
     
             if (!response.ok) {
+                const errorData = await response.json(); // Get the errror message from the backend response
+                setErrorMessage(errorData.message);
                 throw new Error('Login failed');
             }
     
@@ -38,6 +41,7 @@ function Login() {
     return (
         <div className="login-container">
             <h1>Welcome to AudioSync</h1>
+            {errorMessage && <p className="error-message">{errorMessage}</p>}
             <form id="loginForm" onSubmit={handleLogin}>
                 <label htmlFor="username">Username:</label>
                 <input 
