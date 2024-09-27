@@ -112,3 +112,15 @@ class ApiResponse(Model):
         """
 
         self._message = message
+
+    def to_dict(self):
+        """Converts the ApiResponse instance to a dictionary.
+        
+        :return: The type of this ApiResponse.
+        :rtype: dict
+        """
+        return {
+            'code': self._code,
+            'type': self.type,
+            'message': self._message
+        }

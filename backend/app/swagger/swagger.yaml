@@ -142,29 +142,27 @@ paths:
           description: Server error
       x-openapi-router-controller: app.controllers.search_controller
   /users/login:
-    get:
+    post:
       tags:
       - users
       summary: Logs user into the system
-      description: ""
+      description: "Logs in using username and password"
       operationId: login_user
-      parameters:
-      - name: username
-        in: query
-        description: The user name for login
-        required: false
-        style: form
-        explode: true
-        schema:
-          type: string
-      - name: password
-        in: query
-        description: The password for login in clear text
-        required: false
-        style: form
-        explode: true
-        schema:
-          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                  description: The username for login
+                password:
+                  type: string
+                  description: The password for login in clear text
+              required:
+                - username
+                - password
       responses:
         "200":
           description: successful operation
@@ -172,25 +170,24 @@ paths:
             X-Rate-Limit:
               description: calls per hour allowed by the user
               style: simple
-              explode: false
               schema:
                 type: integer
                 format: int32
             X-Expires-After:
               description: date in UTC when token expires
               style: simple
-              explode: false
               schema:
                 type: string
                 format: date-time
           content:
-            application/xml:
-              schema:
-                type: string
-                x-content-type: application/xml
             application/json:
               schema:
-                type: string
+                type: object
+                properties:
+                  token:
+                    type: string
+                  message:
+                    type: string
         "400":
           description: Invalid username/password supplied
       x-openapi-router-controller: app.controllers.users_controller

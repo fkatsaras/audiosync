@@ -9,22 +9,8 @@ auth_bp = Blueprint('auth', __name__)
 
 @auth_bp.route('/login', methods=['POST'])
 def login_route():
-    if request.method == 'POST':
-        if request.is_json:
-            # Handle JSON data
-            data = request.get_json()
-        else:
-            # Handle form data
-            data = request.form
-        
-        username = data.get("username")
-        password = data.get("password")
-
-        # Call user login controller
-        return login_user(username=username, password=password)
-
-    # Return a 405 Method Not Allowed response for non-POST methods
-    return jsonify({'message': 'Method Not Allowed'}), 405
+    # Connexion will handle extracting username and password based on OpenAPI
+    return login_user()
 
 @auth_bp.route('/logout', methods=['POST']) # Using only POST method for avoiding CSRF attacks
 def logout_route():

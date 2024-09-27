@@ -7,6 +7,7 @@ from app.models.playlist import Playlist  # noqa: E501
 from app.models.song import Song  # noqa: E501
 from app import util
 from app.utils.logging_config import get_logger
+from app.models.api_response import ApiResponse
 
 from app.controllers.authorization_controller import SECRET_KEY, token_required
 
@@ -171,7 +172,7 @@ def get_user_playlists(user_id):  # noqa: E501
     return 'do some magic!'
 
 
-def login_user(username=None, password=None):  # noqa: E501
+def login_user():  # noqa: E501
     """Logs user into the system
 
      # noqa: E501
@@ -183,6 +184,22 @@ def login_user(username=None, password=None):  # noqa: E501
 
     :rtype: str
     """
+
+    # Extract JSON data from the POST request
+    data = request.get_json()
+
+    # Validate query parameters
+    username = data.get('username')
+    password = data.get('password')
+
+    if not username or not password:
+        logger.error("Username or password not provided")
+        error_response = ApiResponse(
+            code=400,
+            type='error',
+            message='Username or password missing'
+        )
+        return jsonify(error_response.to_dict()), 400
 
     logger.info(f"Login attempt - Username: {username}")
 
@@ -201,11 +218,27 @@ def login_user(username=None, password=None):  # noqa: E501
         session['user.id'] = username
         logger.debug(f"Session user ID set to: {session.get('user.id')}")
         logger.debug(f"Generated token: {token}")
-        # Return the token as a JSON response
-        return jsonify({'token': token}), 200
+        
+        # Return the token as a JSON response using the api model
+        success_response = ApiResponse(
+            code=200,
+            type='success',
+            message='Login successful'
+        )
+
+        return jsonify({
+            **success_response.to_dict(),
+            'token': token
+        }), 200
     else:
         logger.error("Invalid credentials")
-        return jsonify({'message': 'Invalid credentials'}), 401
+
+        error_response = ApiResponse(
+            code=401,
+            type='error',
+            message='Invalid credentials'
+        )
+        return jsonify({error_response.to_dict()}), 401
 
 
 def logout_user():  # noqa: E501

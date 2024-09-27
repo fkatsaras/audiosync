@@ -140,3 +140,26 @@ def _deserialize_dict(data, boxed_type):
     """
     return {k: _deserialize(v, boxed_type)
             for k, v in six.iteritems(data)}
+
+def dict_toxml(data):
+    """Converts a dictionary to an XML string
+    :param data: dict to convert
+    :type data: dict
+
+    :return: converted dict
+    :rtype: str
+    """
+
+    from xml.etree.ElementTree import Element, tostring
+    def build_xml_element(root, data):
+        if isinstance(data, dict):
+            for key, value in data.items():
+                sub_elem = Element(key)
+                root.append(sub_elem)
+                build_xml_element(sub_elem, value)
+        else:
+            root.text = str(data)
+        
+    root = Element('response')
+    build_xml_element(root, data)
+    return tostring(root, encoding='unicode')
