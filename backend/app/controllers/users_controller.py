@@ -18,7 +18,7 @@ from flask import request, jsonify, session
 
 # TEST : In-memory user store for demonstration --- Use a db in the future
 user = {
-    "testuser": generate_password_hash("testpassword") 
+    "testuser": generate_password_hash("ellipsis") 
 }
 
 logger = get_logger(__name__)
