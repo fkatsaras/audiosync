@@ -3,6 +3,7 @@ import { createBrowserRouter, RouterProvider, Navigate} from 'react-router-dom';
 import Landing from './components/Landing';
 import Login from './components/Login';
 import Home from './components/Home';
+import NotFound from './components/NotFound';
 
 const router = createBrowserRouter([
   { path: "/", element: <Landing /> },
