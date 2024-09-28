@@ -1,8 +1,9 @@
 import React from "react";
 import { createBrowserRouter, RouterProvider, Navigate} from 'react-router-dom';
-import Landing from './components/Landing/Landing';
-import Login from './components/Login/Login';
-import Home from './components/Home/Home';
+import Landing from './components/Landing';
+import Login from './components/Login';
+import Home from './components/Home';
+import NotFound from "./components/NotFound";
 
 const router = createBrowserRouter([
   { path: "/", element: <Landing /> },
@@ -11,7 +12,7 @@ const router = createBrowserRouter([
     path: "/home",
     element: localStorage.getItem('token') ? <Home /> : <Navigate to='/login' />
   },
-  { path: "*", element: <Navigate to="/" />}  // Fix this later to NOT FOUND page
+  { path: "*", element: <NotFound />}  // Fix this later to NOT FOUND page
 ]);
 
 function App() {
