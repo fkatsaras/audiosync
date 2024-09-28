@@ -1,9 +1,8 @@
 import React from "react";
 import { createBrowserRouter, RouterProvider, Navigate} from 'react-router-dom';
-import Landing from './components/Landing';
-import Login from './components/Login';
-import Home from './components/Home';
-import NotFound from './components/NotFound';
+import Landing from './components/Landing/Landing';
+import Login from './components/Login/Login';
+import Home from './components/Home/Home';
 
 const router = createBrowserRouter([
   { path: "/", element: <Landing /> },
