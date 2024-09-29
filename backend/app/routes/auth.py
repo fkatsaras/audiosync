@@ -7,6 +7,10 @@ from flask import request, jsonify, session
 
 auth_bp = Blueprint('auth', __name__)
 
+@auth_bp.route('/check-login', methods=['GET'])
+def check_login_route():
+    return check_login()
+
 @auth_bp.route('/login', methods=['POST'])
 def login_route():
     # Connexion will handle extracting username and password based on OpenAPI
@@ -15,7 +19,3 @@ def login_route():
 @auth_bp.route('/logout', methods=['POST']) # Using only POST method for avoiding CSRF attacks
 def logout_route():
     return logout()
-
-@auth_bp.route('/current_user', methods=['GET'])
-def current_user_route():
-    return current_user()

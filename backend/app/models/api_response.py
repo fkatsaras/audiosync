@@ -3,7 +3,7 @@
 from __future__ import absolute_import
 from datetime import date, datetime  # noqa: F401
 
-from typing import List, Dict  # noqa: F401
+from typing import List, Dict, Any # noqa: F401
 
 from app.models.base_model_ import Model
 from app import util
@@ -14,7 +14,7 @@ class ApiResponse(Model):
 
     Do not edit the class manually.
     """
-    def __init__(self, code: int=None, type: str=None, message: str=None):  # noqa: E501
+    def __init__(self, code: int=None, type: str=None, message: str=None, body: Dict[str, any]=None):  # noqa: E501
         """ApiResponse - a model defined in Swagger
 
         :param code: The code of this ApiResponse.  # noqa: E501
@@ -23,21 +23,26 @@ class ApiResponse(Model):
         :type type: str
         :param message: The message of this ApiResponse.  # noqa: E501
         :type message: str
+        :param body: The body of this ApiResponse.  # noqa: E501
+        :type body: dict
         """
         self.swagger_types = {
             'code': int,
             'type': str,
-            'message': str
+            'message': str,
+            'body': dict
         }
 
         self.attribute_map = {
             'code': 'code',
             'type': 'type',
-            'message': 'message'
+            'message': 'message',
+            'body': 'body'
         }
         self._code = code
         self._type = type
         self._message = message
+        self._body = body
 
     @classmethod
     def from_dict(cls, dikt) -> 'ApiResponse':
@@ -113,6 +118,24 @@ class ApiResponse(Model):
 
         self._message = message
 
+    @property
+    def body(self) -> Dict[str, Any]:
+        """Gets the body of this ApiResponse.
+
+        :return: The body of this ApiResponse.
+        :rtype: dict
+        """
+        return self._body
+
+    @body.setter
+    def body(self, body: Dict[str, Any]):
+        """Sets the body of this ApiResponse.
+
+        :param body: The body of this ApiResponse.
+        :type body: dict
+        """
+        self._body = body
+
     def to_dict(self):
         """Converts the ApiResponse instance to a dictionary.
         
@@ -122,5 +145,6 @@ class ApiResponse(Model):
         return {
             'code': self._code,
             'type': self.type,
-            'message': self._message
+            'message': self._message,
+            'body': self._body 
         }
