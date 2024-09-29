@@ -53,7 +53,7 @@ function Search() {
             <button onClick={() => handleSearch('artists')}>Search Artists</button>
             <button onClick={() => handleSearch('songs')}>Search Songs</button>
 
-            {loading && <div>Loading</div>}
+            {loading && <div>Loading...</div>}
             {error && <div>{error}</div>}
 
             <ul>

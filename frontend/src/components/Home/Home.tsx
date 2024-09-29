@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom'; // Import useNavigate
+import { useNavigate, Link } from 'react-router-dom'; // Import Link
 import './Home.css';
 
 type links = {
@@ -58,11 +58,11 @@ function Home() {
       <h1>Welcome to Your Home Page</h1>
       <nav>
         <ul>
-          <li><a href={links.liked_songs}>Liked Songs</a></li>
-          <li><a href={links.recommended}>Recommended</a></li>
-          <li><a href={links.my_artists}>My Artists</a></li>
-          <li><a href={links.search}>Search</a></li>
-          <li><a href={links.my_playlists}>My Playlists</a></li>
+          {links.liked_songs && <li><Link to={links.liked_songs}>Liked Songs</Link></li>}
+          {links.recommended && <li><Link to={links.recommended}>Recommended</Link></li>}
+          {links.my_artists && <li><Link to={links.my_artists}>My Artists</Link></li>}
+          {links.search && <li><Link to={links.search}>Search</Link></li>}
+          {links.my_playlists && <li><Link to={links.my_playlists}>My Playlists</Link></li>}
         </ul>
       </nav>
       <footer>

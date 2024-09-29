@@ -13,8 +13,10 @@ const router = createBrowserRouter([
     path: "/home",
     element: localStorage.getItem('token') ? <Home /> : <Navigate to='/login' />
   },
-  { path: "/search", element: <Search /> },
-  { path: "*", element: <NotFound />}  // Fix this later to NOT FOUND page
+  { path: "/search",
+    element: localStorage.getItem('token') ? <Search /> : <Navigate to='/login' />
+  },
+  { path: "*", element: <NotFound />}
 ]);
 
 function App() {
