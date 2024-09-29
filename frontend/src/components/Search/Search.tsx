@@ -5,10 +5,13 @@ function Search() {
     const [results, setResults] = useState<any[]>([]);
     const [error, setError] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
+    const [hasSearched, setHasSearched] = useState(false);
 
     const handleSearch = async (searchType: 'artists' | 'songs') => {
         setLoading(true);
         setError(null);
+        setResults([]);
+        setHasSearched(true);   // Mark that a search has been submitted
 
         try {
             const response = await fetch(`/search/${searchType}?q=${query}`, {
@@ -17,12 +20,19 @@ function Search() {
                 }
             });
 
+            if (response.status === 404) {
+                setHasSearched(true);  // Mark that search was performed but nothing was found
+                setResults([]);  // Clear results if no items were found
+                return;
+            }
+
             if(!response.ok) {
                 throw new Error('Failed to fetch search results');
             }
 
             const data = await response.json();
             setResults(data.data[searchType]);
+            setHasSearched(true);
         } catch (err) {
             console.error(err);
             setError('Something went wrong with the search');
@@ -47,12 +57,14 @@ function Search() {
             {error && <div>{error}</div>}
 
             <ul>
-                {results && results.length > 0 ? (
-                results.map((result, index) => (
-                    <li key={index}>{result.name}</li>
-                ))) : (
-                    <li>No results found.</li>
-                )}
+                {/* Render search results if there are any */}
+                {results.length > 0 &&
+                    results.map((result, index) => (
+                        <li key={index}>{result.name}</li>
+                    ))
+                }
+                {/* Render "No results found" if search was performed but no results were found */}
+                {hasSearched && results.length === 0 && !loading && <li>No results found</li>}
             </ul>
         </div>
     );
