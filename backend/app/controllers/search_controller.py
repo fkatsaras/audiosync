@@ -2,6 +2,7 @@ from flask import jsonify
 from app.models.api_response import ApiResponse
 from app.models.search_result import SearchResult
 from app.utils.sample_data import artists_data  # TEST: Use a DB in the future
+from app.utils.sample_data import songs_data # TEST: Use a DB in the future
 
 def search_artists_get(q):  # noqa: E501
     """Search for artists
@@ -60,7 +61,7 @@ def search_songs_get(q):  # noqa: E501
     """
     try:
         # Placeholder for matching songs logic
-        matching_songs = []  # Add your logic here
+        matching_songs = [song for song in songs_data if q.lower() in song.title.lower()]
 
         if not matching_songs:
             response = ApiResponse(
@@ -71,7 +72,7 @@ def search_songs_get(q):  # noqa: E501
             return jsonify(response.to_dict()), 404
 
         # Create a SearchResult with the matching songs (if applicable)
-        # search_result = SearchResult(songs=matching_songs)  # Uncomment and implement
+        search_result = SearchResult(songs=matching_songs)  
 
         response = ApiResponse(
             code=200,
@@ -80,7 +81,7 @@ def search_songs_get(q):  # noqa: E501
         )
         return jsonify({
             'response': response.to_dict(),
-            'data': {}  # Replace with search_result.to_dict() if implemented
+            'data': search_result.to_dict()
         }), 200
 
     except Exception as e:

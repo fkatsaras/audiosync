@@ -60,7 +60,7 @@ function Search() {
                 {/* Render search results if there are any */}
                 {results.length > 0 &&
                     results.map((result, index) => (
-                        <li key={index}>{result.name}</li>
+                        <li key={index}>{result.title || result.name}</li>  /* Use 'title' for songs and 'name' for artists */
                     ))
                 }
                 {/* Render "No results found" if search was performed but no results were found */}
