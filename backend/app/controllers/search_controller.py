@@ -35,7 +35,7 @@ def search_artists_get(q):  # noqa: E501
         )
         return jsonify({
             'response': response.to_dict(),
-            'data': search_result.to_dict()  # Adjust this based on your SearchResult structure
+            'data': search_result.to_dict() 
         }), 200
 
     except Exception as e:

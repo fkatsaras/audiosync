@@ -4,20 +4,24 @@ from app.controllers.search_controller import search_artists_get, search_songs_g
 
 search_bp = Blueprint('search', __name__)
 
-@search_bp.route('/search')
+@search_bp.route('/search/artists', methods=['GET'])
 @token_required
-def search_route(current_user):
-    query = request.args.get('q') # Get the search query
-    search_type = request.args.get('type')   # Get the search type (artists or songs)
+def search_artists_route(current_user):
+    query = request.args.get('q')
 
     if not query:
         return jsonify({'error': 'Query parameter is required.'}), 400
     
-    if search_type == 'artists':
-        result = search_artists_get('query')
-    elif search_type == 'songs':
-        result = search_songs_get('query')
-    else:
-        return jsonify({'error': 'Invalid search type, must be "artists" or "songs"'}), 400
+    return search_artists_get(query)  
+     
+
+@search_bp.route('/search/songs', methods=['GET'])
+@token_required
+def search_songs_route(current_user):
+    query = request.args.get('q')  
+
+    if not query:
+        return jsonify({'error': 'Query parameter is required.'}), 400
     
-    return jsonify(result)
+    return search_songs_get(query) 
+    

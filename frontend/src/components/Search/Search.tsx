@@ -22,7 +22,7 @@ function Search() {
             }
 
             const data = await response.json();
-            setResults(data[searchType]);
+            setResults(data.data[searchType]);
         } catch (err) {
             console.error(err);
             setError('Something went wrong with the search');
@@ -47,9 +47,12 @@ function Search() {
             {error && <div>{error}</div>}
 
             <ul>
-                {results.map((result, index) => (           // Display the results here 
+                {results && results.length > 0 ? (
+                results.map((result, index) => (
                     <li key={index}>{result.name}</li>
-                ))}
+                ))) : (
+                    <li>No results found.</li>
+                )}
             </ul>
         </div>
     );
