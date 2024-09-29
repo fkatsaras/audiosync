@@ -14,12 +14,7 @@ from app.controllers.authorization_controller import SECRET_KEY, token_required
 from werkzeug.security import check_password_hash, generate_password_hash
 import datetime
 from flask import request, jsonify, session
-
-
-# TEST : In-memory user store for demonstration --- Use a db in the future
-user = {
-    "testuser": generate_password_hash("ellipsis") 
-}
+from app.utils.sample_data import user      # TEST : In-memory user store for demonstration --- Use a db in the future
 
 logger = get_logger(__name__)
 

@@ -1,9 +1,7 @@
-import connexion
-import six
-
-from app.models.search_result import SearchResult  # noqa: E501
-from app import util
-
+from flask import jsonify
+from app.models.api_response import ApiResponse
+from app.models.search_result import SearchResult
+from app.utils.sample_data import artists_data  # TEST: Use a DB in the future
 
 def search_artists_get(q):  # noqa: E501
     """Search for artists
@@ -13,9 +11,41 @@ def search_artists_get(q):  # noqa: E501
     :param q: Search query string for artists
     :type q: str
 
-    :rtype: SearchResult
+    :rtype: ApiResponse
     """
-    return 'do some magic!'
+    try:
+        # Filter artists by search query
+        matching_artists = [artist for artist in artists_data if q.lower() in artist.name.lower()]
+
+        # If no artists found, return an error ApiResponse
+        if not matching_artists:
+            response = ApiResponse(
+                code=404,
+                type='error',
+                message=f"No artists found for query: {q}"
+            )
+            return jsonify(response.to_dict()), 404
+        
+        # If artists found, create a SearchResult and return success ApiResponse
+        search_result = SearchResult(artists=matching_artists)
+        response = ApiResponse(
+            code=200,
+            type='success',
+            message="Artists found successfully"
+        )
+        return jsonify({
+            'response': response.to_dict(),
+            'data': search_result.to_dict()  # Adjust this based on your SearchResult structure
+        }), 200
+
+    except Exception as e:
+        # Handle unexpected errors
+        response = ApiResponse(
+            code=500,
+            type='error',
+            message=f"An error occurred: {str(e)}"
+        )
+        return jsonify(response.to_dict()), 500
 
 
 def search_songs_get(q):  # noqa: E501
@@ -26,6 +56,37 @@ def search_songs_get(q):  # noqa: E501
     :param q: Search query string for songs
     :type q: str
 
-    :rtype: SearchResult
+    :rtype: ApiResponse
     """
-    return 'do some magic!'
+    try:
+        # Placeholder for matching songs logic
+        matching_songs = []  # Add your logic here
+
+        if not matching_songs:
+            response = ApiResponse(
+                code=404,
+                type='error',
+                message=f"No songs found for query: {q}"
+            )
+            return jsonify(response.to_dict()), 404
+
+        # Create a SearchResult with the matching songs (if applicable)
+        # search_result = SearchResult(songs=matching_songs)  # Uncomment and implement
+
+        response = ApiResponse(
+            code=200,
+            type='success',
+            message="Songs found successfully"
+        )
+        return jsonify({
+            'response': response.to_dict(),
+            'data': {}  # Replace with search_result.to_dict() if implemented
+        }), 200
+
+    except Exception as e:
+        response = ApiResponse(
+            code=500,
+            type='error',
+            message=f"An error occurred: {str(e)}"
+        )
+        return jsonify(response.to_dict()), 500
