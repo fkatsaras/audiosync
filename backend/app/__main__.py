@@ -17,9 +17,9 @@ load_dotenv()
 
 def create_app():
 
-    app = connexion.App(__name__, specification_dir='./swagger/')
+    app = connexion.App(__name__, specification_dir='./api/')
     app.app.json_encoder = encoder.JSONEncoder
-    app.add_api('swagger.yaml', arguments={'title': 'Swagger AudioSync - OpenAPI 3.0'}, pythonic_params=True)
+    app.add_api('api.yaml', arguments={'title': 'AudioSync API - OpenAPI 3.0'}, pythonic_params=True)
 
     flask_app = app.app
 
