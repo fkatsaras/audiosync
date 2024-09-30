@@ -736,6 +736,27 @@ paths:
         "404":
           description: User not found or no recommended songs found
       x-openapi-router-controller: app.controllers.users_controller
+  /check-login:
+    get:
+      tags:
+      - auth
+      summary: Check if a user is logged in
+      description: Verify if the current session has a logged-in user
+      operationId: check_login
+      responses:
+        "200":
+          description: User is logged in
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        "401":
+          description: User is not logged in
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+      x-openapi-router-controller: app.controllers.auth_controller
 components:
   schemas:
     HomePageResponse:

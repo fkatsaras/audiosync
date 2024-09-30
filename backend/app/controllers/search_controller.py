@@ -4,7 +4,7 @@ from app.models.search_result import SearchResult
 from app.utils.sample_data import artists_data  # TEST: Use a DB in the future
 from app.utils.sample_data import songs_data # TEST: Use a DB in the future
 
-def search_artists_get(q):  # noqa: E501
+def search_artists_get(user: str=None, q: str=None):  # noqa: E501
     """Search for artists
 
     Retrieve search results for artists based on query # noqa: E501
@@ -23,7 +23,7 @@ def search_artists_get(q):  # noqa: E501
             response = ApiResponse(
                 code=404,
                 type='error',
-                message=f"No artists found for query: {q}"
+                message=f"No artists found for query: {q} submitted by user {user}"
             )
             return jsonify(response.to_dict()), 404
         
@@ -32,7 +32,7 @@ def search_artists_get(q):  # noqa: E501
         response = ApiResponse(
             code=200,
             type='success',
-            message="Artists found successfully"
+            message=f"Artists found successfully by user {user}"
         )
         return jsonify({
             'response': response.to_dict(),
@@ -49,7 +49,7 @@ def search_artists_get(q):  # noqa: E501
         return jsonify(response.to_dict()), 500
 
 
-def search_songs_get(q):  # noqa: E501
+def search_songs_get(user: str=None, q: str=None):  # noqa: E501
     """Search for songs
 
     Retrieve search results for songs based on query # noqa: E501
@@ -67,7 +67,7 @@ def search_songs_get(q):  # noqa: E501
             response = ApiResponse(
                 code=404,
                 type='error',
-                message=f"No songs found for query: {q}"
+                message=f"No songs found for query: {q} submitted by user: {user}"
             )
             return jsonify(response.to_dict()), 404
 
@@ -77,7 +77,7 @@ def search_songs_get(q):  # noqa: E501
         response = ApiResponse(
             code=200,
             type='success',
-            message="Songs found successfully"
+            message=f"Songs found successfully by user: {user}"
         )
         return jsonify({
             'response': response.to_dict(),

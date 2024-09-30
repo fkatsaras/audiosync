@@ -1,13 +1,27 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
-// import 'Landing.css';
+import React, { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 function Landing() {
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    // Check if the user is already logged in
+    if (localStorage.getItem('token')) {
+      navigate('/home');
+    }
+  }, [navigate]);
+
+  const handleLoginClick = () => {
+    navigate('/login');
+  };
+
   return (
     <div className="landing-container">
       <h1>Welcome to AudioSync!</h1>
       <p>To get started, please login</p>
-      <Link to="/login" className="login-link">Login</Link>
+      <button onClick={handleLoginClick} className="login-link">
+        Login
+      </button>
     </div>
   );
 }

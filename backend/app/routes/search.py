@@ -12,7 +12,7 @@ def search_artists_route(current_user):
     if not query:
         return jsonify({'error': 'Query parameter is required.'}), 400
     
-    return search_artists_get(query)  
+    return search_artists_get(current_user, query)  
      
 
 @search_bp.route('/search/songs', methods=['GET'])
@@ -23,5 +23,5 @@ def search_songs_route(current_user):
     if not query:
         return jsonify({'error': 'Query parameter is required.'}), 400
     
-    return search_songs_get(query) 
+    return search_songs_get(current_user, query) 
     

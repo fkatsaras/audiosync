@@ -25,14 +25,20 @@ function Login() {
                 throw new Error('Login failed');
             }
     
-            const data = await response.json();
-            console.log('Token received:', data.token);
-    
-            // Store the token in localStorage or sessionStorage
-            localStorage.setItem('token', data.token);
-    
-            // Redirect to home page or update state
-            navigate('/home');
+            // Ensure the response is successful
+            if (response.status === 200) {
+                const data = await response.json();
+                console.log('Token received:', data.token);
+
+                // Store the token in localStorage
+                localStorage.setItem('token', data.token);
+
+                // Navigate to the home page
+                navigate('/home');
+            } else {
+                const errorData = await response.json();
+                setErrorMessage(errorData.message || 'Login failed, please try again.');
+            }
         } catch (error) {
             console.error('Error during login:', error);
         }
