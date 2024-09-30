@@ -34,15 +34,6 @@ def create_app():
     # Configure the session (needed for session management)
     flask_app.secret_key = 'fotis'
 
-    # Serve React build files 
-    @flask_app.route('/', defaults={'path': ''})
-    @flask_app.route('/<path:path>')
-    def serve_react(path):
-        if path != "" and os.path.exists(os.path.join('../frontend/build', path)):
-            return send_from_directory('../frontend/build', path)
-        else: 
-            return send_from_directory('../frontend/build', 'index.html')
-
     return flask_app
 
 if __name__ == '__main__':
