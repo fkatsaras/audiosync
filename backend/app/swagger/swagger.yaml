@@ -29,59 +29,31 @@ tags:
 - name: artists
   description: Operations about artists
 paths:
-  /login:
-    post:
-      summary: Login
-      description: Authenticate a user and return a JWT token.
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                username:
-                  type: string
-                password:
-                  type: string
-      responses:
-        '200':
-          description: Successful login
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  token:
-                    type: string
-        '401':
-          description: Invalid credentials
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-
-  /home:
+  /api/v1/home:
     get:
       tags:
-      - home
+        - home
       summary: Get Home Page GUI
-      description: Retrieve the home page GUI data
-      operationId: home_get
+      description: Retrieve the home page GUI data, including links to various user-related features.
+      operationId: home
+      parameters:
+        - name: current_user
+          in: query
+          description: The username extracted from the token.
+          required: true
+          schema:
+            type: string
       responses:
         "200":
-          description: Home page data retrieved sucessfully
+          description: Home page data retrieved successfully.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/HomePageResponse'
         "500":
-          description: Server error
+          description: Internal server error.
       x-openapi-router-controller: app.controllers.home_controller
-  /search/artists:
+  /api/v1/search/artists:
     get:
       tags:
       - search
@@ -111,7 +83,7 @@ paths:
         "500":
           description: Server error
       x-openapi-router-controller: app.controllers.search_controller
-  /search/songs:
+  /api/v1/search/songs:
     get:
       tags:
       - search
@@ -141,14 +113,15 @@ paths:
         "500":
           description: Server error
       x-openapi-router-controller: app.controllers.search_controller
-  /users/login:
+  /api/v1/users/login:
     post:
       tags:
-      - users
+        - users
       summary: Logs user into the system
-      description: "Logs in using username and password"
-      operationId: login_user
+      description: Logs in using username and password.
+      operationId: loginUser
       requestBody:
+        required: true
         content:
           application/json:
             schema:
@@ -156,26 +129,26 @@ paths:
               properties:
                 username:
                   type: string
-                  description: The username for login
+                  description: The username for login.
+                  example: "john_doe"
                 password:
                   type: string
-                  description: The password for login in clear text
+                  description: The password for login in clear text.
+                  example: "password123"
               required:
                 - username
                 - password
       responses:
         "200":
-          description: successful operation
+          description: Login successful, returns a JWT token.
           headers:
             X-Rate-Limit:
-              description: calls per hour allowed by the user
-              style: simple
+              description: Number of API calls allowed per hour for the user.
               schema:
                 type: integer
                 format: int32
             X-Expires-After:
-              description: date in UTC when token expires
-              style: simple
+              description: Date in UTC when the token expires.
               schema:
                 type: string
                 format: date-time
@@ -186,24 +159,56 @@ paths:
                 properties:
                   token:
                     type: string
+                    description: JWT token for the authenticated session.
                   message:
                     type: string
+                    description: Success message.
         "400":
-          description: Invalid username/password supplied
+          description: Invalid username or password supplied.
+        "401":
+          description: Unauthorized, invalid credentials.
       x-openapi-router-controller: app.controllers.users_controller
-  /users/logout:
-    get:
+  /api/v1/users/logout:
+    post:
       tags:
-      - users
-      summary: Logs out current logged in user session
-      description: ""
+        - users
+      summary: Logs out the current logged-in user session
+      description: Logs out the user by clearing their session information.
       operationId: logout_user
-      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                  description: The username of the user logging out
+              required:
+                - username
       responses:
-        default:
-          description: successful operation
+        "200":
+          description: Successfully logged out the user.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Logged out successfully!"
+        "400":
+          description: No active session found or invalid request.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "No active session found"
       x-openapi-router-controller: app.controllers.users_controller
-  /artists/{artist-id}:
+  /api/v1/artists/{artist-id}:
     get:
       tags:
       - artists
@@ -231,7 +236,7 @@ paths:
         "404":
           description: Artist not found
       x-openapi-router-controller: app.controllers.artists_controller
-  /users/{user-id}/my-artists:
+  /api/v1/users/{user-id}/my-artists:
     get:
       tags:
       - users
@@ -319,7 +324,7 @@ paths:
         "400":
           description: Invalid input
       x-openapi-router-controller: app.controllers.users_controller
-  /artists/{artist-id}/songs:
+  /api/v1/artists/{artist-id}/songs:
     get:
       tags:
       - artists
@@ -350,7 +355,7 @@ paths:
         "404":
           description: Artist not found
       x-openapi-router-controller: app.controllers.artists_controller
-  /songs/{song-id}:
+  /api/v1/songs/{song-id}:
     get:
       tags:
       - songs
@@ -378,7 +383,7 @@ paths:
         "404":
           description: Song not found
       x-openapi-router-controller: app.controllers.songs_controller
-  /users/{user-id}/liked-songs:
+  /api/v1/users/{user-id}/liked-songs:
     get:
       tags:
       - users
@@ -466,7 +471,7 @@ paths:
         "404":
           description: User or song not found
       x-openapi-router-controller: app.controllers.users_controller
-  /users/{user-id}/playlists/{playlist-id}:
+  /api/v1/users/{user-id}/playlists/{playlist-id}:
     get:
       tags:
       - users
@@ -567,7 +572,7 @@ paths:
         "404":
           description: User or playlist not found
       x-openapi-router-controller: app.controllers.users_controller
-  /users/{user-id}/my-playlists:
+  /api/v1/users/{user-id}/my-playlists:
     get:
       tags:
       - users
@@ -659,7 +664,7 @@ paths:
         "404":
           description: User or playlist not found
       x-openapi-router-controller: app.controllers.users_controller
-  /songs/{song-id}/play:
+  /api/v1/songs/{song-id}/play:
     get:
       tags:
       - songs
@@ -707,7 +712,7 @@ paths:
         "404":
           description: Song not found
       x-openapi-router-controller: app.controllers.songs_controller
-  /users/{user-id}/recommended:
+  /api/v1/users/{user-id}/recommended:
     get:
       tags:
       - users
@@ -736,7 +741,7 @@ paths:
         "404":
           description: User not found or no recommended songs found
       x-openapi-router-controller: app.controllers.users_controller
-  /check-login:
+  /api/v1/users/check-login:
     get:
       tags:
       - auth

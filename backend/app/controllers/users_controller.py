@@ -237,14 +237,28 @@ def login_user():  # noqa: E501
 
 
 def logout_user():  # noqa: E501
-    """Logs out current logged in user session
+    """Logs out the current logged-in user session
 
-     # noqa: E501
-
-
-    :rtype: None
+    :rtype: Response
     """
-    return 'do some magic!'
+    data = request.get_json()
+    
+    username = data.get('username')
+    if username:
+        logger.info(f"User {username} logged out")
+        
+        # Clear the username from the session
+        session.pop('username', None)
+        
+        # Create a successful response
+        response = ApiResponse(code=200, type='success', message="Logged out successfully!")
+        return jsonify(response.to_dict()), 200
+    else:
+        logger.warning("Logout attempted with no active session")
+        
+        # Create a response indicating no user was logged in
+        error_response = ApiResponse(code=400, type='error', message="No active session found")
+        return jsonify(error_response.to_dict()), 400
 
 
 def remove_liked_song(user_id, song_id):  # noqa: E501

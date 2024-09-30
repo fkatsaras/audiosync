@@ -18,4 +18,4 @@ def login_route():
 
 @auth_bp.route('/logout', methods=['POST']) # Using only POST method for avoiding CSRF attacks
 def logout_route():
-    return logout()
+    return logout_user()
