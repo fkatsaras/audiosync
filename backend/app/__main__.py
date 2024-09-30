@@ -11,6 +11,7 @@ from app.routes.home import home_bp
 from app.routes.auth import auth_bp
 from app.routes.search import search_bp
 from app.routes.api import api
+from app.routes.song import song_bp
 import os
 
 load_dotenv()
@@ -27,7 +28,7 @@ def create_app():
     CORS(flask_app, resources={r"/*": {"origins": "http://localhost:3000"}})
 
     # Register blueprints
-    blueprints = [home_bp, auth_bp, search_bp, api]
+    blueprints = [home_bp, auth_bp, song_bp, search_bp, api]
     for blueprint in blueprints:
         flask_app.register_blueprint(blueprint=blueprint)
 

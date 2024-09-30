@@ -6,6 +6,7 @@ import Home from './components/Home/Home';
 import Search from './components/Search/Search'
 import NotFound from "./components/NotFound";
 import CheckAuth from "./components/CheckAuth";
+import SongPage from "./components/Song/SongPage";
 
 const router = createBrowserRouter([
   { path: "/", element: <Landing /> },
@@ -16,6 +17,10 @@ const router = createBrowserRouter([
   },
   { path: "/search",
     element: <CheckAuth><Search /></CheckAuth>
+  },
+  { 
+    path: "/songs/:songId",
+    element: <CheckAuth><SongPage /></CheckAuth> 
   },
   { path: "*", element: <NotFound />}
 ]);

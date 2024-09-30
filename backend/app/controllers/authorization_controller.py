@@ -64,12 +64,6 @@ def check_login():
     response = ApiResponse(code=401, type='error', message='User is not logged in.')
     return jsonify(response.to_dict()), 401
 
-# def logout():
-#     logger.info(f"User {session.get('username')} logged out")
-#     session.pop('username', None)
-#     response = ApiResponse(code=200, type='success', message="Logged out successfully!")
-#     return jsonify(response.to_dict()), 200
-
 def current_user():
     username = session.get('username')
     if username:

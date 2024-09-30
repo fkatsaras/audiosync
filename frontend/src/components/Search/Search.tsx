@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { Link } from "react-router-dom";
 
 // Define types for the API response
 interface SearchResponse {
@@ -79,7 +80,7 @@ function Search() {
                 {results.length > 0 &&
                     results.map(([title, link], index) => (
                         <li key={index}>
-                            <a href={link}>{title}</a>
+                            <Link to={link}>{title}</Link>
                         </li>
                     ))
                 }

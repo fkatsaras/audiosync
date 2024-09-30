@@ -16,7 +16,7 @@ def search_artists_get(user: str = None, q: str = None):  # noqa: E501
     """
     try:
         # Filter artists by search query
-        matching_artists = [artist for artist in artists_data if q.lower() in artist.name.lower()]
+        matching_artists = [artist for artist in artists_data if q and q.lower() in artist.name.lower()]
 
         # If no artists found, return an error ApiResponse
         if not matching_artists:
@@ -64,7 +64,7 @@ def search_songs_get(user: str = None, q: str = None):  # noqa: E501
     """
     try:
         # Filter songs by search query
-        matching_songs = [song for song in songs_data if q.lower() in song.title.lower()]
+        matching_songs = [song for song in songs_data if q and q.lower() in song.title.lower()]
 
         if not matching_songs:
             response = ApiResponse(
