@@ -1,12 +1,11 @@
 from typing import List
-
-from flask import request, jsonify, session, redirect, url_for, render_template
-from werkzeug.security import check_password_hash
-from app.models.user_entity import UserEntity
+import requests
+from flask import request, jsonify, session
 from app.utils.logging_config import get_logger
 from app.models.api_response import ApiResponse
 import jwt
 from functools import wraps
+import base64
 
 """
 controller generated to handled auth operation described at:
@@ -29,8 +28,11 @@ logger = get_logger(__name__)
 
 # Secret key for JWT (use an environment variable in production)
 SECRET_KEY = "fotis"
+CLIENT_ID = "f63b8e82324843eeba6dc4af7f080138"
+CLIENT_SECRET = "4e89beb1a54945449aaac0664499520e"
 
 def token_required(f):
+    
     @wraps(f)
     def decorator(*args, **kwargs):
         token = None
@@ -57,6 +59,7 @@ def token_required(f):
     return decorator
 
 def check_login():
+
     if 'user.id' in session:
         username = session.get('username')
         response = ApiResponse(code=200, type='success', message=f'User {username} is logged in.')
@@ -65,6 +68,7 @@ def check_login():
     return jsonify(response.to_dict()), 401
 
 def current_user():
+
     username = session.get('username')
     if username:
         logger.info(f"Current user: {username}")
@@ -73,3 +77,23 @@ def current_user():
     logger.warning("No user logged in")
     response = ApiResponse(code=401, type='error', message="No user logged in")
     return jsonify(response.to_dict()), 401
+
+def get_spotify_token():
+    
+    credentials = f"{CLIENT_ID}:{CLIENT_SECRET}"
+    encoded_credentials = base64.b64encode(credentials.encode()).decode()
+
+    auth_response = requests.post(
+        'https://accounts.spotify.com/api/token',
+        data={'grant_type': 'client_credentials'},
+        headers={
+            'Authorization': f'Basic {encoded_credentials}',
+            'Content-Type': 'application/x-www-form-urlencoded',
+        }
+    )
+
+    if auth_response.status_code == 200:
+        return auth_response.json().get('access_token')
+    else:
+        print(f"Failed to get token: {auth_response.status_code}, {auth_response.text}")
+        return None

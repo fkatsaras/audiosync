@@ -24,7 +24,7 @@ songs_data = [
         duration=515,
         cover="https://example.com/covers/master_of_puppets.jpg",
         liked=True,
-        playlists=[],  # You can populate this with Playlist objects if available
+        playlists=[],  #  Populate this with Playlist objects
         is_playing=False
     ),
     Song(
