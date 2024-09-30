@@ -10,7 +10,7 @@ from app.utils.logging_config import get_logger
 from app.controllers.api_controller import *
 from app.models.api_response import ApiResponse
 
-from app.controllers.authorization_controller import SECRET_KEY, token_required
+from app.controllers.authorization_controller import JWT_SECRET_KEY
 
 from werkzeug.security import check_password_hash, generate_password_hash
 import datetime
@@ -200,7 +200,7 @@ def login_user():  # noqa: E501
         token = jwt.encode({
             'username': username,
             'exp': datetime.datetime.utcnow() + datetime.timedelta(hours=1)
-        }, SECRET_KEY, algorithm="HS256")
+        }, JWT_SECRET_KEY, algorithm="HS256")
 
         # Store user ID in session
         session['user.id'] = username
