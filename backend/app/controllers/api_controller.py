@@ -1,18 +1,34 @@
-from flask import request, jsonify, session, redirect, url_for, render_template
+from flask import jsonify
 from app.models.api_response import ApiResponse
+from typing import Dict, Any
 
-def get_api_data():
+def create_success_response(message: str, body: Dict[str, Any], code: int = 200) -> tuple:
+    """Utility function to create a success ApiResponse.
+
+    :param message: Success message to return.
+    :param body: Body of the response, typically the data being returned.
+    :param code: HTTP status code, defaults to 200.
+    :return: Tuple containing the response data and the HTTP status code.
+    """
     response = ApiResponse(
-        code=200, 
-        type='success', 
-        message='Welcome to AudioSync, API is working!'
+        code=code,
+        type='success',
+        message=message,
+        body=body
     )
-    return jsonify(response.to_dict()), 200
+    return jsonify(response.to_dict()), code
 
-def handle_error():
-    error_response = ApiResponse(
-        code=400, 
-        type='error', 
-        message='Invalid request data'
+def create_error_response(message: str, code: int = 404) -> tuple:
+    """Utility function to create an error ApiResponse.
+
+    :param message: Error message to return.
+    :param code: HTTP status code, defaults to 404.
+    :return: Tuple containing the response data and the HTTP status code.
+    """
+    response = ApiResponse(
+        code=code,
+        type='error',
+        message=message,
+        body=None
     )
-    return jsonify(error_response.to_dict()), 400
+    return jsonify(response.to_dict()), code

@@ -44,4 +44,4 @@ def get_logger(name):
     return logging.getLogger(name)
 
 # Initialize logging when this module is imported
-setup_logging()
+# setup_logging()

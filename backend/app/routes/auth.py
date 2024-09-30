@@ -10,7 +10,6 @@ def check_login_route():
 
 @auth_bp.route('/api/v1/users/login', methods=['POST'])
 def login_route():
-    # Connexion will handle extracting username and password based on OpenAPI
     return login_user()
 
 @auth_bp.route('/api/v1/users/logout', methods=['POST']) # Using only POST method for avoiding CSRF attacks

@@ -7,7 +7,7 @@ import requests
 from app.models.inline_response200 import InlineResponse200  # noqa: E501
 from app.models.song import Song  # noqa: E501
 from app.utils import sample_data
-from app.models.api_response import ApiResponse
+from app.controllers.api_controller import *
 from app.controllers.authorization_controller import get_spotify_token
 
 def get_album_cover(album_name):
@@ -48,22 +48,16 @@ def get_song_by_id(song_id):  # noqa: E501
         song.cover = album_cover_url
 
         # Create a successful API response with the song data in the body 
-        response = ApiResponse(
-            code=200,
-            type='success',
-            message='Song retrieved successfully.',
+        return create_success_response(
+            message='Song retrieved successfully',
             body=song.to_dict()
         )
-        return jsonify(response.to_dict()), 200
     else:
         # Create an error response
-        response = ApiResponse(
-            code=404,
-            type='error',
+        return create_error_response(
             message=f'Song with ID: {song_id} not found.',
-            body=None
+            code=404
         )
-        return jsonify(response.to_dict()), 404
 
 
 def get_song_play_status(song_id):  # noqa: E501

@@ -7,6 +7,7 @@ from app.models.playlist import Playlist  # noqa: E501
 from app.models.song import Song  # noqa: E501
 from app import util
 from app.utils.logging_config import get_logger
+from app.controllers.api_controller import *
 from app.models.api_response import ApiResponse
 
 from app.controllers.authorization_controller import SECRET_KEY, token_required
@@ -170,13 +171,6 @@ def get_user_playlists(user_id):  # noqa: E501
 def login_user():  # noqa: E501
     """Logs user into the system
 
-     # noqa: E501
-
-    :param username: The user name for login
-    :type username: str
-    :param password: The password for login in clear text
-    :type password: str
-
     :rtype: str
     """
 
@@ -189,12 +183,10 @@ def login_user():  # noqa: E501
 
     if not username or not password:
         logger.error("Username or password not provided")
-        error_response = ApiResponse(
-            code=400,
-            type='error',
-            message='Username or password missing'
+        return create_error_response(
+            message='Username or password missing',
+            code=400
         )
-        return jsonify(error_response.to_dict()), 400
 
     logger.info(f"Login attempt - Username: {username}")
 
@@ -209,6 +201,7 @@ def login_user():  # noqa: E501
             'username': username,
             'exp': datetime.datetime.utcnow() + datetime.timedelta(hours=1)
         }, SECRET_KEY, algorithm="HS256")
+
         # Store user ID in session
         session['user.id'] = username
         logger.debug(f"Session user ID set to: {session.get('user.id')}")
@@ -220,20 +213,18 @@ def login_user():  # noqa: E501
             type='success',
             message='Login successful'
         )
-
         return jsonify({
             **success_response.to_dict(),
             'token': token
         }), 200
+    
     else:
         logger.error("Invalid credentials")
 
-        error_response = ApiResponse(
-            code=401,
-            type='error',
-            message='Invalid credentials'
+        return create_error_response(
+            message='Invalid credentials',
+            code=401
         )
-        return jsonify(error_response.to_dict()), 401
 
 
 def logout_user():  # noqa: E501
@@ -251,14 +242,17 @@ def logout_user():  # noqa: E501
         session.pop('username', None)
         
         # Create a successful response
-        response = ApiResponse(code=200, type='success', message="Logged out successfully!")
-        return jsonify(response.to_dict()), 200
+        return create_success_response(
+            message='Logged out successfully!'
+        )
     else:
         logger.warning("Logout attempted with no active session")
         
         # Create a response indicating no user was logged in
-        error_response = ApiResponse(code=400, type='error', message="No active session found")
-        return jsonify(error_response.to_dict()), 400
+        return create_error_response(
+            message='No active session found',
+            code=400
+        )
 
 
 def remove_liked_song(user_id, song_id):  # noqa: E501
