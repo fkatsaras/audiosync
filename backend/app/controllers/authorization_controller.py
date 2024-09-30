@@ -21,15 +21,10 @@ def check_api_key(api_key, required_scopes):
     return {'test_key': 'test_value'}
 
 
-#-------------------------------------------------------------------------------------
-
-# Initialize logger
-logger = get_logger(__name__)
-
 # Secret key for JWT (use an environment variable in production)
-SECRET_KEY = "fotis"
-CLIENT_ID = "f63b8e82324843eeba6dc4af7f080138"
-CLIENT_SECRET = "4e89beb1a54945449aaac0664499520e"
+JWT_SECRET_KEY = "fotis"
+SPOTIFY_CLIENT_ID = "f63b8e82324843eeba6dc4af7f080138"
+SPOTIFY_CLIENT_SECRET = "4e89beb1a54945449aaac0664499520e"
 
 def token_required(f: callable) -> callable:
     """Decorator to enforce token-based authentication on routes.
@@ -57,7 +52,7 @@ def token_required(f: callable) -> callable:
             return create_error_response(message='Token is missing!', code=403)
 
         try:
-            data = jwt.decode(token, SECRET_KEY, algorithms=["HS256"])
+            data = jwt.decode(token, JWT_SECRET_KEY, algorithms=["HS256"])
             current_user = data['username']
             # logger.info(f"Token verified for user: {current_user}")
         except Exception as e:
@@ -111,7 +106,7 @@ def get_spotify_token() -> str | None:
     :rtype: str or None
     """
     
-    credentials = f"{CLIENT_ID}:{CLIENT_SECRET}"
+    credentials = f"{SPOTIFY_CLIENT_ID}:{SPOTIFY_CLIENT_SECRET}"
     encoded_credentials = base64.b64encode(credentials.encode()).decode()
 
     auth_response = requests.post(

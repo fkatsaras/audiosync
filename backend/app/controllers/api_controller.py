@@ -7,7 +7,7 @@ def create_success_response(message: str, body: Dict[str, Any], code: int = 200)
 
     :param message: Success message to return.
     :param body: Body of the response, typically the data being returned.
-    :param code: HTTP status code, defaults to 200.
+    :param code: HTTP status code, defaults to 200 OK.
     :return: Tuple containing the response data and the HTTP status code.
     """
     response = ApiResponse(
@@ -22,7 +22,7 @@ def create_error_response(message: str, code: int = 404) -> tuple:
     """Utility function to create an error ApiResponse.
 
     :param message: Error message to return.
-    :param code: HTTP status code, defaults to 404.
+    :param code: HTTP status code, defaults to 404 Not Found.
     :return: Tuple containing the response data and the HTTP status code.
     """
     response = ApiResponse(

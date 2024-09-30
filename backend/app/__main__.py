@@ -2,7 +2,7 @@
 import connexion
 
 from app import encoder
-from flask import Flask, send_from_directory
+from flask import send_from_directory
 from dotenv import load_dotenv
 from flask_cors import CORS
 import logging
