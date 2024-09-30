@@ -1,9 +1,12 @@
 import connexion
 import six
 
+from flask import jsonify
+
 from app.models.inline_response200 import InlineResponse200  # noqa: E501
 from app.models.song import Song  # noqa: E501
-from app import util
+from app.utils import sample_data
+from app.models.api_response import ApiResponse
 
 
 def get_song_by_id(song_id):  # noqa: E501
@@ -16,7 +19,28 @@ def get_song_by_id(song_id):  # noqa: E501
 
     :rtype: Song
     """
-    return 'do some magic!'
+
+    # Placeholder ! Add DB functionality here
+    song = next((song for song in sample_data.songs_data if song.id == song_id), None)
+
+    if song:
+        # Create a successful API response with the song data in the body 
+        response = ApiResponse(
+            code=200,
+            type='success',
+            message='Song retrieved successfully.',
+            body=song.to_dict()
+        )
+        return jsonify(response.to_dict()), 200
+    else:
+        # Create an error response
+        response = ApiResponse(
+            code=404,
+            type='error',
+            message=f'Song with ID: {song_id} not found.',
+            body=None
+        )
+        return jsonify(response.to_dict()), 404
 
 
 def get_song_play_status(song_id):  # noqa: E501

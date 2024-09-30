@@ -1,5 +1,18 @@
 import React, { useState } from "react";
 
+// Define types for the API response
+interface SearchResponse {
+    response: {
+        code: number;
+        type: string;
+        message: string;
+    };
+    data: {
+        song_links: Record<string, string>; // A map of song titles to their URLs
+        artist_links: Record<string, string>; // A map of artist names to their URLs
+    };
+}
+
 function Search() {
     const [query, setQuery] = useState('');
     const [results, setResults] = useState<any[]>([]);
@@ -31,7 +44,12 @@ function Search() {
             }
 
             const data = await response.json();
-            setResults(data.data[searchType]);
+
+            if (searchType === 'artists') {
+                setResults(Object.entries(data.data.artist_links));
+            } else if ( searchType === 'songs') {
+                setResults(Object.entries(data.data.song_links));
+            }
             setHasSearched(true);
         } catch (err) {
             console.error(err);
@@ -59,8 +77,10 @@ function Search() {
             <ul>
                 {/* Render search results if there are any */}
                 {results.length > 0 &&
-                    results.map((result, index) => (
-                        <li key={index}>{result.title || result.name}</li>  /* Use 'title' for songs and 'name' for artists */
+                    results.map(([title, link], index) => (
+                        <li key={index}>
+                            <a href={link}>{title}</a>
+                        </li>
                     ))
                 }
                 {/* Render "No results found" if search was performed but no results were found */}

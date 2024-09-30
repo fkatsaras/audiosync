@@ -4,7 +4,7 @@ from app.models.search_result import SearchResult
 from app.utils.sample_data import artists_data  # TEST: Use a DB in the future
 from app.utils.sample_data import songs_data # TEST: Use a DB in the future
 
-def search_artists_get(user: str=None, q: str=None):  # noqa: E501
+def search_artists_get(user: str = None, q: str = None):  # noqa: E501
     """Search for artists
 
     Retrieve search results for artists based on query # noqa: E501
@@ -26,9 +26,12 @@ def search_artists_get(user: str=None, q: str=None):  # noqa: E501
                 message=f"No artists found for query: {q} submitted by user {user}"
             )
             return jsonify(response.to_dict()), 404
-        
+
+        # Create a dictionary of artist links
+        artist_links = {artist.name: f"/artists/{artist.id}" for artist in matching_artists} # These links will be visible to the frontend
+
         # If artists found, create a SearchResult and return success ApiResponse
-        search_result = SearchResult(artists=matching_artists)
+        search_result = SearchResult(artist_links=artist_links)
         response = ApiResponse(
             code=200,
             type='success',
@@ -36,7 +39,7 @@ def search_artists_get(user: str=None, q: str=None):  # noqa: E501
         )
         return jsonify({
             'response': response.to_dict(),
-            'data': search_result.to_dict() 
+            'data': search_result.to_dict()
         }), 200
 
     except Exception as e:
@@ -49,7 +52,7 @@ def search_artists_get(user: str=None, q: str=None):  # noqa: E501
         return jsonify(response.to_dict()), 500
 
 
-def search_songs_get(user: str=None, q: str=None):  # noqa: E501
+def search_songs_get(user: str = None, q: str = None):  # noqa: E501
     """Search for songs
 
     Retrieve search results for songs based on query # noqa: E501
@@ -60,7 +63,7 @@ def search_songs_get(user: str=None, q: str=None):  # noqa: E501
     :rtype: ApiResponse
     """
     try:
-        # Placeholder for matching songs logic
+        # Filter songs by search query
         matching_songs = [song for song in songs_data if q.lower() in song.title.lower()]
 
         if not matching_songs:
@@ -71,8 +74,11 @@ def search_songs_get(user: str=None, q: str=None):  # noqa: E501
             )
             return jsonify(response.to_dict()), 404
 
+        # Create a dictionary of song links
+        song_links = {song.title: f"/songs/{song.id}" for song in matching_songs}
+
         # Create a SearchResult with the matching songs (if applicable)
-        search_result = SearchResult(songs=matching_songs)  
+        search_result = SearchResult(song_links=song_links)
 
         response = ApiResponse(
             code=200,

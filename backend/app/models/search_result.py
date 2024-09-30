@@ -16,25 +16,25 @@ class SearchResult(Model):
 
     Do not edit the class manually.
     """
-    def __init__(self, songs: List[Song]=None, artists: List[Artist]=None):  # noqa: E501
+    def __init__(self, song_links: Dict[Song, str] = None, artist_links: Dict[Artist, str] = None):  # noqa: E501
         """SearchResult - a model defined in Swagger
 
-        :param songs: The songs of this SearchResult.  # noqa: E501
-        :type songs: List[Song]
-        :param artists: The artists of this SearchResult.  # noqa: E501
-        :type artists: List[Artist]
+        :param song_links: A dictionary of songs and their corresponding links.  # noqa: E501
+        :type song_links: Dict[Song, str]
+        :param artist_links: A dictionary of artists and their corresponding links.  # noqa: E501
+        :type artist_links: Dict[Artist, str]
         """
         self.swagger_types = {
-            'songs': List[Song],
-            'artists': List[Artist]
+            'song_links': Dict[Song, str],
+            'artist_links': Dict[Artist, str]
         }
 
         self.attribute_map = {
-            'songs': 'songs',
-            'artists': 'artists'
+            'song_links': 'song_links',
+            'artist_links': 'artist_links'
         }
-        self._songs = songs
-        self._artists = artists
+        self._song_links = song_links or {}
+        self._artist_links = artist_links or {}
 
     @classmethod
     def from_dict(cls, dikt) -> 'SearchResult':
@@ -48,47 +48,45 @@ class SearchResult(Model):
         return util.deserialize_model(dikt, cls)
 
     @property
-    def songs(self) -> List[Song]:
-        """Gets the songs of this SearchResult.
+    def song_links(self) -> Dict[Song, str]:
+        """Gets the song links of this SearchResult.
 
-        List of Song objects that are search results  # noqa: E501
+        A dictionary where keys are Song objects and values are their corresponding links.  # noqa: E501
 
-        :return: The songs of this SearchResult.
-        :rtype: List[Song]
+        :return: The song links of this SearchResult.
+        :rtype: Dict[Song, str]
         """
-        return self._songs
+        return self._song_links
 
-    @songs.setter
-    def songs(self, songs: List[Song]):
-        """Sets the songs of this SearchResult.
+    @song_links.setter
+    def song_links(self, song_links: Dict[Song, str]):
+        """Sets the song links of this SearchResult.
 
-        List of Song objects that are search results  # noqa: E501
+        A dictionary where keys are Song objects and values are their corresponding links.  # noqa: E501
 
-        :param songs: The songs of this SearchResult.
-        :type songs: List[Song]
+        :param song_links: The song links of this SearchResult.
+        :type song_links: Dict[Song, str]
         """
-
-        self._songs = songs
+        self._song_links = song_links
 
     @property
-    def artists(self) -> List[Artist]:
-        """Gets the artists of this SearchResult.
+    def artist_links(self) -> Dict[Artist, str]:
+        """Gets the artist links of this SearchResult.
 
-        List of Artist objects that are search results  # noqa: E501
+        A dictionary where keys are Artist objects and values are their corresponding links.  # noqa: E501
 
-        :return: The artists of this SearchResult.
-        :rtype: List[Artist]
+        :return: The artist links of this SearchResult.
+        :rtype: Dict[Artist, str]
         """
-        return self._artists
+        return self._artist_links
 
-    @artists.setter
-    def artists(self, artists: List[Artist]):
-        """Sets the artists of this SearchResult.
+    @artist_links.setter
+    def artist_links(self, artist_links: Dict[Artist, str]):
+        """Sets the artist links of this SearchResult.
 
-        List of Artist objects that are search results  # noqa: E501
+        A dictionary where keys are Artist objects and values are their corresponding links.  # noqa: E501
 
-        :param artists: The artists of this SearchResult.
-        :type artists: List[Artist]
+        :param artist_links: The artist links of this SearchResult.
+        :type artist_links: Dict[Artist, str]
         """
-
-        self._artists = artists
+        self._artist_links = artist_links

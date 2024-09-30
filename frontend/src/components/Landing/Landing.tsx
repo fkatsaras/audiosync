@@ -7,7 +7,7 @@ function Landing() {
   useEffect(() => {
     // Check if the user is already logged in
     if (localStorage.getItem('token')) {
-      navigate('api/v1/home');
+      navigate('/home');
     }
   }, [navigate]);
 
