@@ -14,7 +14,7 @@ function Search() {
         setHasSearched(true);   // Mark that a search has been submitted
 
         try {
-            const response = await fetch(`/search/${searchType}?q=${query}`, {
+            const response = await fetch(`api/v1/search/${searchType}?q=${query}`, {
                 headers: {
                     'Authorization': `Bearer ${localStorage.getItem('token')}`
                 }

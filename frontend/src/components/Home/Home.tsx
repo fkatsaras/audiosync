@@ -19,7 +19,7 @@ function Home() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch('/home', {
+        const response = await fetch('api/v1/home', {
           headers: {
             'Authorization': `Bearer ${localStorage.getItem('token')}`
           }
