@@ -8,13 +8,6 @@ user = {
     "testuser": generate_password_hash("ellipsis") 
 }
 
-
-artists_data = [
-    Artist(id=1, name="Metallica", songs=['Master of Puppets', 'One', 'Fade to Black'], followers=100, is_followed=True),
-    Artist(id=2, name="Iron Maiden", songs=['The Trooper', 'Aces High', 'Hallowed Be Thy Name'], followers=150, is_followed=False),
-    Artist(id=3, name="Tool", songs=['Schism', 'Forty Six & Two', 'Sober'], followers=200, is_followed=True)
-]
-
 songs_data = [
     Song(
         id=1,
@@ -116,3 +109,11 @@ songs_data = [
         is_playing=False
     )
 ]
+
+artists_data = [
+    Artist(id=1, name="Metallica", songs=[songs_data[0], songs_data[1], songs_data[2]], followers=100, is_followed=True),
+    Artist(id=2, name="Iron Maiden", songs=[songs_data[3], songs_data[4], songs_data[5]], followers=150, is_followed=False),
+    Artist(id=3, name="Tool", songs=[songs_data[6], songs_data[7], songs_data[8]], followers=200, is_followed=True)
+]
+
+print(artists_data)

@@ -113,6 +113,60 @@ paths:
         "500":
           description: Server error
       x-openapi-router-controller: app.controllers.search_controller
+  /api/v1/users/register:
+    post:
+      tags:
+        - users
+      summary: Registers a new user in the system
+      description: Registers a user with the provided username, password, email, and personal details.
+      operationId: registerUser
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                  description: The username for registration.
+                  example: "john_doe"
+                password:
+                  type: string
+                  description: The password for registration in clear text.
+                  example: "password123"
+                email:
+                  type: string
+                  description: The email of the user.
+                  example: "john@example.com"
+                first_name:
+                  type: string
+                  description: The user's first name.
+                  example: "John"
+                last_name:
+                  type: string
+                  description: The user's last name.
+                  example: "Doe"
+              required:
+                - username
+                - password
+                - email
+      responses:
+        "201":
+          description: User registered successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Success message.
+        "400":
+          description: Missing required fields.
+        "500":
+          description: Error registering user.
+      x-openapi-router-controller: app.controllers.users_controller
   /api/v1/users/login:
     post:
       tags:
@@ -776,6 +830,22 @@ components:
           type: string
           description: Username of the user
           example: johnDoe
+        passwordHash:
+          type: string
+          description: Hashed password of the user
+          example: $2b$12$eD...
+        email:
+          type: string
+          description: Email address of the user
+          example: john.doe@example.com
+        firstName:
+          type: string
+          description: First name of the user
+          example: John
+        lastName:
+          type: string
+          description: Last name of the user
+          example: Doe
         likedSongs:
           type: array
           description: List of songs that the user has liked
@@ -796,6 +866,10 @@ components:
           description: List of playlists created by the user
           items:
             $ref: '#/components/schemas/Playlist'
+        active:
+          type: boolean
+          description: Indicates whether the user account is active
+          example: true
       xml:
         name: userEntity
     Playlist:

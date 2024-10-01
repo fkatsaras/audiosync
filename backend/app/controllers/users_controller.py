@@ -5,7 +5,7 @@ import six
 from app.models.artist import Artist  # noqa: E501
 from app.models.playlist import Playlist  # noqa: E501
 from app.models.song import Song  # noqa: E501
-from app import util
+from app.models.user_entity import UserEntity
 from app.utils.logging_config import get_logger
 from app.controllers.api_controller import *
 from app.models.api_response import ApiResponse
@@ -15,7 +15,9 @@ from app.controllers.authorization_controller import JWT_SECRET_KEY
 from werkzeug.security import check_password_hash, generate_password_hash
 import datetime
 from flask import request, jsonify, session
-from app.utils.sample_data import user      # TEST : In-memory user store for demonstration --- Use a db in the future
+# from app.utils.sample_data import user      # TEST : In-memory user store for demonstration --- Use a db in the future
+
+from app.database import *
 
 logger = get_logger(__name__)
 
@@ -166,6 +168,55 @@ def get_user_playlists(user_id):  # noqa: E501
     :rtype: List[Playlist]
     """
     return 'do some magic!'
+
+def register_user():    # noqa: E501
+    """Register a new user in the system
+
+    :rtype: str
+    """
+    data = request.get_json()
+
+    # Extracting the required fields from the request
+    username = data.get('username')
+    password = data.get('password')
+    email = data.get('email')
+    first_name = data.get('first_name')
+    last_name = data.get('last_name')
+
+    # Validate required fields
+    if not username or not password or not email:
+        return create_error_response(message='Missing required fields for registration', code=400)
+    
+    # Hash the password
+    password_hash = generate_password_hash(password=password)
+
+    query ="""
+        INSERT INTO user (usenname, password_hash, email, first_name, last_name, active)
+        VALUES (%s, %s, %s, %s, %s, %s)
+    """
+
+    values = (username, password_hash, email, first_name, last_name, True)
+
+    # Establish a db connection
+    connection = create_connection()
+
+    if connection is not None:
+        return create_error_response(message='Datbase connection failed', code=500)
+    
+    # Execute query to load new data into DB
+    try:
+        cursor = connection.cursor()
+        cursor.execute(query, values)
+        connection.commit()
+        return create_success_response(message='User registered successfully', code=201)
+    except Error as e:
+        connection.rollback()
+        return create_error_response(message=f'Error registering user: {str(e)}', code=500)
+    finally:
+        # Close the connection
+        cursor.close()
+        close_connection(connection=connection)
+
 
 
 def login_user():  # noqa: E501
