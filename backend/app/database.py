@@ -1,5 +1,6 @@
 import mysql.connector
 from mysql.connector import Error
+from mysql.connector import IntegrityError
 from flask import current_app
 
 def create_connection() -> None:

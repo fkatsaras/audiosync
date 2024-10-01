@@ -115,5 +115,3 @@ artists_data = [
     Artist(id=2, name="Iron Maiden", songs=[songs_data[3], songs_data[4], songs_data[5]], followers=150, is_followed=False),
     Artist(id=3, name="Tool", songs=[songs_data[6], songs_data[7], songs_data[8]], followers=200, is_followed=True)
 ]
-
-print(artists_data)

@@ -2,7 +2,7 @@ from flask import jsonify
 from app.models.api_response import ApiResponse
 from typing import Dict, Any
 
-def create_success_response(message: str, body: Dict[str, Any], code: int = 200) -> tuple:
+def create_success_response(message: str, body: Dict[str, Any]=None, code: int = 200) -> tuple:
     """Utility function to create a success ApiResponse.
 
     :param message: Success message to return.

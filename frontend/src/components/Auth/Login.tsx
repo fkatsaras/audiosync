@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 function Login() {
     const [username, setUsername] = useState('');
@@ -66,6 +66,7 @@ function Login() {
                 />
                 <button type="submit">Login</button>
             </form>
+            <p>Don't have an account? <Link to="/register">Register here</Link></p>
             {errorMessage && <p className="error-message">{errorMessage}</p>}
         </div>
     );

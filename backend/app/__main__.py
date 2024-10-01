@@ -5,7 +5,6 @@ from app import encoder
 from flask import send_from_directory
 from dotenv import load_dotenv
 from flask_cors import CORS
-import logging
 
 from app.routes.home import home_bp
 from app.routes.auth import auth_bp
@@ -33,6 +32,13 @@ def create_app():
 
     # Configure the session (needed for session management)
     flask_app.secret_key = 'fotis'
+
+
+    # Configure DB connection
+    flask_app.config['DB_HOST'] = os.getenv('DB_HOST')
+    flask_app.config['DB_USER'] = os.getenv('DB_USER')
+    flask_app.config['DB_PASSWORD'] = os.getenv('DB_PASSWORD')
+    flask_app.config['DB_NAME'] = os.getenv('DB_NAME')
 
     return flask_app
 

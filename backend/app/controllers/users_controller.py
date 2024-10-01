@@ -170,9 +170,22 @@ def get_user_playlists(user_id):  # noqa: E501
     return 'do some magic!'
 
 def register_user():    # noqa: E501
-    """Register a new user in the system
+    """
+    Registers a new user in the system by creating a new record in the database.
 
-    :rtype: str
+    The function performs the following steps:
+
+    1. Extracts JSON data (username, password, email, first name, last name) from the POST request.
+    2. Validates that the required fields (username, password, email) are provided.
+    3. Hashes the user's password for secure storage.
+    4. Establishes a database connection to insert the new user's data.
+    5. Executes an SQL `INSERT` statement to store the new user in the database.
+    6. Handles duplicate username errors (if the username already exists) and provides an appropriate error response.
+    7. Commits the transaction to persist the new user in the database.
+    8. Returns a success response if the registration is successful, or an error response in case of failure.
+
+    :returns: A JSON response with success or error information.
+    :rtype: Response (Flask jsonify)
     """
     data = request.get_json()
 
@@ -192,7 +205,7 @@ def register_user():    # noqa: E501
 
     # FOR LATER : USE STORED PROCEDURES TO AVOID HARDCODING QUERIES
     query ="""
-        INSERT INTO user (usenname, password_hash, email, first_name, last_name, active)   
+        INSERT INTO users (username, password_hash, email, first_name, last_name, active)   
         VALUES (%s, %s, %s, %s, %s, %s)
     """
 
@@ -201,7 +214,7 @@ def register_user():    # noqa: E501
     # Establish a db connection
     connection = create_connection()
 
-    if connection is not None:
+    if connection is None:
         return create_error_response(message='Datbase connection failed', code=500)
     
     # Execute query to load new data into DB
@@ -210,18 +223,40 @@ def register_user():    # noqa: E501
         cursor.execute(query, values)
         connection.commit()
         return create_success_response(message='User registered successfully', code=201)
-    except Error as e:
-        connection.rollback()
-        return create_error_response(message=f'Error registering user: {str(e)}', code=500)
+    except IntegrityError as e:
+        
+        if '1062' in str(e):     # MySQL error for duplicate entry
+            return create_error_response(message='Username already exists', code=400)
+        else:
+            connection.rollback()
+            return create_error_response(message=f'Error registering user: {str(e)}', code=500)
     finally:
         # Close the connection
         cursor.close()
         close_connection(connection=connection)
 
 def login_user():  # noqa: E501
-    """Logs user into the system
+    """
+    Logs a user into the system by validating credentials, generating a JWT token, 
+    and storing the user ID in the session.
 
-    :rtype: str
+    The function performs the following steps:
+    
+    1. Extracts JSON data (username and password) from the POST request.
+    2. Validates that both username and password are provided.
+    3. Logs a login attempt for the provided username.
+    4. Establishes a connection to the database.
+    5. Queries the database for the password hash corresponding to the provided username.
+    6. Validates the provided password against the stored password hash using a secure hashing function.
+    7. If authentication is successful:
+        - Generates a JWT token with the username and a 1-hour expiration time.
+        - Stores the username in the session for tracking the logged-in user.
+        - Returns a success response with the generated JWT token.
+    8. If authentication fails (invalid credentials or user not found):
+        - Returns an error response indicating invalid credentials.
+    
+    :returns: A JSON response with a JWT token if login is successful, or an error response otherwise.
+    :rtype: Response (Flask jsonify)
     """
 
     # Extract JSON data from the POST request
@@ -248,9 +283,9 @@ def login_user():  # noqa: E501
     
     # Query the DB for the users password hash
     query = """
-        SELECT password_hash FROM uses WHERE username = %s
+        SELECT password_hash FROM users WHERE username = %s
     """
-    result = execute_query(connection, query, (username,))
+    result = execute_query(connection, query, (username,)) # Comma is necessary to make the value a Tuple
 
     if result is None or len(result) == 0:
         logger.error("User not found")

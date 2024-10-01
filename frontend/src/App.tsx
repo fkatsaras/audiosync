@@ -1,7 +1,8 @@
 import React from "react";
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import Landing from './components/Landing/Landing';
-import Login from './components/Login/Login';
+import Login from './components/Auth/Login';
+import Register from './components/Auth/Register';
 import Home from './components/Home/Home';
 import Search from './components/Search/Search'
 import NotFound from "./components/NotFound";
@@ -11,6 +12,7 @@ import SongPage from "./components/Song/SongPage";
 const router = createBrowserRouter([
   { path: "/", element: <Landing /> },
   { path: "/login", element: <Login /> },
+  { path: "/register", element: <Register /> },
   {
     path: "/home",
     element: <CheckAuth><Home /></CheckAuth>

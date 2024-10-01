@@ -818,6 +818,47 @@ paths:
       x-openapi-router-controller: app.controllers.auth_controller
 components:
   schemas:
+    HomePageResponse:
+        type: object
+        properties:
+          links:
+            $ref: '#/components/schemas/HomePageResponse_links'
+        example:
+          links:
+            search: /search
+            myArtists: "/users/{user-id}/my-artists"
+            myPlaylists: "/users/{user-id}/my-playlists"
+            likedSongs: "/users/{user-id}/liked-songs"
+            recommended: "/users/{user-id}/recommended"
+    HomePageResponse_links:
+        type: object
+        properties:
+          likedSongs:
+            type: string
+            description: URL to navigate to the liked songs page of the user
+            example: "/users/{user-id}/liked-songs"
+          recommended:
+            type: string
+            description: URL to navigate to the recommended songs page of the user
+            example: "/users/{user-id}/recommended"
+          myArtists:
+            type: string
+            description: URL to navigate to the followed artists page of the user
+            example: "/users/{user-id}/my-artists"
+          search:
+            type: string
+            description: URL to navigate to the search page
+            example: /search
+          myPlaylists:
+            type: string
+            description: URL to navigate to My Playlists page
+            example: "/users/{user-id}/my-playlists"
+        example:
+          search: /search
+          myArtists: "/users/{user-id}/my-artists"
+          myPlaylists: "/users/{user-id}/my-playlists"
+          likedSongs: "/users/{user-id}/liked-songs"
+          recommended: "/users/{user-id}/recommended"
     UserEntity:
       type: object
       properties:
