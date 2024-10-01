@@ -32,19 +32,24 @@ def close_connection(connection: mysql.connector.connection.MySQLConnection) -> 
         connection.close()
         print("Connection to MySQL DB closed.")
 
-
-def execute_query(connection: mysql.connector.connection.MySQLConnection, query: str) -> None:
+def execute_query(connection: mysql.connector.connection.MySQLConnection, query: str, values: tuple = None) -> list:
     """Execute a given SQL query using the provided database connection.
 
     :param connection: The MySQL connection object to use for executing the query.
     :param query: The SQL query to execute.
-    :return: None; commits the transaction if successful.
+    :param values: A tuple of values to substitute into the query (if applicable).
+    :return: The result of the query, or None if not applicable.
     """
 
     cursor = connection.cursor()
     try:
-        cursor.execute(query)
-        connection.commit()
+        cursor.execute(query, values)  # Pass the values for parameterized query
+        result = cursor.fetchall()  # Fetch all results
+        connection.commit()  # Commit transaction
         print("Query executed successfully")
+        return result  # Return the fetched results
     except Error as e:
-        print(f"An error occured during query execution: {e}")
+        print(f"An error occurred during query execution: {e}")
+        return None  # Return None on error
+    finally:
+        cursor.close()  # Ensure the cursor is closed

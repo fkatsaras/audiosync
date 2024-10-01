@@ -15,7 +15,7 @@ from app.controllers.authorization_controller import JWT_SECRET_KEY
 from werkzeug.security import check_password_hash, generate_password_hash
 import datetime
 from flask import request, jsonify, session
-# from app.utils.sample_data import user      # TEST : In-memory user store for demonstration --- Use a db in the future
+from app.utils.sample_data import user      # TEST : In-memory user store for demonstration --- Use a db in the future
 
 from app.database import *
 
@@ -190,8 +190,9 @@ def register_user():    # noqa: E501
     # Hash the password
     password_hash = generate_password_hash(password=password)
 
+    # FOR LATER : USE STORED PROCEDURES TO AVOID HARDCODING QUERIES
     query ="""
-        INSERT INTO user (usenname, password_hash, email, first_name, last_name, active)
+        INSERT INTO user (usenname, password_hash, email, first_name, last_name, active)   
         VALUES (%s, %s, %s, %s, %s, %s)
     """
 
@@ -217,8 +218,6 @@ def register_user():    # noqa: E501
         cursor.close()
         close_connection(connection=connection)
 
-
-
 def login_user():  # noqa: E501
     """Logs user into the system
 
@@ -241,8 +240,26 @@ def login_user():  # noqa: E501
 
     logger.info(f"Login attempt - Username: {username}")
 
-    # Check credentials against in-memory user store
-    stored_password_hash = user.get(username) # FIX This checks against a test user defined here - In the future use a db for storing user data
+    # Establish a DB connection
+    connection = create_connection()
+
+    if connection is None:
+        return create_error_response(message='DB connection failed', code=500)
+    
+    # Query the DB for the users password hash
+    query = """
+        SELECT password_hash FROM uses WHERE username = %s
+    """
+    result = execute_query(connection, query, (username,))
+
+    if result is None or len(result) == 0:
+        logger.error("User not found")
+        return create_error_response(message='Invalid credentials', code=401)
+    
+    stored_password_hash = result[0][0]  # Get the password hash from the first row
+
+    # # Check credentials against in-memory user store
+    # stored_password_hash = user.get(username) # FIX This checks against a test user defined here - In the future use a db for storing user data
     
     if stored_password_hash and check_password_hash(stored_password_hash, password):
         logger.debug("Credentials are valid")

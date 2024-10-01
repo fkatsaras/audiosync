@@ -12,16 +12,16 @@
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
-USE 'audiosync_db';
+USE `audiosync_db`;
 
 -- Dumping structure for table audiosync_db.user
-CREATE TABLE IF NOT EXISTS `user` (
+CREATE TABLE IF NOT EXISTS `users` (
     `id` int unsigned NOT NULL AUTO_INCREMENT,
-    `username` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900ai_ci NOT NULL,
-    `password_hash` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900ai_ci NOT NULL,
-    `email` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900ai_ci NOT NULL,
-    `first_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900ai_ci NOT NULL,
-    `last_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900ai_ci NOT NULL,
+    `username` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+    `password_hash` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+    `email` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+    `first_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+    `last_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
     `liked_songs` json DEFAULT NULL,
     `followed_artists` json DEFAULT NULL,
     `recommended_songs` json DEFAULT NULL,
@@ -35,7 +35,7 @@ CREATE TABLE IF NOT EXISTS `user` (
 -- Data exported was unselected
 
 -- Dumping structure for table audiosync_db.song
-CREATE TABLE IF NOT EXISTS `song` (
+CREATE TABLE IF NOT EXISTS `songs` (
   `id` int unsigned NOT NULL AUTO_INCREMENT,
   `title` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
   `artist` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
@@ -51,7 +51,7 @@ CREATE TABLE IF NOT EXISTS `song` (
 -- Data exporting was unselected.
 
 -- Dumping structure for table audiosync_db.artist
-CREATE TABLE IF NOT EXISTS `artist` (
+CREATE TABLE IF NOT EXISTS `artists` (
   `id` int unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
   `songs` json DEFAULT NULL,
