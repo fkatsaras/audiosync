@@ -10,7 +10,17 @@ from app.utils import sample_data
 from app.controllers.api_controller import *
 from app.controllers.authorization_controller import get_spotify_token
 
-def get_album_cover(album_name):
+def get_album_cover(album_name: str) -> str | None:  # noqa: E501
+    """Get album cover by album name
+
+    Retrieve the album cover image URL for a given album by searching on Spotify. # noqa: E501
+
+    :param album_name: The name of the album to search for
+    :type album_name: str
+
+    :return: The URL of the album cover image or None if not found
+    :rtype: str or None
+    """
     token = get_spotify_token()
     search_url = f'https://api.spotify.com/v1/search?q={album_name}&type=album'
     
@@ -27,7 +37,7 @@ def get_album_cover(album_name):
         return None
 
 
-def get_song_by_id(song_id):  # noqa: E501
+def get_song_by_id(song_id: int) -> Song:  # noqa: E501
     """Get song by ID
 
     Retrieve information about a specific song # noqa: E501
