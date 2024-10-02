@@ -44,7 +44,7 @@ def execute_query(connection: mysql.connector.connection.MySQLConnection, query:
 
     cursor = connection.cursor()
     try:
-        cursor.execute(query, values)  # Pass the values for parameterized query
+        cursor.execute(operation=query, params=values)  # Pass the values for parameterized query
         result = cursor.fetchall()  # Fetch all results
         connection.commit()  # Commit transaction
         print("Query executed successfully")

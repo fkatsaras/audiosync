@@ -203,33 +203,40 @@ def register_user():    # noqa: E501
     # Hash the password
     password_hash = generate_password_hash(password=password)
 
-    # FOR LATER : USE STORED PROCEDURES TO AVOID HARDCODING QUERIES
-    query ="""
-        INSERT INTO users (username, password_hash, email, first_name, last_name, active)   
-        VALUES (%s, %s, %s, %s, %s, %s)
-    """
-
-    values = (username, password_hash, email, first_name, last_name, True)
-
     # Establish a db connection
     connection = create_connection()
 
     if connection is None:
-        return create_error_response(message='Datbase connection failed', code=500)
+        return create_error_response(message='Database connection failed', code=500)
     
-    # Execute query to load new data into DB
+    # Execute query from the stored procedure to load new data into DB
     try:
         cursor = connection.cursor()
-        cursor.execute(query, values)
-        connection.commit()
-        return create_success_response(message='User registered successfully', code=201)
-    except IntegrityError as e:
-        
-        if '1062' in str(e):     # MySQL error for duplicate entry
-            return create_error_response(message='Username already exists', code=400)
+
+        # Call the procedure REGISTER_USER in the DB
+        execute_query(
+            connection=connection,
+            query="CALL register_user(%s, %s, %s, %s, %s, @p_success, @p_message);",
+            values=(username, password_hash, email, first_name, last_name),
+        )
+
+        # Get the results back
+        output_result = execute_query(
+            connection=connection,
+            query="SELECT @p_success, @p_message;"
+        )
+
+        # Use the output parameters if they exist
+        if output_result:
+            p_success, p_message = output_result[0]  # Unpack the first row of the result
+
+        if p_success == 1:
+            return create_success_response(message=p_message, code=201)
         else:
-            connection.rollback()
-            return create_error_response(message=f'Error registering user: {str(e)}', code=500)
+            return create_error_response(message=p_message, code=400)
+    except Exception as e:
+        connection.rollback()
+        return create_error_response(message=f'Error registering user: {str(e)}', code=500)
     finally:
         # Close the connection
         cursor.close()

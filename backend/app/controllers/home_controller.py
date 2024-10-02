@@ -1,5 +1,6 @@
 from flask import jsonify
 from app.models.api_response import ApiResponse
+from app.controllers.api_controller import *
 
 def home(current_user):
     """Get Home Page GUI
@@ -16,13 +17,7 @@ def home(current_user):
         'search': '/search',
         'my_playlists': '/my-playlists'
     }
-
-    # Include the links in the body of the ApiResponse
-    response = ApiResponse(
-        code=200, 
-        type='success', 
-        message=f'Home page links retrieved successfully for user: {current_user}.', 
-        body=links 
+    return create_success_response(
+        message=f'Home page links retrieved successfully for user: {current_user}.',
+        body=links
     )
-
-    return jsonify(response.to_dict()), 200

@@ -42,7 +42,8 @@ function Register() {
                     last_name: lastName,
                 }),
             });
-
+            
+            // Store the API response from the backend
             const data = await response.json();
 
             if (!response.ok) {
@@ -64,7 +65,7 @@ function Register() {
             navigate('/login');
         } catch (error) {
             console.error('Error during registration: ', error);
-            setErrorMessage('An error occurred during registration. Please try again later.');
+            setErrorMessage( error + '. Please try again.');
         }
     };
 

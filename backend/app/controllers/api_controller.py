@@ -2,11 +2,12 @@ from flask import jsonify
 from app.models.api_response import ApiResponse
 from typing import Dict, Any
 
-def create_success_response(message: str, body: Dict[str, Any]=None, code: int = 200) -> tuple:
+def create_success_response(message: str, body: Dict[str, Any] | str =None, code: int = 200) -> tuple:
     """Utility function to create a success ApiResponse.
 
     :param message: Success message to return.
-    :param body: Body of the response, typically the data being returned.
+    :param body: Body of the response, typically the data being returned. Can have 
+    JSON format (Dict[str, Any])  or just a simple string.
     :param code: HTTP status code, defaults to 200 OK.
     :return: Tuple containing the response data and the HTTP status code.
     """
