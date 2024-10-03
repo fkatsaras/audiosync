@@ -47,7 +47,7 @@ def execute_query(connection: mysql.connector.connection.MySQLConnection, query:
         cursor.execute(operation=query, params=values)  # Pass the values for parameterized query
         result = cursor.fetchall()  # Fetch all results
         connection.commit()  # Commit transaction
-        print("Query executed successfully")
+        print("Query executed successfully" + query)
         return result  # Return the fetched results
     except Error as e:
         print(f"An error occurred during query execution: {e}")
@@ -76,8 +76,6 @@ def call_procedure(connection: mysql.connector.connection.MySQLConnection, proce
         # Configure the procedure query with both IN and OUT parameters
         query = f"CALL {procedure_name}({in_placeholders}, {out_placeholders});"
 
-        print('Call proc query: ' + query)
-
         # Execute procedure query
         execute_query(connection=connection, query=query, values=in_params)
 
@@ -86,9 +84,6 @@ def call_procedure(connection: mysql.connector.connection.MySQLConnection, proce
             connection=connection,
             query=f"SELECT {', '.join([f'@{param}' for param in out_params])};"
         )
-
-        print("select query: " + f"SELECT {', '.join([f'@{param}' for param in out_params])};")
-        print(output_result)
 
         # Return the OUT parameters if available
         if output_result:
