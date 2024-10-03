@@ -10,14 +10,14 @@ from app.utils.logging_config import get_logger
 from app.controllers.api_controller import *
 from app.models.api_response import ApiResponse
 
-from app.controllers.authorization_controller import JWT_SECRET_KEY
-
 from werkzeug.security import check_password_hash, generate_password_hash
 import datetime
 from flask import request, jsonify, session
 from app.utils.sample_data import user      # TEST : In-memory user store for demonstration --- Use a db in the future
 
 from app.database import *
+from dotenv import load_dotenv
+import os
 
 logger = get_logger(__name__)
 
@@ -174,15 +174,13 @@ def register_user():    # noqa: E501
     Registers a new user in the system by creating a new record in the database.
 
     The function performs the following steps:
-
+    
     1. Extracts JSON data (username, password, email, first name, last name) from the POST request.
     2. Validates that the required fields (username, password, email) are provided.
     3. Hashes the user's password for secure storage.
-    4. Establishes a database connection to insert the new user's data.
-    5. Executes an SQL `INSERT` statement to store the new user in the database.
-    6. Handles duplicate username errors (if the username already exists) and provides an appropriate error response.
-    7. Commits the transaction to persist the new user in the database.
-    8. Returns a success response if the registration is successful, or an error response in case of failure.
+    4. Calls the `register_user` stored procedure to insert the new user.
+    5. Handles duplicate username errors (if the username already exists) and provides an appropriate error response.
+    6. Returns a success response if the registration is successful, or an error response in case of failure.
 
     :returns: A JSON response with success or error information.
     :rtype: Response (Flask jsonify)
@@ -211,24 +209,17 @@ def register_user():    # noqa: E501
     
     # Execute query from the stored procedure to load new data into DB
     try:
-        cursor = connection.cursor()
-
-        # Call the procedure REGISTER_USER in the DB
-        execute_query(
+        # Call the stored procedure to register the user
+        procedure_result = call_procedure(
             connection=connection,
-            query="CALL register_user(%s, %s, %s, %s, %s, @p_success, @p_message);",
-            values=(username, password_hash, email, first_name, last_name),
+            procedure_name="register_user",
+            in_params=(username, password_hash, email, first_name, last_name),
+            out_params=['p_success', 'p_message']
         )
 
-        # Get the results back
-        output_result = execute_query(
-            connection=connection,
-            query="SELECT @p_success, @p_message;"
-        )
+        p_success, p_message = procedure_result
 
-        # Use the output parameters if they exist
-        if output_result:
-            p_success, p_message = output_result[0]  # Unpack the first row of the result
+        print(p_success, p_message)
 
         if p_success == 1:
             return create_success_response(message=p_message, code=201)
@@ -239,12 +230,11 @@ def register_user():    # noqa: E501
         return create_error_response(message=f'Error registering user: {str(e)}', code=500)
     finally:
         # Close the connection
-        cursor.close()
         close_connection(connection=connection)
 
 def login_user():  # noqa: E501
     """
-    Logs a user into the system by validating credentials, generating a JWT token, 
+    Logs a user into the system by validating credentials, generating a JWT token,
     and storing the user ID in the session.
 
     The function performs the following steps:
@@ -252,19 +242,20 @@ def login_user():  # noqa: E501
     1. Extracts JSON data (username and password) from the POST request.
     2. Validates that both username and password are provided.
     3. Logs a login attempt for the provided username.
-    4. Establishes a connection to the database.
-    5. Queries the database for the password hash corresponding to the provided username.
-    6. Validates the provided password against the stored password hash using a secure hashing function.
-    7. If authentication is successful:
+    4. Calls the login_user stored procedure to validate credentials.
+    5. If authentication is successful:
         - Generates a JWT token with the username and a 1-hour expiration time.
         - Stores the username in the session for tracking the logged-in user.
         - Returns a success response with the generated JWT token.
-    8. If authentication fails (invalid credentials or user not found):
+    6. If authentication fails (invalid credentials):
         - Returns an error response indicating invalid credentials.
     
     :returns: A JSON response with a JWT token if login is successful, or an error response otherwise.
     :rtype: Response (Flask jsonify)
     """
+
+    # Get the JWT key from the .env 
+    load_dotenv()
 
     # Extract JSON data from the POST request
     data = request.get_json()
@@ -288,53 +279,56 @@ def login_user():  # noqa: E501
     if connection is None:
         return create_error_response(message='DB connection failed', code=500)
     
-    # Query the DB for the users password hash
-    query = """
-        SELECT password_hash FROM users WHERE username = %s
-    """
-    result = execute_query(connection, query, (username,)) # Comma is necessary to make the value a Tuple
+    try:
+        # Call the stored procedure to validate the user
+        procedure_result = call_procedure(
+        connection=connection,
+        procedure_name="login_user",
+        in_params=(username,),
+        out_params=['p_password_hash', 'p_success', 'p_message']
+    )
 
-    if result is None or len(result) == 0:
-        logger.error("User not found")
-        return create_error_response(message='Invalid credentials', code=401)
-    
-    stored_password_hash = result[0][0]  # Get the password hash from the first row
+        p_password_hash, p_success, p_message = procedure_result
 
-    # # Check credentials against in-memory user store
-    # stored_password_hash = user.get(username) # FIX This checks against a test user defined here - In the future use a db for storing user data
-    
-    if stored_password_hash and check_password_hash(stored_password_hash, password):
-        logger.debug("Credentials are valid")
-        
-        # Generate a JWT token
-        token = jwt.encode({
-            'username': username,
-            'exp': datetime.datetime.utcnow() + datetime.timedelta(hours=1)
-        }, JWT_SECRET_KEY, algorithm="HS256")
+        if p_success == 1 and p_password_hash:
+            # Validate the password using Werkzeug's check_password_hash
+            if check_password_hash(p_password_hash, password):
+                logger.debug("Credentials are valid")
 
-        # Store user ID in session
-        session['user.id'] = username
-        logger.debug(f"Session user ID set to: {session.get('user.id')}")
-        logger.debug(f"Generated token: {token}")
-        
-        # Return the token as a JSON response using the api model
-        success_response = ApiResponse(
-            code=200,
-            type='success',
-            message='Login successful'
-        )
-        return jsonify({
-            **success_response.to_dict(),
-            'token': token
-        }), 200
-    
-    else:
-        logger.error("Invalid credentials")
+                # Generate a JWT token
+                token = jwt.encode({
+                    'username': username,
+                    'exp': datetime.datetime.utcnow() + datetime.timedelta(hours=1)
+                }, os.getenv('JWT_SECRET_KEY'), algorithm="HS256")
 
-        return create_error_response(
-            message='Invalid credentials',
-            code=401
-        )
+                # Store user ID in session
+                session['user.id'] = username
+                logger.debug(f"Session user ID set to: {session.get('user.id')}")
+                logger.debug(f"Generated token: {token}")
+
+                # Return the token as a JSON response using the api model
+                success_response = ApiResponse(
+                    code=200,
+                    type='success',
+                    message='Login successful'
+                )
+                return jsonify({
+                    **success_response.to_dict(),
+                    'token': token
+                }), 200
+            else:
+                logger.error("Invalid password")
+                return create_error_response(message="Invalid password", code=401)
+        else:
+            logger.error(p_message)
+            return create_error_response(message=p_message, code=401)
+
+    except Exception as e:
+        logger.error(f"Exception during login: {str(e)}")
+        return create_error_response(message='An error occurred', code=500)
+
+    finally:
+        close_connection(connection=connection)
 
 
 def logout_user():  # noqa: E501

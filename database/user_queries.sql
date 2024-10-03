@@ -54,24 +54,24 @@ DELIMITER //
 
 CREATE PROCEDURE `login_user` (
     IN `p_username` VARCHAR(255),
-    IN `p_password_hash` VARCHAR(255),
+    OUT `p_password_hash` VARCHAR(255),
     OUT `p_success` INT,
     OUT `p_message` VARCHAR(255)
 )
 BEGIN
     DECLARE `user_exists` INT;
     
-    -- Check if the user exists with the provided credentials
-    SELECT COUNT(*) INTO `user_exists`
+    -- Check if the user exists
+    SELECT `password_hash` INTO `p_password_hash`
     FROM `users`
-    WHERE `username` = `p_username` AND `password_hash` = `p_password_hash`;
+    WHERE `username` = `p_username`;
     
-    IF `user_exists` > 0 THEN
+    IF p_password_hash IS NOT NULL THEN
         SET `p_success` = 1;
-        SET `p_message` = 'Login successful';
+        SET `p_message` = 'User exists, password hash retrieved';
     ELSE
         SET `p_success` = 0;
-        SET `p_message` = 'Invalid username or password';
+        SET `p_message` = 'Invalid username';
     END IF;
 END //
 

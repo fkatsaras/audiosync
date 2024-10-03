@@ -54,3 +54,47 @@ def execute_query(connection: mysql.connector.connection.MySQLConnection, query:
         return None  # Return None on error
     finally:
         cursor.close()  # Ensure the cursor is closed
+
+def call_procedure(connection: mysql.connector.connection.MySQLConnection, procedure_name: str, in_params: tuple, out_params: list) -> tuple:
+    """
+    Calls a stored procedure with IN and OUT parameters and fetches the OUT parameters from the result.
+
+    :param connection: The database connection object
+    :param procedure_name: The name of the stored procedure to call
+    :param in_params: A tuple containing the input parameters to pass to the procedure
+    :param out_params: A list of output parameter names (strings) to retrieve from the procedure
+    :returns: A tuple containing the output parameter values in the same order as the out_params list
+    :raises: Any exceptions that occur during database interaction
+    """
+
+    try:
+
+        # Prepare the call
+        in_placeholders = ', '.join(['%s'] * len(in_params))
+        out_placeholders = ', '.join([f"@{param}" for param in out_params]) 
+        
+        # Configure the procedure query with both IN and OUT parameters
+        query = f"CALL {procedure_name}({in_placeholders}, {out_placeholders});"
+
+        print('Call proc query: ' + query)
+
+        # Execute procedure query
+        execute_query(connection=connection, query=query, values=in_params)
+
+        # Fetch the OUT parameters from the procedure
+        output_result = execute_query(
+            connection=connection,
+            query=f"SELECT {', '.join([f'@{param}' for param in out_params])};"
+        )
+
+        print("select query: " + f"SELECT {', '.join([f'@{param}' for param in out_params])};")
+        print(output_result)
+
+        # Return the OUT parameters if available
+        if output_result:
+            return output_result[0]  # Returns the output values in the same order as out_params
+        else:
+            raise RuntimeError(f"No output returned from procedure {procedure_name}")
+
+    except Exception as e:
+        raise RuntimeError(f"Error calling stored procedure {procedure_name}: {str(e)}")

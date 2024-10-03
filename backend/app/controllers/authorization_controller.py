@@ -6,25 +6,33 @@ from app.controllers.api_controller import *
 import jwt
 from functools import wraps
 import base64
+from dotenv import load_dotenv
+import os
 
 """
 controller generated to handled auth operation described at:
 https://connexion.readthedocs.io/en/latest/security.html
 """
 def check_AudioSync_auth(token):
+    """
+    Authenticates a token (e.g., JWT) and returns user details like ID and scopes (permissions).
+    """
     return {'scopes': ['read:pets', 'write:pets'], 'uid': 'test_value'}
 
 def validate_scope_AudioSync_auth(required_scopes, token_scopes):
+    """
+    Authorizes actions by checking if the user's token contains the required permissions (scopes).
+    """
     return set(required_scopes).issubset(set(token_scopes))
 
 def check_api_key(api_key, required_scopes):
+    """
+    Authenticates an API key and potentially returns details about the API key, such as permissions or ownership.
+    """
     return {'test_key': 'test_value'}
 
-
-# Secret key for JWT (use an environment variable in production)
-JWT_SECRET_KEY = "fotis"
-SPOTIFY_CLIENT_ID = "f63b8e82324843eeba6dc4af7f080138"
-SPOTIFY_CLIENT_SECRET = "4e89beb1a54945449aaac0664499520e"
+# Get the appropriate env variables
+load_dotenv()
 
 def token_required(f: callable) -> callable:
     """Decorator to enforce token-based authentication on routes.
@@ -52,7 +60,7 @@ def token_required(f: callable) -> callable:
             return create_error_response(message='Token is missing!', code=403)
 
         try:
-            data = jwt.decode(token, JWT_SECRET_KEY, algorithms=["HS256"])
+            data = jwt.decode(token, os.getenv('JWT_SECRET_KEY'), algorithms=["HS256"])
             current_user = data['username']
             # logger.info(f"Token verified for user: {current_user}")
         except Exception as e:
@@ -106,7 +114,7 @@ def get_spotify_token() -> str | None:
     :rtype: str or None
     """
     
-    credentials = f"{SPOTIFY_CLIENT_ID}:{SPOTIFY_CLIENT_SECRET}"
+    credentials = f"{os.getenv('SPOTIFY_CLIENT_ID')}:{os.getenv('SPOTIFY_CLIENT_SECRET')}"
     encoded_credentials = base64.b64encode(credentials.encode()).decode()
 
     auth_response = requests.post(
