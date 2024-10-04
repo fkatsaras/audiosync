@@ -1,8 +1,7 @@
-from flask import jsonify
 from app.models.api_response import ApiResponse
 from app.controllers.api_controller import *
 
-def home(current_user):
+def home(current_user: str) -> ApiResponse:
     """Get Home Page GUI
 
     Retrieve the home page GUI data

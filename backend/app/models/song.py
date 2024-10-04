@@ -17,13 +17,15 @@ class Song(Model):
 
     Do not edit the class manually.
     """
-    def __init__(self, id: int=None, title: str=None, artist: str=None, album: str=None, duration: int=None, cover: str=None, liked: bool=None, playlists: List['Playlist']=None, is_playing: bool=None):  # noqa: E501 Forward reference to Playlist
+    def __init__(self, id: int=None, title: str=None, artist_id: int=None, artist: str=None, album: str=None, duration: int=None, cover: str=None, liked: bool=None, playlists: List['Playlist']=None, is_playing: bool=None):  # noqa: E501 Forward reference to Playlist
         """Song - a model defined in Swagger
 
         :param id: The id of this Song.  # noqa: E501
         :type id: int
         :param title: The title of this Song.  # noqa: E501
         :type title: str
+        :param artist: The id of the artist of this Song.  # noqa: E501
+        :type artist: int
         :param artist: The artist of this Song.  # noqa: E501
         :type artist: str
         :param album: The album of this Song.  # noqa: E501
@@ -42,6 +44,7 @@ class Song(Model):
         self.swagger_types = {
             'id': int,
             'title': str,
+            'artist_id': int,
             'artist': str,
             'album': str,
             'duration': int,
@@ -54,6 +57,7 @@ class Song(Model):
         self.attribute_map = {
             'id': 'id',
             'title': 'title',
+            'artist_id': 'artist_id',
             'artist': 'artist',
             'album': 'album',
             'duration': 'duration',
@@ -64,6 +68,7 @@ class Song(Model):
         }
         self._id = id
         self._title = title
+        self._artist_id = artist_id
         self._artist = artist
         self._album = album
         self._duration = duration
@@ -128,6 +133,30 @@ class Song(Model):
         """
 
         self._title = title
+
+    @property
+    def artist_id(self) -> int:
+        """Gets the artist's ID of this Song.
+
+        ID of the artist who created the song  # noqa: E501
+
+        :return: The artist of this Song.
+        :rtype: str
+        """
+        return self._artist_id
+
+    @artist_id.setter
+    def artist_id(self, artist_id: int):
+        """Sets the artist ID of this Song.
+
+        Name of the artist who created the song  # noqa: E501
+
+        :param artist: The artist of this Song.
+        :type artist: str
+        """
+
+        self._artist_id = artist_id
+
 
     @property
     def artist(self) -> str:

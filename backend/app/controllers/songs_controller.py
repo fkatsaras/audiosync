@@ -10,6 +10,8 @@ from app.utils import sample_data
 from app.controllers.api_controller import *
 from app.controllers.authorization_controller import get_spotify_token
 
+from app.database import *
+
 def get_album_cover(album_name: str) -> str | None:  # noqa: E501
     """Get album cover by album name
 
@@ -37,10 +39,10 @@ def get_album_cover(album_name: str) -> str | None:  # noqa: E501
         return None
 
 
-def get_song_by_id(song_id: int) -> Song:  # noqa: E501
+def get_song_by_id(song_id: int) -> ApiResponse:  # noqa: E501
     """Get song by ID
 
-    Retrieve information about a specific song # noqa: E501
+    Retrieve information about a specific song from the database # noqa: E501
 
     :param song_id: The ID of the song to fetch
     :type song_id: int
@@ -48,10 +50,26 @@ def get_song_by_id(song_id: int) -> Song:  # noqa: E501
     :rtype: Song
     """
 
-    # Placeholder ! Add DB functionality here
-    song = next((song for song in sample_data.songs_data if song.id == song_id), None)
+    # Create DB connection
+    connection = create_connection()
+    if not connection:
+        return create_error_response(
+            message='DB connection failed.',
+            code=500
+        )
 
-    if song:
+    query = "SELECT * FROM songs WHERE id = %s"                                  # !TODO! Create another store procedure for this
+    values = (song_id,)
+
+    # Execute the query and retrieve the song data as a dictionary
+    result = execute_query(connection=connection, query=query, values=values)    # !TODO! Might need to add this to database.py (return ApiResponse)
+    close_connection(connection=connection)
+
+    if result and len(result) > 0:
+        song_data = result[0]  # Retrieve the first result (since we expect a single song by ID)
+        
+        # Create a Song object using the from_dict method
+        song = Song.from_dict(song_data)
 
         # Fetch the album cover using the song's album name and set it as the cover of the song instance
         album_cover_url = get_album_cover(song.album)

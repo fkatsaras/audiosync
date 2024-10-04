@@ -71,7 +71,7 @@ def token_required(f: callable) -> callable:
 
     return decorator
 
-def check_login() -> tuple:
+def check_login() -> ApiResponse:
     """Checks if a user is logged in by verifying session data.
 
     This function checks the session for a logged-in user. If found, 
@@ -87,7 +87,7 @@ def check_login() -> tuple:
     
     return create_error_response(message='User is not logged in.', code=401)
 
-def current_user() -> tuple:
+def current_user() -> ApiResponse:
     """Returns the currently logged-in user if any.
 
     This function retrieves the username from the session. If a username

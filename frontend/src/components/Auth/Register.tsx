@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate , Link } from "react-router-dom";
 
 function Register() {
     const [username, setUsername] = useState('');
@@ -121,6 +121,7 @@ function Register() {
                 />
                 <button type="submit">Register</button>
             </form>
+            <p>Already have an account? <Link to="/login">Login here</Link></p>
             {errorMessage && <p className="error-message">{errorMessage}</p>}
             {successMessage && <p className="success-message">{successMessage}</p>}
         </div>
