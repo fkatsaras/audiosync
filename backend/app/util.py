@@ -29,6 +29,9 @@ def _deserialize(data, klass):
             return _deserialize_list(data, klass.__args__[0])
         if type_util.is_dict(klass):
             return _deserialize_dict(data, klass.__args__[1])
+    elif hasattr(klass, '__name__') and klass.__name__ == 'ForwardRef':
+        # If klass is a ForwardRef, resolve it using eval (caution advised)     # !TODO! check this out later: mabye we can avoid using the eval function
+        klass = eval(klass.__name__)
     else:
         return deserialize_model(data, klass)
 

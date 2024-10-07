@@ -14,7 +14,7 @@
 
 USE `audiosync_db`;
 
--- Dumping structure for table audiosync_db.user
+-- Dumping structure for table audiosync_db.users
 CREATE TABLE IF NOT EXISTS `users` (
     `id` int unsigned NOT NULL AUTO_INCREMENT,
     `username` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
@@ -34,14 +34,14 @@ CREATE TABLE IF NOT EXISTS `users` (
 
 -- Data exported was unselected
 
--- Dumping structure for table audiosync_db.song
+-- Dumping structure for table audiosync_db.songs
 CREATE TABLE IF NOT EXISTS `songs` (
   `id` int unsigned NOT NULL AUTO_INCREMENT,
   `title` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
   `artist_id` INT UNSIGNED NOT NULL,  -- Foreign key for artist
   `album` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
   `duration` int NOT NULL,
-  `cover` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  `cover` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
   `liked` boolean NOT NULL,
   `playlists` json DEFAULT NULL,
   `is_playing` boolean NOT NULL,
@@ -51,11 +51,12 @@ CREATE TABLE IF NOT EXISTS `songs` (
 
 -- Data exporting was unselected.
 
--- Dumping structure for table audiosync_db.artist
+-- Dumping structure for table audiosync_db.artists
 CREATE TABLE IF NOT EXISTS `artists` (
   `id` int unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
   `followers` int unsigned NOT NULL,
   `is_followed` boolean NOT NULL,
+  `profile_picture` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;

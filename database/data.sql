@@ -18,21 +18,21 @@ USE `audiosync_db`;
 -- Dumping data for table audiosync_db.songs
 /*!40000 ALTER TABLE `songs` DISABLE KEYS */;
 INSERT INTO `songs` (id, title, artist_id, album, duration, cover, liked, playlists, is_playing) VALUES
-    (1, 'Master of Puppets', 1, 'Master of Puppets', 515, 'https://example.com/covers/master_of_puppets.jpg', true, '[]', false),
-    (2, 'One', 1, '...And Justice for All', 447, 'https://example.com/covers/and_justice_for_all.jpg', false, '[]', false),
-    (3, 'Fade to Black', 1, 'Ride the Lightning', 417, 'https://example.com/covers/ride_the_lightning.jpg', true, '[]', false),
-    (4, 'The Trooper', 2, 'Piece of Mind', 249, 'https://example.com/covers/piece_of_mind.jpg', true, '[]', false),
-    (5, 'Aces High', 2, 'Powerslave', 296, 'https://example.com/covers/powerslave.jpg', false, '[]', false),
-    (6, 'Hallowed Be Thy Name', 2, 'The Number of the Beast', 431, 'https://example.com/covers/the_number_of_the_beast.jpg', true, '[]', true),
-    (7, 'Schism', 3, 'Lateralus', 412, 'https://example.com/covers/lateralus.jpg', true, '[]', false),
-    (8, 'Forty Six & Two', 3, 'Ænima', 402, 'https://example.com/covers/aenima.jpg', false, '[]', false),
-    (9, 'Sober', 3, 'Undertow', 311, 'https://example.com/covers/undertow.jpg', true, '[]', false);
+    (1, 'Master of Puppets', 1, 'Master of Puppets', 515, NULL, true, '[]', false),                         -- !TODO! get a placeholder image to display in case spotify api fails
+    (2, 'One', 1, '...And Justice for All', 447, NULL, false, '[]', false),
+    (3, 'Fade to Black', 1, 'Ride the Lightning', 417, NULL, true, '[]', false),
+    (4, 'The Trooper', 2, 'Piece of Mind', 249, NULL, true, '[]', false),
+    (5, 'Aces High', 2, 'Powerslave', 296, NULL, false, '[]', false),
+    (6, 'Hallowed Be Thy Name', 2, 'The Number of the Beast', 431, NULL, true, '[]', true),
+    (7, 'Schism', 3, 'Lateralus', 412, NULL, true, '[]', false),
+    (8, 'Forty Six & Two', 3, 'Ænima', 402, NULL, false, '[]', false),
+    (9, 'Sober', 3, 'Undertow', 311, NULL, true, '[]', false);
 /*!40000 ALTER TABLE `songs` ENABLE KEYS */;
 
 -- Dumping data for table audiosync_db.artists
 /*!40000 ALTER TABLE `artists` DISABLE KEYS */;
-INSERT INTO `artists` (id, name, followers, is_followed) VALUES
-    (1, 'Metallica', 100, true),
-    (2, 'Iron Maiden', 150, false),
-    (3, 'Tool', 200, true);
+INSERT INTO `artists` (id, name, followers, is_followed, profile_picture) VALUES
+    (1, 'Metallica', 100, true, NULL),
+    (2, 'Iron Maiden', 150, false, NULL),
+    (3, 'Tool', 200, true, NULL);
 /*!40000 ALTER TABLE `artists` ENABLE KEYS */;

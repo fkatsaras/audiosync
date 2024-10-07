@@ -1,12 +1,12 @@
 # coding: utf-8
 
-from __future__ import absolute_import
+from __future__ import absolute_import, annotations
 from datetime import date, datetime  # noqa: F401
 
 from typing import List, Dict , TYPE_CHECKING # noqa: F401
 
 from app.models.base_model_ import Model
-#from app.models.playlist import Playlist  # noqa: F401,E501
+from app.models.playlist import Playlist  # noqa: F401,E501
 from app import util
 
 if TYPE_CHECKING:
@@ -17,7 +17,7 @@ class Song(Model):
 
     Do not edit the class manually.
     """
-    def __init__(self, id: int=None, title: str=None, artist_id: int=None, artist: str=None, album: str=None, duration: int=None, cover: str=None, liked: bool=None, playlists: List['Playlist']=None, is_playing: bool=None):  # noqa: E501 Forward reference to Playlist
+    def __init__(self, id: int=None, title: str=None, artist_id: int=None, artist: str=None, album: str=None, duration: int=None, cover: str=None, liked: bool=None, playlists: List[Playlist]=None, is_playing: bool=None):  # noqa: E501 Forward reference to Playlist
         """Song - a model defined in Swagger
 
         :param id: The id of this Song.  # noqa: E501
@@ -50,7 +50,7 @@ class Song(Model):
             'duration': int,
             'cover': str,
             'liked': bool,
-            'playlists': List['Playlist'], # Using string to defer evaluation
+            'playlists': List[Playlist], 
             'is_playing': bool
         }
 
@@ -274,7 +274,7 @@ class Song(Model):
         self._liked = liked
 
     @property
-    def playlists(self) -> List['Playlist']: # Using string to defer evaluation
+    def playlists(self) -> List[Playlist]: 
         """Gets the playlists of this Song.
 
         List of Playlist objects to which the user has added the song  # noqa: E501
@@ -285,7 +285,7 @@ class Song(Model):
         return self._playlists
 
     @playlists.setter
-    def playlists(self, playlists: List['Playlist']): # Using string to defer evaluation
+    def playlists(self, playlists: List[Playlist]): 
         """Sets the playlists of this Song.
 
         List of Playlist objects to which the user has added the song  # noqa: E501

@@ -1,6 +1,6 @@
 # coding: utf-8
 
-from __future__ import absolute_import
+from __future__ import absolute_import, annotations # import annotations to defer evaluation of circularly imported Song, Playlist classes 
 from datetime import date, datetime  # noqa: F401
 
 from typing import List, Dict  # noqa: F401
@@ -15,7 +15,7 @@ class Artist(Model):
 
     Do not edit the class manually.
     """
-    def __init__(self, id: int=None, name: str=None, songs: List[Song]=None, followers: int=None, is_followed: bool=None):  # noqa: E501
+    def __init__(self, id: int=None, name: str=None, songs: List[Song]=None, followers: int=None, is_followed: bool=None, profile_picture: str=None):  # noqa: E501
         """Artist - a model defined in Swagger
 
         :param id: The id of this Artist.  # noqa: E501
@@ -28,13 +28,16 @@ class Artist(Model):
         :type followers: int
         :param is_followed: The is_followed of this Artist.  # noqa: E501
         :type is_followed: bool
+        :param profile_picture: The profile picture of this Artist.  # noqa: E501
+        :type profile_picture: str
         """
         self.swagger_types = {
             'id': int,
             'name': str,
-            'songs': List[Song],
+            'songs': List[Song],  
             'followers': int,
-            'is_followed': bool
+            'is_followed': bool,
+            'profile_picture': str
         }
 
         self.attribute_map = {
@@ -42,13 +45,15 @@ class Artist(Model):
             'name': 'name',
             'songs': 'songs',
             'followers': 'followers',
-            'is_followed': 'is_followed'
+            'is_followed': 'is_followed',
+            'profile_picture': 'profile_picture'
         }
         self._id = id
         self._name = name
         self._songs = songs
         self._followers = followers
         self._is_followed = is_followed
+        self._profile_picture = profile_picture
 
     @classmethod
     def from_dict(cls, dikt) -> 'Artist':
@@ -108,7 +113,7 @@ class Artist(Model):
         self._name = name
 
     @property
-    def songs(self) -> List[Song]:
+    def songs(self) -> List[Song]:     
         """Gets the songs of this Artist.
 
         List of Song objects that belong to the artist  # noqa: E501
@@ -119,7 +124,7 @@ class Artist(Model):
         return self._songs
 
     @songs.setter
-    def songs(self, songs: List[Song]):
+    def songs(self, songs: List[Song]):  
         """Sets the songs of this Artist.
 
         List of Song objects that belong to the artist  # noqa: E501
@@ -175,3 +180,26 @@ class Artist(Model):
         """
 
         self._is_followed = is_followed
+
+    @property
+    def profile_picture(self) -> str:
+        """Gets the profile_picture of this Artist.
+
+        Flag indicating if the user follows the artist  # noqa: E501
+
+        :return: The profile_picture of this Artist.
+        :rtype: bool
+        """
+        return self._profile_picture
+
+    @profile_picture.setter
+    def profile_picture(self, profile_picture: bool):
+        """Sets the profile_picture of this Artist.
+
+        Flag indicating if the user follows the artist  # noqa: E501
+
+        :param profile_picture: The profile_picture of this Artist.
+        :type profile_picture: bool
+        """
+
+        self._profile_picture = profile_picture
