@@ -23,6 +23,7 @@ const ArtistPage: React.FC = () => {
     const [artist, setArtist] = useState<Artist | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const [message, setMessage] = useState<string | null>(null);
 
     useEffect(() => {
         // Fetch the artists details from the backend
@@ -50,6 +51,35 @@ const ArtistPage: React.FC = () => {
         fetchArtist();
     }, [artistId]);
 
+    const handleFollowToggle = async () => {
+        if (artist) {
+            const endpoint = artist.is_followed?
+            `/api/v1/artists/${artistId}/unfollow` :
+            `/api/v1/artists/${artistId}/follow`;
+
+            const response = await fetch(endpoint, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                    'Content-type': 'application/json', 
+                },
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                setArtist(prevArtist => ({
+                    ...prevArtist!,
+                    is_followed: data.is_followed,
+                    followers: data.is_followed? prevArtist!.followers + 1 : prevArtist!.followers - 1,
+                }))
+                setMessage(data.message);
+            } else {
+                const errorData = await response.json();
+                setMessage(errorData.message);
+            }
+        }
+    };
+
     if (loading) return <div>Loading...</div>;
     if (error) return <div>{error}</div>;
 
@@ -60,7 +90,14 @@ const ArtistPage: React.FC = () => {
                 <h1>{artist?.name}</h1>
                 <img src={artist?.profile_picture} alt={`${artist?.name} profile`} />
                 <p>Followers: {artist?.followers}</p>
-                <p>{artist?.is_followed ? "Following" : "Not Following"}</p>
+                <button onClick={handleFollowToggle}>
+                    {artist.is_followed? 'Unfollow' : 'Follow'}
+                </button>
+                {/*
+                 Display unfollow/follow/error message here
+                 !TODO! Add timeout logic so that the follow message isnt permanent
+                 */}
+                {message && <p>{message}</p>}
     
                 <h2>Songs</h2>
                 <ul>

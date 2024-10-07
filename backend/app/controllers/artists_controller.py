@@ -37,7 +37,7 @@ def get_artist_profile_picture(artist_name: str) -> str | None:  # noqa: E501
         return None
 
 
-def get_artist_songs(artist_id):  # noqa: E501
+def get_artist_songs(artist_id: int) -> ApiResponse:  # noqa: E501
     """Get artist songs
 
     Retrieve the list of songs by a specific artist # noqa: E501
@@ -50,7 +50,7 @@ def get_artist_songs(artist_id):  # noqa: E501
     return 'do some magic!'
 
 
-def get_artist_by_id(artist_id):  # noqa: E501
+def get_artist_by_id(artist_id: int, as_response: bool=True) -> ApiResponse | Artist:  # noqa: E501
     """Get artist by ID
 
     Retrieve information about a specific artist from the database # noqa: E501
@@ -97,14 +97,82 @@ def get_artist_by_id(artist_id):  # noqa: E501
         pfp = get_artist_profile_picture(artist.name)
         artist.profile_picture = pfp
 
-        # Create a successful API response with the artist data in the body 
-        return create_success_response(
-            message='Artist retrieved successfully',
-            body=artist.to_dict()
-        )
+        if as_response:
+            # Create a successful API response with the artist data in the body 
+            return create_success_response(
+                message='Artist retrieved successfully',
+                body=artist.to_dict()
+            )
+        else: 
+            return artist   #If specified, returns the artist as an Object
     else:
         # Create an error response
         return create_error_response(
             message=f'Artist with ID: {artist_id} not found.',
             code=404
         )
+    
+def update_artist_db(connection: mysql.connector.connection.MySQLConnection, artist_id: int, updates: dict) -> bool:    #!TODO! Move that into the database utils / make it more modular
+    """Update the artist's attributes in the database.
+
+    :param connection: The MySQL connection object.
+    :param artist_id: The ID of the artist to update.
+    :param updates: A dictionary of field names and their new values.
+    :return: True if the update was successful, False otherwise.
+    """
+
+    if not updates:
+        print("No updates provided.")
+        return False
+    
+    # Build SET clause dynamically given the inputs
+    set_clause = ', '.join(f"{key} = %s" for key in updates.keys())
+
+    # Prepare the SQL query
+    query = f"""
+    UPDATE artists
+    SET {set_clause}
+    WHERE id = %s;
+    """
+
+    # Prepare the values to be passed into the query
+    values = list(updates.values()) + [artist_id]
+
+    # Execute the update query
+    result = execute_query(connection=connection, query=query, values=tuple(values))
+
+    return result is not None
+
+def follow_artist(artist_id: int) -> ApiResponse:
+    """Follow an artist given their ID
+
+    Follow a apecific artist and update the relevant is_followed variable in the database # noqa: E501
+
+    :param artist_id: The ID of the artist to fetch
+    :type artist_id: int
+
+    :rtype: ApiResponse
+    """
+    # Get the artist Object 
+    artist = get_artist_by_id(artist_id=artist_id, as_response=False)
+
+    if not artist:
+        return create_error_response(message='Artist not found.')
+    
+    if artist.is_followed:
+        return create_error_response(message='You are already following this artist', code=400)
+    
+    updates = {
+        'is_followed': True,
+        'followers': artist.followers + 1
+    }
+
+    connection = create_connection()
+    succesfull_update = update_artist_db(connection=connection, artist_id=artist_id, updates=updates)
+
+    if succesfull_update:
+        return create_success_response(message='Artist successfully followed.')
+    else:
+        return create_error_response(message='Failed to update the artist in the database.')  
+
+
