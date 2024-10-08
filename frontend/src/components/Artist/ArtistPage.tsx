@@ -53,11 +53,8 @@ const ArtistPage: React.FC = () => {
 
     const handleFollowToggle = async () => {
         if (artist) {
-            const endpoint = artist.is_followed?
-            `/api/v1/artists/${artistId}/unfollow` :
-            `/api/v1/artists/${artistId}/follow`;
 
-            const response = await fetch(endpoint, {
+            const response = await fetch(`/api/v1/artists/${artistId}/follow`, {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${localStorage.getItem('token')}`,
@@ -69,8 +66,8 @@ const ArtistPage: React.FC = () => {
                 const data = await response.json();
                 setArtist(prevArtist => ({
                     ...prevArtist!,
-                    is_followed: data.is_followed,
-                    followers: data.is_followed? prevArtist!.followers + 1 : prevArtist!.followers - 1,
+                    is_followed: data.body.is_followed,
+                    followers: data.body.is_followed? prevArtist!.followers + 1 : prevArtist!.followers - 1,
                 }))
                 setMessage(data.message);
             } else {

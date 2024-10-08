@@ -58,15 +58,24 @@ def get_song_by_id(song_id: int) -> ApiResponse:  # noqa: E501
             code=500
         )
 
-    query = "SELECT * FROM songs WHERE id = %s"                                  # !TODO! Create another store procedure for this
+    query = """
+    SELECT songs.*, artists.name AS artist_name
+    FROM songs
+    JOIN artists ON songs.artist_id = artists.id
+    WHERE songs.id = %s
+    """                                  # !TODO! Create another store procedure for this
     values = (song_id,)
 
     # Execute the query and retrieve the song data as a dictionary
     result = execute_query(connection=connection, query=query, values=values)    # !TODO! Might need to add this to database.py (return ApiResponse)
+    print(result)
     close_connection(connection=connection)
 
     if result and len(result) > 0:
         song_data = result[0]  # Retrieve the first result (since we expect a single song by ID)
+
+        # Append the artists name to the song data
+        song_data['artist'] = song_data.get('artist_name')
         
         # Create a Song object using the from_dict method
         song = Song.from_dict(song_data)

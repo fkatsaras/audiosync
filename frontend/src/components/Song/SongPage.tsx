@@ -1,11 +1,12 @@
 import React , { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 
 // Define types for song data
-interface Song {
+interface Song {    // !TODO! Song interface var order doesnt match the backend response body
     id: number,
     title: string,
     artist: string,
+    artist_id: number,
     album: string,
     duration: number,
     cover: string,
@@ -54,7 +55,7 @@ const SongPage: React.FC = () => {
             { song ? (
                 <div>
                     <h1>{song.title}</h1>
-                    <p>Artist: {song.artist}</p>
+                    <p>Artist: <Link to={`/artists/${song.artist_id}`}>{song.artist}</Link></p>
                     <p>Album: {song.album}</p>
                     <p>Duration: {song.duration} seconds</p>
                     <img src={song.cover} alt={`${song.title} cover`} />

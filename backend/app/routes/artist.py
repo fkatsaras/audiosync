@@ -12,6 +12,6 @@ def artist_route(current_user, artist_id):
 
 @artist_bp.route('/api/v1/artists/<int:artist_id>/follow', methods=['POST'])
 @token_required
-def follow_artist_route(current_user, artist_id):
+def toggle_follow_artist_route(current_user, artist_id):
     """Route to update the artis's is_followed variable"""
-    return follow_artist(artist_id=artist_id)
+    return toggle_follow_artist(artist_id=artist_id)

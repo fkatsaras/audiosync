@@ -143,14 +143,11 @@ def update_artist_db(connection: mysql.connector.connection.MySQLConnection, art
 
     return result is not None
 
-def follow_artist(artist_id: int) -> ApiResponse:
-    """Follow an artist given their ID
+def toggle_follow_artist(artist_id: int) -> ApiResponse:
+    """Toggle the follow status of an artist given their ID.
 
-    Follow a apecific artist and update the relevant is_followed variable in the database # noqa: E501
-
-    :param artist_id: The ID of the artist to fetch
+    :param artist_id: The ID of the artist
     :type artist_id: int
-
     :rtype: ApiResponse
     """
     # Get the artist Object 
@@ -160,18 +157,23 @@ def follow_artist(artist_id: int) -> ApiResponse:
         return create_error_response(message='Artist not found.')
     
     if artist.is_followed:
-        return create_error_response(message='You are already following this artist', code=400)
-    
-    updates = {
-        'is_followed': True,
-        'followers': artist.followers + 1
-    }
+        updates = {
+            'is_followed': False,
+            'followers': max(artist.followers - 1, 0) # To make sure followers don't get below 0
+        }
+        message = 'Artist successfully unfollowed.'
+    else:
+        updates = {
+            'is_followed': True,
+            'followers': artist.followers + 1
+        }
+        message='Artist successfully followed.'
 
     connection = create_connection()
     succesfull_update = update_artist_db(connection=connection, artist_id=artist_id, updates=updates)
 
     if succesfull_update:
-        return create_success_response(message='Artist successfully followed.')
+        return create_success_response(message=message, body={'is_followed': updates['is_followed']})
     else:
         return create_error_response(message='Failed to update the artist in the database.')  
 
