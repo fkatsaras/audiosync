@@ -409,6 +409,48 @@ paths:
         "404":
           description: Artist not found
       x-openapi-router-controller: app.controllers.artists_controller
+  /api/v1/artists/{artist_id}/follow:
+    post:
+      tags:
+      - artists
+      summary: Toggle follow/unfollow an artist
+      description: Follow or unfollow an artist. If the user is already following the artist, it will unfollow the artist; otherwise, it will follow the artist.
+      operationId: toggle_follow_artist
+      parameters:
+      - name: artist_id
+        in: path
+        description: The ID of the artist to follow/unfollow
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        description: User authentication required to follow/unfollow the artist
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        "200":
+          description: Artist followed/unfollowed successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Artist followed successfully./ Artist unfollowed successfully."
+                  is_followed:
+                    type: boolean
+                    example: true
+        "400":
+          description: Invalid request or missing parameters
+        "404":
+          description: Artist not found
+      security:
+      - bearerAuth: []
+      x-openapi-router-controller: app.controllers.artists_controller
   /api/v1/songs/{song-id}:
     get:
       tags:
