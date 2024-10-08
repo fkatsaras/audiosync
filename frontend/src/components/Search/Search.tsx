@@ -1,19 +1,6 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 
-// Define types for the API response
-interface SearchResponse {
-    response: {
-        code: number;
-        type: string;
-        message: string;
-    };
-    data: {
-        song_links: Record<string, string>; // A map of song titles to their URLs
-        artist_links: Record<string, string>; // A map of artist names to their URLs
-    };
-}
-
 function Search() {
     const [query, setQuery] = useState('');
     const [results, setResults] = useState<any[]>([]);

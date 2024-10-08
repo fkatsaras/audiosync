@@ -210,16 +210,12 @@ def register_user():    # noqa: E501
     # Execute query from the stored procedure to load new data into DB
     try:
         # Call the stored procedure to register the user
-        procedure_result = call_procedure(
+        p_success, p_message = call_procedure(
             connection=connection,
             procedure_name="register_user",
             in_params=(username, password_hash, email, first_name, last_name),
             out_params=['p_success', 'p_message']
         )
-
-        p_success, p_message = procedure_result
-
-        print(p_success, p_message)
 
         if p_success == 1:
             return create_success_response(message=p_message, code=201)
