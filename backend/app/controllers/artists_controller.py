@@ -50,7 +50,7 @@ def get_artist_songs(artist_id: int) -> ApiResponse:  # noqa: E501
     return 'do some magic!'
 
 
-def get_artist_by_id(artist_id: int, as_response: bool=True) -> ApiResponse | Artist:  # noqa: E501
+def get_artist_by_id(user_id: int, artist_id: int, as_response: bool=True) -> ApiResponse | Artist:  # noqa: E501
     """Get artist by ID
 
     Retrieve information about a specific artist from the database # noqa: E501
@@ -89,9 +89,19 @@ def get_artist_by_id(artist_id: int, as_response: bool=True) -> ApiResponse | Ar
             song = Song.from_dict(song_data)
             songs.append(song)
 
-        # Step 4: Create Artist obj from data
+        # Step 4: Check if the user follows this artist
+        follow_query = """
+            SELECT 1 FROM followed_artists
+            WHERE user_id = %s AND artist_id = %s
+        """
+        follow_result = execute_query(connection=connection, query=follow_query, values=(user_id, artist_id))
+
+        is_followed = bool(follow_result)  # If there's a result, the user follows the artist
+
+        # Step 5: Create Artist obj from data
         artist = Artist.from_dict(artist_data)
         artist.songs = songs # Assign the list of songs 
+        artist.is_followed = is_followed # Assign the follow status for the user
 
         # Fetch the album cover using the song's album name and set it as the cover of the song instance
         pfp = get_artist_profile_picture(artist.name)

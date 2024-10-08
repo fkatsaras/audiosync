@@ -7,12 +7,12 @@ artist_bp = Blueprint('artist', __name__)
 
 @artist_bp.route('/api/v1/artists/<int:artist_id>', methods=['GET'])
 @token_required
-def artist_route(current_user, artist_id):
+def artist_route(current_user: int, artist_id: int) -> ApiResponse:
     """Route to get artist information by artist_id"""
-    return get_artist_by_id(artist_id=artist_id)
+    return get_artist_by_id(user_id=current_user, artist_id=artist_id)
 
 @artist_bp.route('/api/v1/artists/<int:artist_id>/follow', methods=['POST'])
 @token_required
-def toggle_follow_artist_route(current_user, artist_id):
+def toggle_follow_artist_route(current_user: int, artist_id: int) -> ApiResponse:
     """Route to update the artis's is_followed variable"""
     return toggle_follow_artist(user_id=current_user, artist_id=artist_id)

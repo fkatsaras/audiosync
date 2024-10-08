@@ -387,7 +387,7 @@ def toggle_follow_artist(user_id: int, artist_id: int) -> ApiResponse:  # noqa: 
     :rtype: None
     """
     # Get the artist Object 
-    artist = get_artist_by_id(artist_id=artist_id, as_response=False)
+    artist = get_artist_by_id(user_id=user_id, artist_id=artist_id, as_response=False)
 
     if not artist:
         return error_response(message='Artist not found.')
