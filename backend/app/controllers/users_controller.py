@@ -282,7 +282,7 @@ def login_user():  # noqa: E501
         connection=connection,
         procedure_name="login_user",
         in_params=(username,),
-        out_params=['p_password_hash', 'p_user_id', 'p_success', 'p_message']            #!TODO! Close the connection where neccessary
+        out_params=['p_password_hash', 'p_user_id', 'p_success', 'p_message']
         )
 
         if p_success == 1 and p_password_hash:
