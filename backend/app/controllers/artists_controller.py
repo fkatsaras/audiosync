@@ -64,7 +64,7 @@ def get_artist_by_id(artist_id: int, as_response: bool=True) -> ApiResponse | Ar
     # Create DB connection
     connection = create_connection()
     if not connection:
-        return create_error_response(
+        return error_response(
             message='DB connection failed.',
             code=500
         )
@@ -99,7 +99,7 @@ def get_artist_by_id(artist_id: int, as_response: bool=True) -> ApiResponse | Ar
 
         if as_response:
             # Create a successful API response with the artist data in the body 
-            return create_success_response(
+            return success_response(
                 message='Artist retrieved successfully',
                 body=artist.to_dict()
             )
@@ -107,7 +107,7 @@ def get_artist_by_id(artist_id: int, as_response: bool=True) -> ApiResponse | Ar
             return artist   #If specified, returns the artist as an Object
     else:
         # Create an error response
-        return create_error_response(
+        return error_response(
             message=f'Artist with ID: {artist_id} not found.',
             code=404
         )
@@ -142,39 +142,3 @@ def update_artist_db(connection: mysql.connector.connection.MySQLConnection, art
     result = execute_query(connection=connection, query=query, values=tuple(values))
 
     return result is not None
-
-def toggle_follow_artist(artist_id: int) -> ApiResponse:
-    """Toggle the follow status of an artist given their ID.
-
-    :param artist_id: The ID of the artist
-    :type artist_id: int
-    :rtype: ApiResponse
-    """
-    # Get the artist Object 
-    artist = get_artist_by_id(artist_id=artist_id, as_response=False)
-
-    if not artist:
-        return create_error_response(message='Artist not found.')
-    
-    if artist.is_followed:
-        updates = {
-            'is_followed': False,
-            'followers': max(artist.followers - 1, 0) # To make sure followers don't get below 0
-        }
-        message = 'Artist successfully unfollowed.'
-    else:
-        updates = {
-            'is_followed': True,
-            'followers': artist.followers + 1
-        }
-        message='Artist successfully followed.'
-
-    connection = create_connection()
-    succesfull_update = update_artist_db(connection=connection, artist_id=artist_id, updates=updates)
-
-    if succesfull_update:
-        return create_success_response(message=message, body={'is_followed': updates['is_followed']})
-    else:
-        return create_error_response(message='Failed to update the artist in the database.')  
-
-

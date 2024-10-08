@@ -57,7 +57,7 @@ def token_required(f: callable) -> callable:
         
         if not token:
             # logger.warning("Missing token in request")
-            return create_error_response(message='Token is missing!', code=403)
+            return error_response(message='Token is missing!', code=403)
 
         try:
             data = jwt.decode(token, os.getenv('JWT_SECRET_KEY'), algorithms=["HS256"])
@@ -65,7 +65,7 @@ def token_required(f: callable) -> callable:
             # logger.info(f"Token verified for user: {current_user}")
         except Exception as e:
             # logger.error(f"Error decoding token: {e}")
-            return create_error_response(message='Token is invalid!', code=403)
+            return error_response(message='Token is invalid!', code=403)
 
         return f(current_user, *args, **kwargs)
 
@@ -83,9 +83,9 @@ def check_login() -> ApiResponse:
 
     if 'user.id' in session:
         username = session.get('username')
-        return create_success_response(message=f'User {username} is logged in.')
+        return success_response(message=f'User {username} is logged in.')
     
-    return create_error_response(message='User is not logged in.', code=401)
+    return error_response(message='User is not logged in.', code=401)
 
 def current_user() -> ApiResponse:
     """Returns the currently logged-in user if any.
@@ -100,8 +100,8 @@ def current_user() -> ApiResponse:
 
     username = session.get('username')
     if username:
-        return create_success_response(message=f'Current user: {username}')
-    return create_error_response(message='No user logged in', code=401)
+        return success_response(message=f'Current user: {username}')
+    return error_response(message='No user logged in', code=401)
 
 def get_spotify_token() -> str | None:
     """Obtains an access token from the Spotify API using client credentials.

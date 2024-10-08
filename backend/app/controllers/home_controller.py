@@ -16,7 +16,7 @@ def home(current_user: str) -> ApiResponse:
         'search': '/search',
         'my_playlists': '/my-playlists'
     }
-    return create_success_response(
+    return success_response(
         message=f'Home page links retrieved successfully for user: {current_user}.',
         body=links
     )

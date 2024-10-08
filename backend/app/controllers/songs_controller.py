@@ -53,7 +53,7 @@ def get_song_by_id(song_id: int) -> ApiResponse:  # noqa: E501
     # Create DB connection
     connection = create_connection()
     if not connection:
-        return create_error_response(
+        return error_response(
             message='DB connection failed.',
             code=500
         )
@@ -85,13 +85,13 @@ def get_song_by_id(song_id: int) -> ApiResponse:  # noqa: E501
         song.cover = album_cover_url
 
         # Create a successful API response with the song data in the body 
-        return create_success_response(
+        return success_response(
             message='Song retrieved successfully',
             body=song.to_dict()
         )
     else:
         # Create an error response
-        return create_error_response(
+        return error_response(
             message=f'Song with ID: {song_id} not found.',
             code=404
         )

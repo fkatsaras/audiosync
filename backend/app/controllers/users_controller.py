@@ -9,6 +9,7 @@ from app.models.user_entity import UserEntity
 from app.utils.logging_config import get_logger
 from app.controllers.api_controller import *
 from app.models.api_response import ApiResponse
+from app.controllers.artists_controller import get_artist_by_id, update_artist_db
 
 from werkzeug.security import check_password_hash, generate_password_hash
 import datetime
@@ -196,7 +197,7 @@ def register_user():    # noqa: E501
 
     # Validate required fields
     if not username or not password or not email:
-        return create_error_response(message='Missing required fields for registration', code=400)
+        return error_response(message='Missing required fields for registration', code=400)
     
     # Hash the password
     password_hash = generate_password_hash(password=password)
@@ -205,7 +206,7 @@ def register_user():    # noqa: E501
     connection = create_connection()
 
     if connection is None:
-        return create_error_response(message='Database connection failed', code=500)
+        return error_response(message='Database connection failed', code=500)
     
     # Execute query from the stored procedure to load new data into DB
     try:
@@ -218,12 +219,12 @@ def register_user():    # noqa: E501
         )
 
         if p_success == 1:
-            return create_success_response(message=p_message, code=201)
+            return success_response(message=p_message, code=201)
         else:
-            return create_error_response(message=p_message, code=400)
+            return error_response(message=p_message, code=400)
     except Exception as e:
         connection.rollback()
-        return create_error_response(message=f'Error registering user: {str(e)}', code=500)
+        return error_response(message=f'Error registering user: {str(e)}', code=500)
     finally:
         # Close the connection
         close_connection(connection=connection)
@@ -262,7 +263,7 @@ def login_user():  # noqa: E501
 
     if not username or not password:
         logger.error("Username or password not provided")
-        return create_error_response(
+        return error_response(
             message='Username or password missing',
             code=400
         )
@@ -273,7 +274,7 @@ def login_user():  # noqa: E501
     connection = create_connection()
 
     if connection is None:
-        return create_error_response(message='DB connection failed', code=500)
+        return error_response(message='DB connection failed', code=500)
     
     try:
         # Call the stored procedure to validate the user
@@ -314,14 +315,14 @@ def login_user():  # noqa: E501
                 }), 200
             else:
                 logger.error("Invalid password")
-                return create_error_response(message="Invalid password", code=401)
+                return error_response(message="Invalid password", code=401)
         else:
             logger.error(p_message)
-            return create_error_response(message=p_message, code=401)
+            return error_response(message=p_message, code=401)
 
     except Exception as e:
         logger.error(f"Exception during login: {str(e)}")
-        return create_error_response(message='An error occurred', code=500)
+        return error_response(message='An error occurred', code=500)
 
     finally:
         close_connection(connection=connection)
@@ -342,14 +343,14 @@ def logout_user():  # noqa: E501
         session.pop('username', None)
         
         # Create a successful response
-        return create_success_response(
+        return success_response(
             message='Logged out successfully!'
         )
     else:
         logger.warning("Logout attempted with no active session")
         
         # Create a response indicating no user was logged in
-        return create_error_response(
+        return error_response(
             message='No active session found',
             code=400
         )
@@ -370,10 +371,10 @@ def remove_liked_song(user_id, song_id):  # noqa: E501
     return 'do some magic!'
 
 
-def unfollow_artist(user_id, artist_id):  # noqa: E501
-    """Unfollow an artist
+def toggle_follow_artist(user_id: int, artist_id: int) -> ApiResponse:  # noqa: E501
+    """Toggle follow artist
 
-    Remove an artist from the user&#x27;s followed artists # noqa: E501
+    Remove or add an artist from/to the user&#x27;s followed artists # noqa: E501
 
     :param user_id: The ID of the user
     :type user_id: int
@@ -382,8 +383,33 @@ def unfollow_artist(user_id, artist_id):  # noqa: E501
 
     :rtype: None
     """
-    return 'do some magic!'
+    # Get the artist Object 
+    artist = get_artist_by_id(artist_id=artist_id, as_response=False)
 
+    if not artist:
+        return error_response(message='Artist not found.')
+    
+    if artist.is_followed:
+        updates = {
+            'is_followed': False,
+            'followers': max(artist.followers - 1, 0) # To make sure followers don't get below 0
+        }
+        message = 'Artist successfully unfollowed.'
+    else:
+        updates = {
+            'is_followed': True,
+            'followers': artist.followers + 1
+        }
+        message='Artist successfully followed.'
+
+    connection = create_connection()
+    succesfull_update = update_artist_db(connection=connection, artist_id=artist_id, updates=updates)
+
+    if succesfull_update:
+        return success_response(message=message, body={'is_followed': updates['is_followed']})
+    else:
+        return error_response(message='Failed to update the artist in the database.')  
+    
 
 def update_playlist_by_id(body, user_id, playlist_id):  # noqa: E501
     """Update details of a specific playlist
