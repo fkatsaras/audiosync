@@ -22,17 +22,36 @@ CREATE TABLE IF NOT EXISTS `users` (
     `email` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
     `first_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
     `last_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
-    `liked_songs` json DEFAULT NULL,
-    `followed_artists` json DEFAULT NULL,
-    `recommended_songs` json DEFAULT NULL,
-    `created_playlists` json DEFAULT NULL,
     `active` boolean NOT NULL DEFAULT true,
     PRIMARY KEY (`id`),
-    UNIQUE KEY (`username`),  -- Optional: ensure unique usernames
-    UNIQUE KEY (`email`)       -- Optional: ensure unique email addresses
+    UNIQUE KEY (`username`),
+    UNIQUE KEY (`email`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- Data exported was unselected
+
+-- Dumping structure for table audiosync_db.liked_songs
+CREATE TABLE IF NOT EXISTS `liked_songs` (
+  `user_id` int unsigned NOT NULL,
+  `song_id` int unsigned NOT NULL,
+  FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON DELETE CASCADE,
+  FOREIGN KEY (`song_id`) REFERENCES `songs`(`id`) ON DELETE CASCADE,
+  PRIMARY KEY (`user_id`, `song_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- Data exported was unselected
+
+-- Dumping structure for table audiosync_db.followed_artists
+CREATE TABLE IF NOT EXISTS `followed_artists` (
+    `user_id` int unsigned NOT NULL,
+    `artist_id` int unsigned NOT NULL,
+    FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON DELETE CASCADE,
+    FOREIGN KEY (`artist_id`) REFERENCES `artists`(`id`) ON DELETE CASCADE,
+    PRIMARY KEY (`user_id`, `artist_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- Data exported was unselected
+
 
 -- Dumping structure for table audiosync_db.songs
 CREATE TABLE IF NOT EXISTS `songs` (
