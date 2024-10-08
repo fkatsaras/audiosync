@@ -61,7 +61,7 @@ def token_required(f: callable) -> callable:
 
         try:
             data = jwt.decode(token, os.getenv('JWT_SECRET_KEY'), algorithms=["HS256"])
-            current_user = data['username']
+            current_user = data.get('user_id')
             # logger.info(f"Token verified for user: {current_user}")
         except Exception as e:
             # logger.error(f"Error decoding token: {e}")

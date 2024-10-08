@@ -54,6 +54,7 @@ DELIMITER //
 
 CREATE PROCEDURE `login_user` (
     IN `p_username` VARCHAR(255),
+    OUT `p_user_id` INT,                    -- WARNING: Order of the out params matters!
     OUT `p_password_hash` VARCHAR(255),
     OUT `p_success` INT,
     OUT `p_message` VARCHAR(255)
@@ -62,7 +63,7 @@ BEGIN
     DECLARE `user_exists` INT;
     
     -- Check if the user exists
-    SELECT `password_hash` INTO `p_password_hash`
+    SELECT `password_hash`, `id` INTO `p_password_hash`, `p_user_id`
     FROM `users`
     WHERE `username` = `p_username`;
     

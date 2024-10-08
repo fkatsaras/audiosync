@@ -19,7 +19,7 @@ USE `audiosync_db`;
 /*!40000 ALTER TABLE `songs` DISABLE KEYS */;
 INSERT INTO `songs` (id, title, artist_id, album, duration, cover, liked, playlists, is_playing) VALUES
     (1, 'Master of Puppets', 1, 'Master of Puppets', 515, NULL, true, '[]', false),                         -- !TODO! get a placeholder image to display in case spotify api fails
-    (2, 'One', 1, '...And Justice for All', 447, NULL, false, '[]', false),
+    (2, 'One', 1, '...And Justice for All', 447, NULL, false, '[]', false),                                 
     (3, 'Fade to Black', 1, 'Ride the Lightning', 417, NULL, true, '[]', false),
     (4, 'The Trooper', 2, 'Piece of Mind', 249, NULL, true, '[]', false),
     (5, 'Aces High', 2, 'Powerslave', 296, NULL, false, '[]', false),
@@ -31,8 +31,8 @@ INSERT INTO `songs` (id, title, artist_id, album, duration, cover, liked, playli
 
 -- Dumping data for table audiosync_db.artists
 /*!40000 ALTER TABLE `artists` DISABLE KEYS */;
-INSERT INTO `artists` (id, name, followers, is_followed, profile_picture) VALUES
-    (1, 'Metallica', 100, true, NULL),
-    (2, 'Iron Maiden', 150, false, NULL),
-    (3, 'Tool', 200, true, NULL);
+INSERT INTO `artists` (id, name, followers, profile_picture) VALUES
+    (1, 'Metallica', 100, NULL),
+    (2, 'Iron Maiden', 150, NULL),
+    (3, 'Tool', 200, NULL);
 /*!40000 ALTER TABLE `artists` ENABLE KEYS */;

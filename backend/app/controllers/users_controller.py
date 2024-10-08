@@ -278,14 +278,12 @@ def login_user():  # noqa: E501
     
     try:
         # Call the stored procedure to validate the user
-        procedure_result = call_procedure(
+        p_user_id, p_password_hash, p_success, p_message = call_procedure(
         connection=connection,
         procedure_name="login_user",
         in_params=(username,),
-        out_params=['p_password_hash', 'p_success', 'p_message']
-    )
-
-        p_password_hash, p_success, p_message = procedure_result
+        out_params=['p_password_hash', 'p_user_id', 'p_success', 'p_message']            #!TODO! Close the connection where neccessary
+        )
 
         if p_success == 1 and p_password_hash:
             # Validate the password using Werkzeug's check_password_hash
@@ -294,12 +292,13 @@ def login_user():  # noqa: E501
 
                 # Generate a JWT token
                 token = jwt.encode({
+                    'user_id': p_user_id,
                     'username': username,
-                    'exp': datetime.datetime.utcnow() + datetime.timedelta(hours=1)
+                    'exp': datetime.datetime.utcnow() + datetime.timedelta(hours=1)     #!TODO! Think about how long will the session last
                 }, os.getenv('JWT_SECRET_KEY'), algorithm="HS256")
 
                 # Store user ID in session
-                session['user.id'] = username
+                session['user.id'] = p_user_id
                 logger.debug(f"Session user ID set to: {session.get('user.id')}")
                 logger.debug(f"Generated token: {token}")
 
@@ -309,19 +308,23 @@ def login_user():  # noqa: E501
                     type='success',
                     message='Login successful'
                 )
+                close_connection(connection)
                 return jsonify({
                     **success_response.to_dict(),
                     'token': token
                 }), 200
             else:
                 logger.error("Invalid password")
+                close_connection(connection)
                 return error_response(message="Invalid password", code=401)
         else:
             logger.error(p_message)
+            close_connection(connection)
             return error_response(message=p_message, code=401)
 
     except Exception as e:
         logger.error(f"Exception during login: {str(e)}")
+        close_connection(connection)
         return error_response(message='An error occurred', code=500)
 
     finally:
@@ -389,26 +392,60 @@ def toggle_follow_artist(user_id: int, artist_id: int) -> ApiResponse:  # noqa: 
     if not artist:
         return error_response(message='Artist not found.')
     
-    if artist.is_followed:
-        updates = {
-            'is_followed': False,
-            'followers': max(artist.followers - 1, 0) # To make sure followers don't get below 0
-        }
-        message = 'Artist successfully unfollowed.'
-    else:
-        updates = {
-            'is_followed': True,
-            'followers': artist.followers + 1
-        }
-        message='Artist successfully followed.'
-
     connection = create_connection()
-    succesfull_update = update_artist_db(connection=connection, artist_id=artist_id, updates=updates)
 
-    if succesfull_update:
-        return success_response(message=message, body={'is_followed': updates['is_followed']})
+    # Check if user is already following this artist
+    query = """
+        SELECT 1 FROM followed_artists
+        WHERE user_id = %s AND artist_id = %s
+    """ 
+    followed = execute_query(connection=connection, query=query, values=(user_id, artist_id))
+
+    if followed:
+        # User is already following the artist, unfollow
+        delete_query = """
+            DELETE FROM followed_artists
+            WHERE user_id = %s AND artist_id = %s
+        """
+
+        success = execute_query(connection=connection, query=delete_query, values=(user_id, artist_id))
+
+        if success is not None:
+            # Decrease artists followers count
+            update_query = """
+                UPDATE artists
+                SET followers = GREATEST(followers - 1, 0)
+                WHERE id = %s
+            """
+
+            execute_query(connection=connection, query=update_query, values=(artist_id,))
+            close_connection(connection)
+            return success_response(message='Artist unfollowed successfully.', body={'is_followed' : False})
+        else:
+            close_connection(connection)
+            return error_response(message='Failed to unfollow artist.')
     else:
-        return error_response(message='Failed to update the artist in the database.')  
+        # User isnt following artist, so follow
+        insert_query = """
+            INSERT INTO followed_artists (user_id, artist_id)
+            VALUES (%s, %s)
+        """
+
+        success = execute_query(connection=connection, query=insert_query, values=(user_id, artist_id))
+
+        if success is not None:
+            # Increase artists followers count
+            update_query = """
+                UPDATE artists
+                SET followers = followers + 1
+                WHERE id = %s
+            """
+            execute_query(connection=connection, query=update_query, values=(artist_id,))
+            close_connection(connection)
+            return success_response(message='Artist followed successfully.', body={'is_followed': True})
+        else:
+            close_connection(connection)
+            return error_response(message='Failed to follow artist.')
     
 
 def update_playlist_by_id(body, user_id, playlist_id):  # noqa: E501

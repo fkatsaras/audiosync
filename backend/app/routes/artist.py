@@ -15,4 +15,4 @@ def artist_route(current_user, artist_id):
 @token_required
 def toggle_follow_artist_route(current_user, artist_id):
     """Route to update the artis's is_followed variable"""
-    return toggle_follow_artist(user_id=current_user,artist_id=artist_id)
+    return toggle_follow_artist(user_id=current_user, artist_id=artist_id)

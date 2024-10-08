@@ -28,6 +28,33 @@ CREATE TABLE IF NOT EXISTS `users` (
     UNIQUE KEY (`email`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
+-- Dumping structure for table audiosync_db.artists
+CREATE TABLE IF NOT EXISTS `artists` (
+  `id` int unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  `followers` int unsigned NOT NULL,
+  `profile_picture` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- Dumping structure for table audiosync_db.songs
+CREATE TABLE IF NOT EXISTS `songs` (
+  `id` int unsigned NOT NULL AUTO_INCREMENT,
+  `title` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  `artist_id` INT UNSIGNED NOT NULL,  -- Foreign key for artist
+  `album` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  `duration` int NOT NULL,
+  `cover` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  `liked` boolean NOT NULL,
+  `playlists` json DEFAULT NULL,        -- !TODO! when creating the playlist table , the playlist column must be replaced with playlist id (FOREIGN KEY)
+  `is_playing` boolean NOT NULL,
+  PRIMARY KEY (`id`),
+  CONSTRAINT `fk_artist` FOREIGN KEY (`artist_id`) REFERENCES `artists` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- Data exporting was unselected.
+
+
 -- Data exported was unselected
 
 -- Dumping structure for table audiosync_db.liked_songs
@@ -51,31 +78,3 @@ CREATE TABLE IF NOT EXISTS `followed_artists` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- Data exported was unselected
-
-
--- Dumping structure for table audiosync_db.songs
-CREATE TABLE IF NOT EXISTS `songs` (
-  `id` int unsigned NOT NULL AUTO_INCREMENT,
-  `title` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
-  `artist_id` INT UNSIGNED NOT NULL,  -- Foreign key for artist
-  `album` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
-  `duration` int NOT NULL,
-  `cover` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
-  `liked` boolean NOT NULL,
-  `playlists` json DEFAULT NULL,
-  `is_playing` boolean NOT NULL,
-  PRIMARY KEY (`id`),
-  CONSTRAINT `fk_artist` FOREIGN KEY (`artist_id`) REFERENCES `artists` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
--- Data exporting was unselected.
-
--- Dumping structure for table audiosync_db.artists
-CREATE TABLE IF NOT EXISTS `artists` (
-  `id` int unsigned NOT NULL AUTO_INCREMENT,
-  `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
-  `followers` int unsigned NOT NULL,
-  `is_followed` boolean NOT NULL,
-  `profile_picture` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
