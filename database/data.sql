@@ -27,6 +27,23 @@ INSERT INTO `songs` (id, title, artist_id, album, duration, cover, liked, playli
     (7, 'Schism', 3, 'Lateralus', 412, NULL, true, '[]', false),
     (8, 'Forty Six & Two', 3, 'Ænima', 402, NULL, false, '[]', false),
     (9, 'Sober', 3, 'Undertow', 311, NULL, true, '[]', false);
+    (10, 'Run to the Hills', 2, 'The Number of the Beast', 300, NULL, true, '[]', false),
+    (11, 'Fear of the Dark', 2, 'Fear of the Dark', 432, NULL, false, '[]', false),
+    (12, 'Holy Wars... The Punishment Due', 4, 'Rust in Peace', 391, NULL, true, '[]', false),
+    (13, 'Symphony of Destruction', 4, 'Countdown to Extinction', 244, NULL, true, '[]', false),
+    (14, 'Chop Suey!', 5, 'Toxicity', 240, NULL, true, '[]', false),
+    (15, 'Toxicity', 5, 'Toxicity', 212, NULL, true, '[]', false),
+    (16, 'Stinkfist', 3, 'Ænima', 304, NULL, false, '[]', false),
+    (17, 'Aenema', 3, 'Ænima', 315, NULL, true, '[]', true),
+    (18, 'Enter Sandman', 1, 'Metallica', 331, NULL, true, '[]', false),
+    (19, 'Creeping Death', 1, 'Ride the Lightning', 260, NULL, true, '[]', false),
+    (20, 'Tornado of Souls', 4, 'Rust in Peace', 432, NULL, true, '[]', false),
+    (21, 'Hangar 18', 4, 'Rust in Peace', 388, NULL, true, '[]', false),
+    (22, 'Aerials', 5, 'Toxicity', 400, NULL, true, '[]', false),
+    (23, 'B.Y.O.B.', 5, 'Mezmerize', 230, NULL, true, '[]', false),
+    (24, 'The Pot', 3, '10,000 Days', 337, NULL, true, '[]', false),
+    (25, 'Paranoid', 4, 'Peace Sells... But Whos Buying?', 212, NULL, true, '[]', false);
+
 /*!40000 ALTER TABLE `songs` ENABLE KEYS */;
 
 -- Dumping data for table audiosync_db.artists
@@ -35,4 +52,6 @@ INSERT INTO `artists` (id, name, followers, profile_picture) VALUES
     (1, 'Metallica', 100, NULL),
     (2, 'Iron Maiden', 150, NULL),
     (3, 'Tool', 200, NULL);
+    (4, 'Megadeth', 120, NULL),
+    (5, 'System of a Down', 180, NULL);
 /*!40000 ALTER TABLE `artists` ENABLE KEYS */;

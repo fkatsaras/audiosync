@@ -9,14 +9,18 @@ search_bp = Blueprint('search', __name__)
 @token_required
 def search_artists_route(current_user: int) -> ApiResponse:
     query = request.args.get('q')
+    limit = request.args.get('limit', default=5, type=int)
+    offset = request.args.get('offset', default=0, type=int)
     
-    return search_artists_get(user_id=current_user, user_query=query)  
+    return search_artists_get(user_id=current_user, user_query=query, limit=limit, offset=offset)  
      
 
 @search_bp.route('/api/v1/search/songs', methods=['GET'])
 @token_required
 def search_songs_route(current_user: int) -> ApiResponse:
-    query = request.args.get('q')  
+    query = request.args.get('q')
+    limit = request.args.get('limit', default=5, type=int)
+    offset = request.args.get('offset', default=0, type=int)
     
-    return search_songs_get(user_id=current_user, user_query=query) 
+    return search_songs_get(user_id=current_user, user_query=query, limit=limit, offset=offset) 
     

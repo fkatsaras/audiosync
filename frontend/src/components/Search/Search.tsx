@@ -1,49 +1,95 @@
-import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import React, { useState } from 'react';
+import { Link } from 'react-router-dom'; 
 
-function Search() {
-    const [query, setQuery] = useState('');
-    const [results, setResults] = useState<any[]>([]);
-    const [error, setError] = useState<string | null>(null);
-    const [loading, setLoading] = useState(false);
-    const [hasSearched, setHasSearched] = useState(false);
+// Define types for artista and song results 
+interface Artist {
+    id: number;
+    name: string;
+    profile_picture?: string;
+}
 
-    const handleSearch = async (searchType: 'artists' | 'songs') => {
+interface Song {
+    id: number;
+    title: string;
+    album?: string;
+    duration: string;
+}
+
+const Search: React.FC = () => {
+    const [query, setQuery] = useState<string>('');
+    const [artistResults, setArtistResults] = useState<Artist[]>([]);
+    const [songResults, setSongResults] = useState<Song[]>([]);
+    const [artistOffset, setArtistOffset] = useState<number>(0);
+    const [songOffset, setSongOffset] = useState<number>(0);
+    const [loading, setLoading] = useState<boolean>(false);
+    const [error, setError] = useState<string>('');
+    const [hasMoreArtists, setHasMoreArtists] = useState<boolean>(false);
+    const [hasMoreSongs, setHasMoreSongs] = useState<boolean>(true);      // Tracks if there are more song results
+    const [hasSearched, setHasSearched] = useState<boolean>(false);
+
+    // Fetch results from the backend
+    const fetchResults = async (type: 'artists' | 'songs', offset: number) => {
         setLoading(true);
-        setError(null);
-        setResults([]);
-        setHasSearched(true);   // Mark that a search has been submitted
-
         try {
-            const response = await fetch(`api/v1/search/${searchType}?q=${query}`, {
+            const response = await fetch(`/api/v1/search/${type}?q=${query}&offset=${offset}&limit=5`, {
                 headers: {
                     'Authorization': `Bearer ${localStorage.getItem('token')}`
                 }
             });
-
-            if (response.status === 404) {
-                setHasSearched(true);  // Mark that search was performed but nothing was found
-                setResults([]);  // Clear results if no items were found
-                return;
-            }
-
-            if(!response.ok) {
-                throw new Error('Failed to fetch search results');
-            }
-
+    
             const data = await response.json();
-
-            if (searchType === 'artists') {
-                setResults(data.body.artists);  // Access the list of artist JSONs received from the backend
-            } else if ( searchType === 'songs') {
-                setResults(data.body.songs);
+    
+            if (type === 'artists') {
+                setArtistResults((prevResults) => [...prevResults, ...data.body.artists]);
+    
+                if (data.body.artists.length < 5) {
+                    setHasMoreArtists(false);
+                }
+            } else {
+                setSongResults((prevResults) => [...prevResults, ...data.body.songs]);
+    
+                if (data.body.songs.length < 5) {
+                    setHasMoreSongs(false);
+                }
             }
+    
+            setLoading(false);
             setHasSearched(true);
         } catch (err) {
-            console.error(err);
-            setError('Something went wrong with the search');
+            setError('Failed to fetch results.');
+            setLoading(false);
         } finally {
             setLoading(false);
+        }
+
+    };
+
+
+    // Handle the search button clicks 
+    const handleSearch = (type: 'artists' | 'songs') => {
+        setArtistResults([]);
+        setSongResults([]);
+        setArtistOffset(0);
+        setSongOffset(0);
+        setHasMoreArtists(true);
+        setHasMoreSongs(true);
+
+        // fetch the results
+        fetchResults(type, 0);
+    };
+
+    const handleShowMore = (type: 'artists' | 'songs') => {
+        if (type === 'artists') {
+            const newOffset = artistOffset + 5;
+            setArtistOffset(newOffset);
+
+            // Send another request to fetch more results 
+            fetchResults('artists', newOffset);
+        } else {
+            const newOffset = songOffset + 5;
+            setSongOffset(newOffset);
+
+            fetchResults('songs', newOffset);
         }
     };
 
@@ -51,10 +97,10 @@ function Search() {
         <div>
             <h1>Search</h1>
             <input
-                type="text"
+                type='text'
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
-                placeholder="Search for artists or songs..."
+                placeholder='Search for artists, songs...'
             />
             <button onClick={() => handleSearch('artists')}>Search Artists</button>
             <button onClick={() => handleSearch('songs')}>Search Songs</button>
@@ -63,45 +109,55 @@ function Search() {
             {error && <div>{error}</div>}
 
             <ul>
-                {/* Render search results if there are any */}
-                {results.length > 0 &&
-                    results.map((result, index) => (
-                        <li key={index}>
-                            {/* Artist Search results*/}
-                            {result.name && (
-                                <div>
-                                    {result.profile_picture && 
-                                    <img 
-                                        src={result.profile_picture}
-                                        alt="pfp"
-                                        style={{ width: '50px', height: '50px', marginRight: '10px'  }}
-                                    />
-                                    }
-                                    <h3><Link to={`/artists/${result.id}`}>{result.name}</Link></h3>
-                                </div>
-                            )}
-                            {/* Song Search results*/}
-                            {result.title && (
-                                <div>
-                                    {result.album && 
-                                    <img 
-                                        src={result.album}
-                                        alt="album"
-                                        style={{ width: '50px', height: '50px', marginRight: '10px'}}
-                                    />
-                                    }
-                                    <h3><Link to={`/songs/${result.id}`}>{result.title}</Link></h3>
-                                    {result.duration}
-                                </div>
-                            )}
-                        </li>
-                    ))
-                }
-                {/* Render "No results found" if search was performed but no results were found */}
-                {hasSearched && results.length === 0 && !loading && <p>No results found</p>}
+                {/*Artists results*/}
+                {artistResults.length > 0 && artistResults.map((artist, index) => (
+                    <li key={artist.id}>
+                        <div>
+                            {artist.profile_picture && 
+                            <img 
+                                src={artist.profile_picture}
+                                alt='Artist profile'
+                                style={{ width: '50px', height: '50px', marginRight: '10px' }}
+                            />}
+                            <h3><Link to={`/artists/${artist.id}`}>{artist.name}</Link></h3>
+                        </div>
+                    </li>
+                ))}
+
+                {/* Song results*/}
+                {songResults.length > 0 && songResults.map((song, index) => (
+                    <li key={song.id}>
+                        <div>
+                            {song.album && 
+                            <img 
+                                src={song.album}
+                                alt='Song cover'
+                                style={{ width: '50px', height: '50px', marginRight: '10px' }}
+                            />}
+                            <h3><Link to={`/songs/${song.id}`}>{song.title}</Link></h3>
+                            {song.duration}
+                        </div>
+                    </li>
+                ))}
+
+                {/* Show more */}
+                {hasMoreArtists && !loading && artistResults.length > 0 && (
+                    <button onClick={() => handleShowMore('artists')}>Show More</button>
+                )}
+
+                {/* Show more songs */}
+                {hasMoreSongs && !loading && songResults.length > 0 && (
+                    <button onClick={() => handleShowMore('songs')}>Show More</button>
+                )}
             </ul>
+            
+            {/* In case no results match the query*/}
+            {hasSearched && artistResults.length === 0 && songResults.length === 0 && !loading && (
+            <div>No results found</div>
+            )}
         </div>
     );
-}
+};
+
 
 export default Search;

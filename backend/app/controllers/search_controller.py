@@ -1,15 +1,11 @@
 import re
 
-from flask import jsonify
 from app.controllers.api_controller import *
-from app.models.search_result import SearchResult
-# from app.utils.sample_data import artists_data  # TEST: Use a DB in the future
 from app.controllers.artists_controller import get_artist_profile_picture
 from app.controllers.songs_controller import get_album_cover
 from app.database import *
-from app.utils.sample_data import songs_data # TEST: Use a DB in the future
 
-def search_artists_get(user_id: str = None, user_query: str = None):  # noqa: E501           !TODO! Think about refactoring the whole songs/artists to avoid duplicate code
+def search_artists_get(user_id: str = None, user_query: str = None, limit: int=5, offset: int=0) -> ApiResponse:  # noqa: E501           !TODO! Think about refactoring the whole songs/artists to avoid duplicate code
     """Search for artists
 
     Retrieve search results for artists based on query # noqa: E501
@@ -45,10 +41,11 @@ def search_artists_get(user_id: str = None, user_query: str = None):  # noqa: E5
             SELECT id, name
             FROM artists
             WHERE LOWER(name) LIKE %s
+            LIMIT %s OFFSET %s
         """
 
         query_param = f'%{user_query.lower()}%'  # Using wildcard for finding partial matches
-        result = execute_query(connection=connection, query=search_query, values=(query_param, ))
+        result = execute_query(connection=connection, query=search_query, values=(query_param, limit, offset))
 
         # If no artists found, return error response
         if not result:
@@ -59,7 +56,7 @@ def search_artists_get(user_id: str = None, user_query: str = None):  # noqa: E5
         
         # Add profile picture for each artist
         artists = []
-        for artist in result:
+        for artist in result:               # !TODO! Add top result functionality sometime in the future: the album cover load takes a huge toll on performance
             artist_data = {
                 'id': artist['id'],
                 'name': artist['name'],
@@ -80,7 +77,7 @@ def search_artists_get(user_id: str = None, user_query: str = None):  # noqa: E5
         )
 
 
-def search_songs_get(user_id: str=None, user_query: str=None):  # noqa: E501
+def search_songs_get(user_id: str=None, user_query: str=None, limit: int=5, offset: int=0) -> ApiResponse:  # noqa: E501LI
     """Search for songs
 
     Retrieve search results for songs based on query # noqa: E501
@@ -117,10 +114,11 @@ def search_songs_get(user_id: str=None, user_query: str=None):  # noqa: E501
             SELECT id, title, album, duration
             FROM songs
             WHERE LOWER(title) LIKE %s
+            LIMIT %s OFFSET %s
         """
 
         query_param = f'%{user_query.lower()}%'  # Using wildcard for finding partial matches
-        result = execute_query(connection=connection, query=search_query, values=(query_param, ))
+        result = execute_query(connection=connection, query=search_query, values=(query_param, limit, offset))
 
         # If no songs found, return error response
         if not result:
