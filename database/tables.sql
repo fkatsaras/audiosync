@@ -49,7 +49,6 @@ CREATE TABLE IF NOT EXISTS `songs` (
   `album` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
   `duration` int NOT NULL,
   `cover` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
-  `liked` boolean NOT NULL,
   `playlists` json DEFAULT NULL,        -- !TODO! when creating the playlist table , the playlist column must be replaced with playlist id (FOREIGN KEY)
   `is_playing` boolean NOT NULL,
   PRIMARY KEY (`id`),

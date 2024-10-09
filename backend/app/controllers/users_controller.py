@@ -9,7 +9,8 @@ from app.models.user_entity import UserEntity
 from app.utils.logging_config import get_logger
 from app.controllers.api_controller import *
 from app.models.api_response import ApiResponse
-from app.controllers.artists_controller import get_artist_by_id, update_artist_db
+from app.controllers.artists_controller import get_artist_by_id
+from app.controllers.songs_controller import get_song_by_id
 
 from werkzeug.security import check_password_hash, generate_password_hash
 import datetime
@@ -359,7 +360,7 @@ def logout_user():  # noqa: E501
         )
 
 
-def remove_liked_song(user_id, song_id):  # noqa: E501
+def toggle_like_song(user_id: int, song_id: int) -> ApiResponse:  # noqa: E501
     """User unlikes a song
 
     Remove a specific song from the list of liked songs for a user # noqa: E501
@@ -371,7 +372,51 @@ def remove_liked_song(user_id, song_id):  # noqa: E501
 
     :rtype: None
     """
-    return 'do some magic!'
+
+    connection = create_connection()
+    if not connection:
+        return error_response(
+            message='DB connection failed.',
+            code=500
+        )
+    
+    # Check if the song is already liked by the user
+    query = """
+        SELECT 1 FROM liked_songs
+        WHERE user_id = %s AND song_id = %s
+    """
+
+    like_result = execute_query(connection=connection, query=query, values=(user_id, song_id))
+
+    if like_result:
+        # Song is already liked so unlike it
+        delete_query = """
+            DELETE FROM liked_songs
+            WHERE user_id = %s AND song_id = %s
+        """
+
+        success = execute_query(connection=connection, query=delete_query, values=(user_id, song_id))
+
+        if success is not None:
+            close_connection(connection)
+            return success_response(message='Song unliked successfully.', body={'liked' : False})
+        else:
+            close_connection(connection)
+            return error_response(message='Failed to unlike song.')
+        
+    else:
+        # Song is not liked, so like it
+        insert_query = """
+            INSERT INTO liked_songs (user_id, song_id)
+            VALUES (%s, %s)
+        """
+        success = execute_query(connection=connection, query=insert_query, values=(user_id, song_id))
+        if success is not None:
+            close_connection(connection)
+            return success_response(message='Song liked successfully.', body={'liked' : True})
+        else:
+            close_connection(connection)
+            return error_response(message='Failed to like song.')
 
 
 def toggle_follow_artist(user_id: int, artist_id: int) -> ApiResponse:  # noqa: E501

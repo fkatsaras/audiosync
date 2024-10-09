@@ -39,15 +39,19 @@ def get_album_cover(album_name: str) -> str | None:  # noqa: E501
         return None
 
 
-def get_song_by_id(song_id: int) -> ApiResponse:  # noqa: E501
+def get_song_by_id(user_id: int, song_id: int, as_response: bool=True) -> Song | ApiResponse:  # noqa: E501
     """Get song by ID
 
     Retrieve information about a specific song from the database # noqa: E501
 
     :param song_id: The ID of the song to fetch
     :type song_id: int
+    :param user_id: The ID of the user liking the song
+    :type user_id: int
+    :param as_response: A flag to indicate wether the function will return a JSON/Dict or an Object
+    :type as_response: bool
 
-    :rtype: Song
+    :rtype: Song | ApiResponse
     """
 
     # Create DB connection
@@ -68,8 +72,6 @@ def get_song_by_id(song_id: int) -> ApiResponse:  # noqa: E501
 
     # Execute the query and retrieve the song data as a dictionary
     result = execute_query(connection=connection, query=query, values=values)    # !TODO! Might need to add this to database.py (return ApiResponse)
-    print(result)
-    close_connection(connection=connection)
 
     if result and len(result) > 0:
         song_data = result[0]  # Retrieve the first result (since we expect a single song by ID)
@@ -83,6 +85,14 @@ def get_song_by_id(song_id: int) -> ApiResponse:  # noqa: E501
         # Fetch the album cover using the song's album name and set it as the cover of the song instance
         album_cover_url = get_album_cover(song.album)
         song.cover = album_cover_url
+
+        # Check if the user has liked this song
+        like_query = """
+            SELECT 1 FROM liked_songs
+            WHERE user_id = %s AND song_id = %s
+        """
+        like_result = execute_query(connection=connection, query=like_query, values=(user_id, song_id))
+        song.liked = bool(like_result)  # Set the `is_liked` attribute based on query result
 
         # Create a successful API response with the song data in the body 
         return success_response(
