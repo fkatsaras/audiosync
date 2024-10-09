@@ -98,7 +98,7 @@ function Search() {
                     ))
                 }
                 {/* Render "No results found" if search was performed but no results were found */}
-                {hasSearched && results.length === 0 && !loading && <li>No results found</li>}
+                {hasSearched && results.length === 0 && !loading && <p>No results found</p>}
             </ul>
         </div>
     );
