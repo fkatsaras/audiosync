@@ -34,9 +34,9 @@ function Search() {
             const data = await response.json();
 
             if (searchType === 'artists') {
-                setResults(Object.entries(data.data.artist_links));
+                setResults(data.body.artists);  // Access the list of artist JSONs received from the backend
             } else if ( searchType === 'songs') {
-                setResults(Object.entries(data.data.song_links));
+                setResults(data.body.songs);
             }
             setHasSearched(true);
         } catch (err) {
@@ -65,9 +65,35 @@ function Search() {
             <ul>
                 {/* Render search results if there are any */}
                 {results.length > 0 &&
-                    results.map(([title, link], index) => (
+                    results.map((result, index) => (
                         <li key={index}>
-                            <Link to={link}>{title}</Link>
+                            {/* Artist Search results*/}
+                            {result.name && (
+                                <div>
+                                    {result.profile_picture && 
+                                    <img 
+                                        src={result.profile_picture}
+                                        alt="pfp"
+                                        style={{ width: '50px', height: '50px', marginRight: '10px'  }}
+                                    />
+                                    }
+                                    <h3><Link to={`/artists/${result.id}`}>{result.name}</Link></h3>
+                                </div>
+                            )}
+                            {/* Song Search results*/}
+                            {result.title && (
+                                <div>
+                                    {result.album && 
+                                    <img 
+                                        src={result.album}
+                                        alt="album"
+                                        style={{ width: '50px', height: '50px', marginRight: '10px'}}
+                                    />
+                                    }
+                                    <h3><Link to={`/songs/${result.id}`}>{result.title}</Link></h3>
+                                    {result.duration}
+                                </div>
+                            )}
                         </li>
                     ))
                 }

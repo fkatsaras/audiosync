@@ -58,12 +58,12 @@ paths:
       tags:
       - search
       summary: Search for artists
-      description: Retrieve search results for artists based on query
+      description: Retrieve search results for artists based on query.
       operationId: search_artists_get
       parameters:
       - name: q
         in: query
-        description: Search query string for artists
+        description: Search query string for artists. The query will be used to search for partial matches in artist names.
         required: true
         style: form
         explode: true
@@ -71,17 +71,39 @@ paths:
           type: string
       responses:
         "200":
-          description: Search results retrieved successfully
+          description: Search results retrieved successfully.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SearchResult'
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Success message.
+                  body:
+                    type: object
+                    properties:
+                      artists:
+                        type: array
+                        description: List of artists matching the search query.
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: integer
+                              description: The unique ID of the artist.
+                            name:
+                              type: string
+                              description: The name of the artist.
+                            profile_picture:
+                              type: string
+                              description: The URL of the artist's profile picture.
         "400":
-          description: Bad request
+          description: Bad request. This happens when the search query is empty or invalid.
         "404":
-          description: Artist not found
+          description: Artist not found. No artists were found matching the search query.
         "500":
-          description: Server error
+          description: Server error. There was an issue processing the request or connecting to the database.
       x-openapi-router-controller: app.controllers.search_controller
   /api/v1/search/songs:
     get:
