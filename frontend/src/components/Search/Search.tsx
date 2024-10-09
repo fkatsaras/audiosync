@@ -38,6 +38,18 @@ const Search: React.FC = () => {
             });
     
             const data = await response.json();
+
+            // Check if data.body is null
+            if (!data.body) {
+                if (type === 'artists') {
+                    setHasMoreArtists(false);
+                } else {
+                    setHasMoreSongs(false);
+                }
+                setLoading(false);
+                setHasSearched(true);
+                return;
+            }
     
             if (type === 'artists') {
                 setArtistResults((prevResults) => [...prevResults, ...data.body.artists]);
