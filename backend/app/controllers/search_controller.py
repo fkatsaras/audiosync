@@ -5,7 +5,7 @@ from app.controllers.artists_controller import get_artist_profile_picture
 from app.controllers.songs_controller import get_album_cover
 from app.database import *
 
-def search_artists_get(user_id: str = None, user_query: str = None, limit: int=5, offset: int=0) -> ApiResponse:  # noqa: E501           !TODO! Think about refactoring the whole songs/artists to avoid duplicate code
+def search_artists_get(user_id: str = None, user_query: str = None, limit: int=5, offset: int=0) -> ApiResponse:  # noqa: E501           !TODO! Think about refactoring the whole songs/artists to avoid duplicate code# !TODO! refactor this with async so that we can get BATCH covers/ pfps in parallel from spotify
     """Search for artists
 
     Retrieve search results for artists based on query # noqa: E501

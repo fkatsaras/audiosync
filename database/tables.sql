@@ -28,6 +28,8 @@ CREATE TABLE IF NOT EXISTS `users` (
     UNIQUE KEY (`email`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
+-- Data exported was unselected
+
 -- Dumping structure for table audiosync_db.artists
 CREATE TABLE IF NOT EXISTS `artists` (
   `id` int unsigned NOT NULL AUTO_INCREMENT,
@@ -36,6 +38,8 @@ CREATE TABLE IF NOT EXISTS `artists` (
   `profile_picture` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- Data exported was unselected
 
 -- Dumping structure for table audiosync_db.songs
 CREATE TABLE IF NOT EXISTS `songs` (
@@ -53,9 +57,6 @@ CREATE TABLE IF NOT EXISTS `songs` (
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- Data exporting was unselected.
-
-
--- Data exported was unselected
 
 -- Dumping structure for table audiosync_db.liked_songs
 CREATE TABLE IF NOT EXISTS `liked_songs` (
