@@ -1,19 +1,7 @@
 import React , { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
+import { Song } from "../../types/types";
 
-// Define types for song data
-interface Song {    // !TODO! Song interface var order doesnt match the backend response body
-    id: number,
-    title: string,
-    artist: string,
-    artist_id: number,
-    album: string,
-    duration: number,
-    cover: string,
-    liked: boolean,
-    playlists: string[],
-    is_playing: boolean
-}
 
 const SongPage: React.FC = () => {
     const { songId } = useParams<{ songId: string }>(); // Get song ID from URL parameters

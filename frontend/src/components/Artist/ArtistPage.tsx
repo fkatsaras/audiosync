@@ -1,22 +1,6 @@
 import React, { useEffect, useState} from "react";
 import { useParams, Link } from "react-router-dom";
-
-// Define types for song data
-interface Song {                //!TODO! export all the interfaces from a single file to avoid duplicate code
-    id: number;
-    title: string;
-    duration: string;
-};
-
-// Define types for artist data
-interface Artist {
-    id: number,
-    name: string,
-    songs: Song[],
-    followers: number,
-    is_followed: boolean,
-    profile_picture: string
-};
+import { Artist } from "../../types/types";
 
 const ArtistPage: React.FC = () => {
     const { artistId } = useParams<{ artistId: string }>(); // Get artist ID from URL params

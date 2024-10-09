@@ -1,20 +1,15 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom'; 
+import { Song, Artist } from '../../types/types';
 
-// Define types for artista and song results 
-interface Artist {
-    id: number;
-    name: string;
-    profile_picture?: string;
-}
 
-interface Song {
-    id: number;
-    title: string;
-    album?: string;
-    duration: string;
-}
-
+/**
+ * Search component allows users to search for artists and songs by entering a query.
+ * It fetches the search results from the backend and displays them, with options to load more results.
+ * 
+ * @component
+ * @returns {JSX.Element} The Search component UI.
+ */
 const Search: React.FC = () => {
     const [query, setQuery] = useState<string>('');
     const [artistResults, setArtistResults] = useState<Artist[]>([]);
@@ -27,7 +22,15 @@ const Search: React.FC = () => {
     const [hasMoreSongs, setHasMoreSongs] = useState<boolean>(true);      // Tracks if there are more song results
     const [hasSearched, setHasSearched] = useState<boolean>(false);
 
-    // Fetch results from the backend
+    /**
+    * Fetches search results from the backend API for the given type (artists or songs) and offset.
+    * 
+    * @async
+    * @function fetchResults
+    * @param {'artists' | 'songs'} type - The type of results to fetch (artists or songs).
+    * @param {number} offset - The number of results to skip, for pagination purposes.
+    * @returns {Promise<void>} Updates the state with fetched results and handles loading/error states.
+    */
     const fetchResults = async (type: 'artists' | 'songs', offset: number) => {
         setLoading(true);
         try {
@@ -77,7 +80,12 @@ const Search: React.FC = () => {
     };
 
 
-    // Handle the search button clicks 
+    /**
+    * Handles search button clicks by clearing previous results and fetching new results.
+    * 
+    * @function handleSearch
+    * @param {'artists' | 'songs'} type - The type of results to search for (artists or songs).
+    */
     const handleSearch = (type: 'artists' | 'songs') => {
         setArtistResults([]);
         setSongResults([]);
@@ -90,6 +98,12 @@ const Search: React.FC = () => {
         fetchResults(type, 0);
     };
 
+    /**
+    * Fetches more results when the user clicks "Show More" for either artists or songs.
+    * 
+    * @function handleShowMore
+    * @param {'artists' | 'songs'} type - The type of results to fetch more of (artists or songs).
+    */
     const handleShowMore = (type: 'artists' | 'songs') => {
         if (type === 'artists') {
             const newOffset = artistOffset + 5;
