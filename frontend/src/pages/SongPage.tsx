@@ -1,7 +1,7 @@
 import React , { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import { Song } from "../../types/types";
-import HomeButton from "../Home/HomeButton";
+import { Song } from "../types/types";
+import HomeButton from "../components/Home/HomeButton";
 
 
 const SongPage: React.FC = () => {

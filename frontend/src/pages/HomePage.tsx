@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom'; // Import Link
-import './Home.css';
+import '../styles/Home.css';
 
 type Links = {
   liked_songs?: string;

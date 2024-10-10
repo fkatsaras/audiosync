@@ -1,6 +1,7 @@
 import React, { useEffect, useState} from "react";
 import { useParams, Link } from "react-router-dom";
-import { Artist } from "../../types/types";
+import { Artist } from "../types/types";
+import HomeButton from "../components/Home/HomeButton";
 
 const ArtistPage: React.FC = () => {
     const { artistId } = useParams<{ artistId: string }>(); // Get artist ID from URL params
@@ -66,6 +67,7 @@ const ArtistPage: React.FC = () => {
 
     return (
         <div>
+            <HomeButton />
             {artist && (
                 <div>
                 <h1>{artist?.name}</h1>
@@ -85,7 +87,7 @@ const ArtistPage: React.FC = () => {
                     {artist?.songs.map((song) => (
                         <li key={song.id}>
                             {/* Navigate to ta songs page using Link */}
-                            < Link to={`/songs/${song.id}`}>
+                            <Link to={`/songs/${song.id}`}>
                                 {song.title}
                             </Link>
                              - {song.duration}

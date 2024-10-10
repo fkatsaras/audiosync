@@ -1,14 +1,14 @@
 import React from "react";
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
-import Landing from './components/Landing/Landing';
-import Login from './components/Auth/Login';
-import Register from './components/Auth/Register';
-import Home from './components/Home/Home';
-import Search from './components/Search/Search'
+import Landing from './pages/LandingPage';
+import Login from './pages/LoginPage';
+import Register from './pages/RegisterPage';
+import Home from './pages/HomePage';
+import Search from './pages/SearchPage'
 import NotFound from "./components/NotFound";
 import CheckAuth from "./components/CheckAuth";
-import SongPage from "./components/Song/SongPage";
-import ArtistPage from "./components/Artist/ArtistPage";
+import SongPage from "./pages/SongPage";
+import ArtistPage from "./pages/ArtistPage";
 
 const router = createBrowserRouter([
   { path: "/", element: <Landing /> },

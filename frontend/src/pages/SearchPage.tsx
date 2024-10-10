@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom'; 
-import { Song, Artist } from '../../types/types';
+import { Song, Artist } from '../types/types';
 
 
 /**

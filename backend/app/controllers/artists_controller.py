@@ -60,66 +60,71 @@ def get_artist_by_id(user_id: int, artist_id: int, as_response: bool=True) -> Ap
 
     :rtype: ApiResponse
     """
-
-    # Create DB connection
-    connection = create_connection()
-    if not connection:
-        return error_response(
-            message='DB connection failed.',
-            code=500
-        )
-
-    # Step 1:  Fetch the artists details from the DB
-    artist_id_query = "SELECT * FROM artists WHERE id = %s"                                  # !TODO! Create another store procedure for this
-    values = (artist_id,)
-
-    result = execute_query(connection=connection, query=artist_id_query, values=values)      # !TODO! Might need to add this to database.py (return ApiResponse)
-
-    if result and len(result) > 0:
-        artist_data = result[0]  # Retrieve the first result (since we expect a single artist by ID)
-
-        # Step 2: Fetch the songs related to the artist from the DB
-        songs_query = "SELECT * FROM songs WHERE artist_id = %s"
-        song_values = (artist_id,)
-        songs_result = execute_query(connection=connection, query=songs_query, values=song_values)
-
-        # Step 3: Create Song objs from query
-        songs = []
-        for song_data in songs_result:
-            song = Song.from_dict(song_data)
-            songs.append(song)
-
-        # Step 4: Check if the user follows this artist
-        follow_query = """
-            SELECT 1 FROM followed_artists
-            WHERE user_id = %s AND artist_id = %s
-        """
-        follow_result = execute_query(connection=connection, query=follow_query, values=(user_id, artist_id))
-
-        is_followed = bool(follow_result)  # If there's a result, the user follows the artist
-
-        # Step 5: Create Artist obj from data
-        artist = Artist.from_dict(artist_data)
-        artist.songs = songs # Assign the list of songs 
-        artist.is_followed = is_followed # Assign the follow status for the user
-
-        # Fetch the album cover using the song's album name and set it as the cover of the song instance
-        pfp = get_artist_profile_picture(artist.name)
-        artist.profile_picture = pfp
-
-        if as_response:
-            # Create a successful API response with the artist data in the body 
-            return success_response(
-                message='Artist retrieved successfully',
-                body=artist.to_dict()
+    try:
+        # Create DB connection
+        connection = create_connection()
+        if not connection:
+            return error_response(
+                message='DB connection failed.',
+                code=500
             )
-        else: 
-            return artist   #If specified, returns the artist as an Object
-    else:
-        # Create an error response
+
+        # Step 1:  Fetch the artists details from the DB
+        artist_id_query = "SELECT * FROM artists WHERE id = %s"                                  # !TODO! Create another store procedure for this
+        values = (artist_id,)
+
+        result = execute_query(connection=connection, query=artist_id_query, values=values)      # !TODO! Might need to add this to database.py (return ApiResponse)
+
+        if result and len(result) > 0:
+            artist_data = result[0]  # Retrieve the first result (since we expect a single artist by ID)
+
+            # Step 2: Fetch the songs related to the artist from the DB
+            songs_query = "SELECT * FROM songs WHERE artist_id = %s"
+            song_values = (artist_id,)
+            songs_result = execute_query(connection=connection, query=songs_query, values=song_values)
+
+            # Step 3: Create Song objs from query
+            songs = []
+            for song_data in songs_result:
+                song = Song.from_dict(song_data)
+                songs.append(song)
+
+            # Step 4: Check if the user follows this artist
+            follow_query = """
+                SELECT 1 FROM followed_artists
+                WHERE user_id = %s AND artist_id = %s
+            """
+            follow_result = execute_query(connection=connection, query=follow_query, values=(user_id, artist_id))
+
+            is_followed = bool(follow_result)  # If there's a result, the user follows the artist
+
+            # Step 5: Create Artist obj from data
+            artist = Artist.from_dict(artist_data)
+            artist.songs = songs # Assign the list of songs 
+            artist.is_followed = is_followed # Assign the follow status for the user
+
+            # Fetch the album cover using the song's album name and set it as the cover of the song instance
+            pfp = get_artist_profile_picture(artist.name)
+            artist.profile_picture = pfp
+
+            if as_response:
+                # Create a successful API response with the artist data in the body 
+                return success_response(
+                    message='Artist retrieved successfully',
+                    body=artist.to_dict()
+                )
+            else: 
+                return artist   #If specified, returns the artist as an Object
+        else:
+            # Create an error response
+            return error_response(
+                message=f'Artist with ID: {artist_id} not found.',
+                code=404
+            )
+    except Exception as e:
         return error_response(
-            message=f'Artist with ID: {artist_id} not found.',
-            code=404
+            message=f'An error occurred while retreiving the artist: {str(e)}',
+            code=500
         )
     
 def update_artist_db(connection: mysql.connector.connection.MySQLConnection, artist_id: int, updates: dict) -> bool:    #!TODO! Move that into the database utils / make it more modular
