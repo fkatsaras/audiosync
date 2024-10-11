@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom'; // Import Link
-import '../styles/Home.css';
+import { useNavigate } from 'react-router-dom'; // Import Link
+import '../styles/HomePage.css';
+import Navbar from '../components/Navbar/Navbar';
+import AppBody from '../components/AppBody/AppBody';
 
 type Links = {
   liked_songs?: string;
@@ -49,6 +51,8 @@ function Home() {
     fetchData();
   }, [navigate]);
 
+  console.log(links); // Dummy !TODO! Change what will be returned from the backend
+
   if (loading) {
     return <div>Loading...</div>; // Show a loading indicator
   }
@@ -59,27 +63,11 @@ function Home() {
 
   // Guard against `links` being null or undefined
   return (
-    <div>
-      <h1>Welcome to Your Home Page</h1>
-      <nav>
-        <ul>
-          {links?.liked_songs && <li><Link to={links.liked_songs}>Liked Songs</Link></li>}
-          {links?.recommended && <li><Link to={links.recommended}>Recommended</Link></li>}
-          {links?.my_artists && <li><Link to={links.my_artists}>My Artists</Link></li>}
-          {links?.search && <li><Link to={links.search}>Search</Link></li>}
-          {links?.my_playlists && <li><Link to={links.my_playlists}>My Playlists</Link></li>}
-        </ul>
-        {links && Object.keys(links).length === 0 && <li>No links available.</li>} {/* Handle empty links */}
-      </nav>
-      <footer>
-        <button onClick={() => {
-          localStorage.removeItem('token');
-          setLinks(null);  // Clear links
-          setError(null);  // Clear any errors
-          setLoading(false);  // Stop loading
-          navigate('/login');  // Redirect to login
-        }}>Logout</button>
-      </footer>
+    <div className='home-container'>
+      <Navbar />
+      <AppBody>
+        <h1>Welcome to Your Home Page</h1>
+      </AppBody>
     </div>
   );
 }

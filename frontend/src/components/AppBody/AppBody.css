@@ -1,0 +1,15 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700&display=swap');
+
+.home-container, .search-container {
+    margin-left: 230px; /* Avoid overlapping with the Nav bar*/
+    padding: 20px;
+    min-height: 100vh;
+    background-color: #181818;
+    font-family: 'Montserrat', sans-serif;
+}
+
+h1 {
+    color: #ffffff;
+    font-size: 2rem;
+    margin-bottom: 20px;
+}

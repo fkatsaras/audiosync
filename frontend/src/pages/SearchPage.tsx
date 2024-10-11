@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom'; 
-import { Song, Artist } from '../types/types';
-
+import { Song, Artist } from '../types/dataTypes';
+import Navbar from '../components/Navbar/Navbar';
+import '../styles/SearchPage.css'
+import AppBody from '../components/AppBody/AppBody';
 
 /**
  * Search component allows users to search for artists and songs by entering a query.
@@ -120,67 +122,70 @@ const Search: React.FC = () => {
     };
 
     return (
-        <div>
-            <h1>Search</h1>
-            <input
-                type='text'
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                placeholder='Search for artists, songs...'
-            />
-            <button onClick={() => handleSearch('artists')}>Search Artists</button>
-            <button onClick={() => handleSearch('songs')}>Search Songs</button>
+        <div className='search-container'>
+            <Navbar />
+            <AppBody>
+                <h1>Search</h1>
+                <input
+                    type='text'
+                    value={query}
+                    onChange={(e) => setQuery(e.target.value)}
+                    placeholder='Search for artists, songs...'
+                />
+                <button onClick={() => handleSearch('artists')}>Search Artists</button>
+                <button onClick={() => handleSearch('songs')}>Search Songs</button>
 
-            {loading && <div>Loading...</div>}
-            {error && <div>{error}</div>}
+                {loading && <div>Loading...</div>}
+                {error && <div>{error}</div>}
 
-            <ul>
-                {/*Artists results*/}
-                {artistResults.length > 0 && artistResults.map((artist, index) => (
-                    <li key={artist.id}>
-                        <div>
-                            {artist.profile_picture && 
-                            <img 
-                                src={artist.profile_picture}
-                                alt='Artist profile'
-                                style={{ width: '50px', height: '50px', marginRight: '10px' }}
-                            />}
-                            <h3><Link to={`/artists/${artist.id}`}>{artist.name}</Link></h3>
-                        </div>
-                    </li>
-                ))}
+                <ul>
+                    {/*Artists results*/}
+                    {artistResults.length > 0 && artistResults.map((artist, index) => (
+                        <li key={artist.id}>
+                            <div>
+                                {artist.profile_picture && 
+                                <img 
+                                    src={artist.profile_picture}
+                                    alt='Artist profile'
+                                    className='artist-image'
+                                />}
+                                <h3><Link to={`/artists/${artist.id}`}>{artist.name}</Link></h3>
+                            </div>
+                        </li>
+                    ))}
 
-                {/* Song results*/}
-                {songResults.length > 0 && songResults.map((song, index) => (
-                    <li key={song.id}>
-                        <div>
-                            {song.album && 
-                            <img 
-                                src={song.album}
-                                alt='Song cover'
-                                style={{ width: '50px', height: '50px', marginRight: '10px' }}
-                            />}
-                            <h3><Link to={`/songs/${song.id}`}>{song.title}</Link></h3>
-                            {song.duration}
-                        </div>
-                    </li>
-                ))}
+                    {/* Song results*/}
+                    {songResults.length > 0 && songResults.map((song, index) => (
+                        <li key={song.id}>
+                            <div>
+                                {song.album && 
+                                <img 
+                                    src={song.album}
+                                    alt='Song cover'
+                                    className='song-image'
+                                />}
+                                <h3><Link to={`/songs/${song.id}`}>{song.title}</Link></h3>
+                                {song.duration}
+                            </div>
+                        </li>
+                    ))}
 
-                {/* Show more */}
-                {hasMoreArtists && !loading && artistResults.length > 0 && (
-                    <button onClick={() => handleShowMore('artists')}>Show More</button>
+                    {/* Show more */}
+                    {hasMoreArtists && !loading && artistResults.length > 0 && (
+                        <button onClick={() => handleShowMore('artists')}>Show More</button>
+                    )}
+
+                    {/* Show more songs */}
+                    {hasMoreSongs && !loading && songResults.length > 0 && (
+                        <button onClick={() => handleShowMore('songs')}>Show More</button>
+                    )}
+                </ul>
+                
+                {/* In case no results match the query*/}
+                {hasSearched && artistResults.length === 0 && songResults.length === 0 && !loading && (
+                <div>No results found</div>
                 )}
-
-                {/* Show more songs */}
-                {hasMoreSongs && !loading && songResults.length > 0 && (
-                    <button onClick={() => handleShowMore('songs')}>Show More</button>
-                )}
-            </ul>
-            
-            {/* In case no results match the query*/}
-            {hasSearched && artistResults.length === 0 && songResults.length === 0 && !loading && (
-            <div>No results found</div>
-            )}
+            </AppBody>
         </div>
     );
 };

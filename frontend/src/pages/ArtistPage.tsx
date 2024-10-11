@@ -1,6 +1,6 @@
 import React, { useEffect, useState} from "react";
 import { useParams, Link } from "react-router-dom";
-import { Artist } from "../types/types";
+import { Artist } from "../types/dataTypes";
 import HomeButton from "../components/Home/HomeButton";
 
 const ArtistPage: React.FC = () => {
