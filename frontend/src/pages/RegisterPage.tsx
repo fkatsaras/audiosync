@@ -1,5 +1,8 @@
 import React, { useState } from "react";
 import { useNavigate , Link } from "react-router-dom";
+import AppBody from "../components/AppBody/AppBody";
+import Input from "../components/Input/Input";
+import Button from "../components/Button/Button";
 
 function Register() {
     const [username, setUsername] = useState('');
@@ -70,61 +73,69 @@ function Register() {
     };
 
     return (
-        <div className="register-container">
-            <h1>Create Your Account</h1>
-            <form id="registerForm" onSubmit={handleRegister}>
-                <label htmlFor="username">Username:</label>
-                <input 
-                    type="text" 
-                    id="username" 
-                    value={username} 
-                    onChange={(e) => setUsername(e.target.value)} 
-                    required 
-                />
-                <label htmlFor="email">Email:</label>
-                <input 
-                    type="email" 
-                    id="email" 
-                    value={email} 
-                    onChange={(e) => setEmail(e.target.value)} 
-                    required 
-                />
-                <label htmlFor="firstName">First Name:</label>
-                <input 
-                    type="text" 
-                    id="firstName" 
-                    value={firstName} 
-                    onChange={(e) => setFirstName(e.target.value)} 
-                />
-                <label htmlFor="lastName">Last Name:</label>
-                <input 
-                    type="text" 
-                    id="lastName" 
-                    value={lastName} 
-                    onChange={(e) => setLastName(e.target.value)} 
-                />
-                <label htmlFor="password">Password:</label>
-                <input 
-                    type="password" 
-                    id="password" 
-                    value={password} 
-                    onChange={(e) => setPassword(e.target.value)} 
-                    required 
-                />
-                <label htmlFor="confirmPassword">Confirm Password:</label>
-                <input 
-                    type="password" 
-                    id="confirmPassword" 
-                    value={confirmPassword} 
-                    onChange={(e) => setConfirmPassword(e.target.value)} 
-                    required 
-                />
-                <button type="submit">Register</button>
-            </form>
-            <p>Already have an account? <Link to="/login">Login here</Link></p>
-            {errorMessage && <p className="error-message">{errorMessage}</p>}
-            {successMessage && <p className="success-message">{successMessage}</p>}
-        </div>
+        <AppBody>
+            <div className="register-container">
+                <h1>Create Your Account</h1>
+                <form id="registerForm" onSubmit={handleRegister}>
+                    <label htmlFor="username">Username:</label>
+                    <Input 
+                        type="text"
+                        id="username" 
+                        value={username} 
+                        onChange={(e) => setUsername(e.target.value)} 
+                        required
+                        placeholder="" 
+                    />
+                    <label htmlFor="email">Email:</label>
+                    <Input 
+                        type="email" 
+                        id="email" 
+                        value={email} 
+                        onChange={(e) => setEmail(e.target.value)} 
+                        required
+                        placeholder="" 
+                    />
+                    <label htmlFor="firstName">First Name:</label>
+                    <Input 
+                        type="text" 
+                        id="firstName" 
+                        value={firstName} 
+                        onChange={(e) => setFirstName(e.target.value)}
+                        placeholder="" 
+                    />
+                    <label htmlFor="lastName">Last Name:</label>
+                    <Input 
+                        type="text" 
+                        id="lastName" 
+                        value={lastName} 
+                        onChange={(e) => setLastName(e.target.value)}
+                        placeholder="" 
+                    />
+                    <label htmlFor="password">Password:</label>
+                    <Input 
+                        type="password" 
+                        id="password" 
+                        value={password} 
+                        onChange={(e) => setPassword(e.target.value)} 
+                        required
+                        placeholder="" 
+                    />
+                    <label htmlFor="confirmPassword">Confirm Password:</label>
+                    <Input 
+                        type="password" 
+                        id="confirmPassword" 
+                        value={confirmPassword} 
+                        onChange={(e) => setConfirmPassword(e.target.value)} 
+                        required
+                        placeholder="" 
+                    />
+                    <Button type="submit">Register</Button>
+                </form>
+                <p>Already have an account? <Link to="/login">Login here</Link></p>
+                {errorMessage && <p className="error-message">{errorMessage}</p>}
+                {successMessage && <p className="success-message">{successMessage}</p>}
+            </div>
+        </AppBody>
     );
 }
 

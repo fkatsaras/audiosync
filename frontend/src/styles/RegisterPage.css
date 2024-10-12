@@ -1,4 +1,4 @@
-.login-container {
+.register-container {
     padding: 20px;
     min-height: 100vh;
     background-color: #181818;
@@ -7,24 +7,4 @@
     flex-direction: column; /* Stack children vertically */
     align-items: center; /* Center content horizontally */
     justify-content: center; /* Center content vertically */
-}
-
-h1 {
-    color: #ffffff;
-    font-size: 2rem;
-    margin-bottom: 20px;
-}
-
-label {
-    color: #ffffff; /* Style label text */
-    margin-bottom: 5px;
-}
-
-.error-message {
-    color: red; /* Style for error message */
-    margin-top: 10px;
-}
-
-p {
-    color: #f1f1f1;
 }

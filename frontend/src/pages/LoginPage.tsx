@@ -1,5 +1,9 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from 'react-router-dom';
+import AppBody from "../components/AppBody/AppBody";
+import '../styles/LoginPage.css'
+import Input from "../components/Input/Input";
+import Button from "../components/Button/Button";
 
 function Login() {
     const [username, setUsername] = useState('');
@@ -45,30 +49,34 @@ function Login() {
     };
 
     return (
-        <div className="login-container">
-            <h1>Welcome to AudioSync</h1>
-            <form id="loginForm" onSubmit={handleLogin}>
-                <label htmlFor="username">Username:</label>
-                <input 
-                  type="text" 
-                  id="username" 
-                  value={username} 
-                  onChange={(e) => setUsername(e.target.value)} 
-                  required 
-                />
-                <label htmlFor="password">Password:</label>
-                <input 
-                  type="password" 
-                  id="password" 
-                  value={password} 
-                  onChange={(e) => setPassword(e.target.value)} 
-                  required 
-                />
-                <button type="submit">Login</button>
-            </form>
-            <p>Don't have an account? <Link to="/register">Register here</Link></p>
-            {errorMessage && <p className="error-message">{errorMessage}</p>}
-        </div>
+        <AppBody>
+            <div className="login-container">
+                <h1>Welcome to AudioSync</h1>
+                <form id="loginForm" onSubmit={handleLogin}>
+                    <label htmlFor="username">Username:</label>
+                    <Input 
+                      id="username"
+                      placeholder=""
+                      type="text"  
+                      value={username} 
+                      onChange={(e) => setUsername(e.target.value)} 
+                      required 
+                    />
+                    <label htmlFor="password">Password:</label>
+                    <Input 
+                      id="password"
+                      type="password" 
+                      placeholder="" 
+                      value={password} 
+                      onChange={(e) => setPassword(e.target.value)} 
+                      required 
+                    />
+                    <Button type="submit" className="login-button">Login</Button>
+                </form>
+                <p>Don't have an account? <Link to="/register">Register here</Link></p>
+                {errorMessage && <p className="error-message">{errorMessage}</p>}
+            </div>
+        </AppBody>
     );
 }
 

@@ -4,6 +4,9 @@ import { Song, Artist } from '../types/dataTypes';
 import Navbar from '../components/Navbar/Navbar';
 import '../styles/SearchPage.css'
 import AppBody from '../components/AppBody/AppBody';
+import LoadingDots from '../components/LoadingDots/LoadingDots';
+import Button from '../components/Button/Button';
+import Input from '../components/Input/Input';
 
 /**
  * Search component allows users to search for artists and songs by entering a query.
@@ -126,58 +129,66 @@ const Search: React.FC = () => {
             <Navbar />
             <AppBody>
                 <h1>Search</h1>
-                <input
+                <Input
+                    id=''
                     type='text'
                     value={query}
                     onChange={(e) => setQuery(e.target.value)}
                     placeholder='Search for artists, songs...'
+                    className='search-input'
                 />
-                <button onClick={() => handleSearch('artists')}>Search Artists</button>
-                <button onClick={() => handleSearch('songs')}>Search Songs</button>
+                <div className='search-buttons-container'>
+                    <Button onClick={() => handleSearch('artists')} className='search-button'>Artists</Button>
+                    <Button onClick={() => handleSearch('songs')} className='search-button'>Songs</Button>
+                </div>
 
-                {loading && <div>Loading...</div>}
+                {loading && <LoadingDots />}
                 {error && <div>{error}</div>}
 
                 <ul>
                     {/*Artists results*/}
                     {artistResults.length > 0 && artistResults.map((artist, index) => (
                         <li key={artist.id}>
-                            <div>
-                                {artist.profile_picture && 
-                                <img 
-                                    src={artist.profile_picture}
-                                    alt='Artist profile'
-                                    className='artist-image'
-                                />}
-                                <h3><Link to={`/artists/${artist.id}`}>{artist.name}</Link></h3>
-                            </div>
+                            <Link to={`/artists/${artist.id}`} className='result-container'>
+                                <div className='result-content'>
+                                    {artist.profile_picture && 
+                                    <img
+                                        src={artist.profile_picture}
+                                        alt='Artist profile'
+                                        className='artist-result-image'
+                                    />}
+                                    <h3>{artist.name}</h3>
+                                </div>
+                            </Link>
                         </li>
                     ))}
 
                     {/* Song results*/}
                     {songResults.length > 0 && songResults.map((song, index) => (
                         <li key={song.id}>
-                            <div>
-                                {song.album && 
-                                <img 
-                                    src={song.album}
-                                    alt='Song cover'
-                                    className='song-image'
-                                />}
-                                <h3><Link to={`/songs/${song.id}`}>{song.title}</Link></h3>
-                                {song.duration}
-                            </div>
+                            <Link to={`/songs/${song.id}`} className='result-container'>
+                                <div className='result-content'>
+                                    {song.album && 
+                                    <img
+                                        src={song.album}
+                                        alt='Song cover'
+                                        className='song-result-image'
+                                    />}
+                                    <h3>{song.title}</h3>
+                                    <p className='song-result-duration'>{song.duration}</p>
+                                </div>
+                            </Link>
                         </li>
                     ))}
 
                     {/* Show more */}
                     {hasMoreArtists && !loading && artistResults.length > 0 && (
-                        <button onClick={() => handleShowMore('artists')}>Show More</button>
+                        <Button onClick={() => handleShowMore('artists')} className='show-more-button'>Show More</Button>
                     )}
 
                     {/* Show more songs */}
                     {hasMoreSongs && !loading && songResults.length > 0 && (
-                        <button onClick={() => handleShowMore('songs')}>Show More</button>
+                        <Button onClick={() => handleShowMore('songs')} className='show-more-button'>Show More</Button>
                     )}
                 </ul>
                 

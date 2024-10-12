@@ -1,6 +1,7 @@
 import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 import './Navbar.css';
+import Button from "../Button/Button";
 
 
 function Navbar() {
@@ -30,7 +31,7 @@ function Navbar() {
                     {links?.my_playlists && <li className="navbar-item"><Link to={links.my_playlists}>Your Playlists</Link></li>}
                     {links?.search && <li className="navbar-item"><Link to={links.search}>Search</Link></li>}
                     <li>
-                    <button onClick={handleLogout} className="logout-button">Logout</button>
+                    <Button onClick={handleLogout} className="logout-button">Logout</Button>
                     </li>
                 </ul>
             </nav>

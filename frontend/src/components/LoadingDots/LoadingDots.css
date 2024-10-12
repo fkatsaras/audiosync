@@ -1,0 +1,32 @@
+@keyframes bounce {
+    0%, 100% {
+        transform: translateY(0); /* Start at the end original position */
+    } 
+    50% {
+        transform: translateY(-10px); /* Move up - down by 10px */
+    }
+}
+
+.loading-container {
+    display: flex;
+    justify-content: center;    /* Center the dots horizontally and vertically */
+    align-items: center;
+    height: 50px;
+}
+
+.loading-dot {
+    width: 10px;
+    height: 10px;
+    background-color: white;
+    border-radius: 50%; /* Circle */
+    margin: 0 5px;  /* Space between dots */
+    animation: bounce 0.6s infinite ease-in-out;
+}
+
+.loading-dot:nth-child(2) {
+    animation-delay: 0.2s;  /* Delay for the second dot */
+}
+
+.loading-dot:nth-child(3) {
+    animation-delay: 0.4s;  /* Delay for the third dot */
+}
