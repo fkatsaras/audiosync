@@ -48,7 +48,8 @@ button:visited {
 
 .default-button.active {
     background: linear-gradient(135deg, #8e24aa, #4a148c); /* Gradient from lighter to dark purple */
-    color: white; /* White text when active */
+    color: white; /* background text when active */
+    font-weight: bold;
     border-color: transparent; /* No visible border when active */
 }
 

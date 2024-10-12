@@ -19,7 +19,7 @@
 }
 
 .result-subtitle {
-    color: #1db954;
+    color: #6a1b9a;
     align-items: flex-end;
 }
 
@@ -62,5 +62,5 @@ li {
 
 .song-result-duration {
     margin-left: auto; /* Align duration to the far right */
-    color: #1db954; /* Spotify green */
+    color: #6a1b9a; /* Spotify green */
 }

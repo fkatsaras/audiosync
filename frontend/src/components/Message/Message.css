@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700&display=swap');
+
 .message-container {
     display: flex;
     align-items: center;
@@ -38,8 +40,8 @@
 
 /* Styles specific to info messages */
 .info-message .message-text {
-    background-color: #d3d3d3;
     color: #000;
+    font-family: 'Montserrat', sans-serif;
 }
 
 .info-message .message-text {
@@ -48,12 +50,12 @@
 
 /* Styles specific to success messages */
 .success-message .message-icon {
-    background-color: #1db954;
+    background-color: #6a1b9a;
     color: #fff;
 }
 
 .success-message .message-text {
-    color: #1db954;
+    color: #6a1b9a;
 }
 
 

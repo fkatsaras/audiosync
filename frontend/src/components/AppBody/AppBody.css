@@ -13,3 +13,19 @@ h1 {
     font-size: 2rem;
     margin-bottom: 20px;
 }
+
+h2 {
+    color: #ffffff;
+    font-size: 1.5rem;
+    margin-bottom: 20px;
+}
+
+p, 
+p a {
+    color: inherit;
+}
+
+p a:visited,
+p:visited {
+    color: inherit;
+}

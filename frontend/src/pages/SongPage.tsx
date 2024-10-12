@@ -1,6 +1,10 @@
 import React , { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { Song } from "../types/dataTypes";
+import AppBody from "../components/AppBody/AppBody";
+import Button from "../components/Buttons/Button";
+import Message from "../components/Message/Message";
+import LoadingDots from "../components/LoadingDots/LoadingDots";
 
 
 const SongPage: React.FC = () => {
@@ -62,33 +66,36 @@ const SongPage: React.FC = () => {
         }
     };
 
-    if (loading) return <div>Loading...</div>;
+    if (loading) return <LoadingDots />;
     if (error) return <div>{error}</div>;
 
     return (
-        <div>
-            { song ? (
-                <div>
-                    <h1>{song.title}</h1>
-                    <p>Artist: <Link to={`/artists/${song.artist_id}`}>{song.artist}</Link></p>
-                    <p>Album: {song.album}</p>
-                    <p>Duration: {song.duration} seconds</p>
-                    <img src={song.cover} alt={`${song.title} cover`} />
-                    {/* Additional song info here*/}
-                    {/*
-                     Display unfollow/follow/error message here
-                     !TODO! Add timeout logic so that the follow message isnt permanent
-                     */}
-                    {message && <p>{message}</p>}
-                    <br />
-                    <button onClick={handleLikeToggle}>
-                        {song.liked? 'Unlike' : 'Like'}
-                    </button>
-                </div>
-            ) : (
-                <p>Song not found.</p>
-            )}
-        </div>
+        <AppBody>
+            <Button><Link to='/'>Home</Link></Button>   {/* TODO: Integrate the link component inside the button component*/}
+            <div className="song-container">
+                { song ? (
+                    <div className="song-info">
+                        <h1>{song.title}</h1>
+                        <p>Artist: <Link to={`/artists/${song.artist_id}`}>{song.artist}</Link></p>
+                        <p>Album: {song.album}</p>
+                        <p>Duration: {song.duration} seconds</p>
+                        <img src={song.cover} alt={`${song.title} cover`} />
+                        {/* Additional song info here*/}
+                        {/*
+                         Display unfollow/follow/error message here
+                         !TODO! Add timeout logic so that the follow message isnt permanent
+                         */}
+                        <br />
+                        <Button isSpecial={true} isActive={song.liked} onClick={handleLikeToggle}>
+                            {song.liked? 'Unlike' : 'Like'}
+                        </Button>
+                        {message && <Message className="info-message">{message}</Message>}
+                    </div>
+                ) : (
+                    <Message className="info-message">Song not found.</Message>
+                )}
+            </div>
+        </AppBody>
     )
 }
 
