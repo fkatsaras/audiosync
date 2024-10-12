@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom'; // Import Link
 import '../styles/HomePage.css';
 import Navbar from '../components/Navbar/Navbar';
 import AppBody from '../components/AppBody/AppBody';
+import LoadingDots from '../components/LoadingDots/LoadingDots';
+import Message from '../components/Message/Message';
 
 type Links = {
   liked_songs?: string;
@@ -53,15 +55,9 @@ function Home() {
 
   console.log(links); // Dummy !TODO! Change what will be returned from the backend
 
-  if (loading) {
-    return <div>Loading...</div>; // Show a loading indicator
-  }
+  if (loading) return <LoadingDots />;
+  if (error) return <Message className='error-message'>{error}</Message>;
 
-  if (error) {
-    return <div>{error}</div>; // Display error message
-  }
-
-  // Guard against `links` being null or undefined
   return (
     <div className='home-container'>
       <Navbar />
