@@ -1,7 +1,6 @@
 import React , { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { Song } from "../types/dataTypes";
-import HomeButton from "../components/Home/HomeButton";
 
 
 const SongPage: React.FC = () => {
@@ -68,7 +67,6 @@ const SongPage: React.FC = () => {
 
     return (
         <div>
-            <HomeButton />
             { song ? (
                 <div>
                     <h1>{song.title}</h1>

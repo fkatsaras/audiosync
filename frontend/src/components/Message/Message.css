@@ -1,4 +1,4 @@
-.info-message-container {
+.message-container {
     display: flex;
     align-items: center;
     background-color: #181818;
@@ -7,15 +7,15 @@
     border-radius: 8px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);    /* Shadow effect */
     margin: 10px 0;
-    width: 100%;
+    width: auto;
     transition: background-color 0.3s ease;
 }
 
-.info-message-container:hover {
+.message-container:hover {
     background-color: #2a2a2a;
 }
 
-.info-icon {
+.message-icon {
     background-color: #d3d3d3;
     color: #000;
     border-radius: 50%;
@@ -29,9 +29,40 @@
     margin-right: 10px;
 }
 
-.info-message {
+.message-text {
     font-size: 0.9rem;
     margin: 0;
     color: #f1f1f1;
     line-height: 1.5;
+}
+
+/* Styles specific to info messages */
+.info-message .message-text {
+    background-color: #d3d3d3;
+    color: #000;
+}
+
+.info-message .message-text {
+    color: #f1f1f1;
+}
+
+/* Styles specific to success messages */
+.success-message .message-icon {
+    background-color: #1db954;
+    color: #fff;
+}
+
+.success-message .message-text {
+    color: #1db954;
+}
+
+
+/* Styles specific to error messages */
+.error-messsage .message-icon {
+    background-color: #ff4d4d;
+    color: #000;
+}
+
+.error-messsage .message-text {
+    color: #ff4d4d;
 }

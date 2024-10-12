@@ -1,5 +1,7 @@
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import AppBody from '../components/AppBody/AppBody';
+import Button from '../components/Buttons/Button';
 
 function Landing() {
   const navigate = useNavigate();
@@ -16,13 +18,15 @@ function Landing() {
   };
 
   return (
-    <div className="landing-container">
+    <AppBody>
+      <div className="landing-container">
       <h1>Welcome to AudioSync!</h1>
       <p>To get started, please login</p>
-      <button onClick={handleLoginClick} className="login-link">
+      <Button onClick={handleLoginClick} className="login-link">
         Login
-      </button>
+      </Button>
     </div>
+    </AppBody>
   );
 }
 

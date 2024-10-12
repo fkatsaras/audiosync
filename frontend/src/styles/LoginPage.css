@@ -7,6 +7,9 @@
     flex-direction: column; /* Stack children vertically */
     align-items: center; /* Center content horizontally */
     justify-content: center; /* Center content vertically */
+    width: 100%;
+    margin: 0 auto;
+    max-width: 500px;
 }
 
 h1 {
@@ -18,11 +21,6 @@ h1 {
 label {
     color: #ffffff; /* Style label text */
     margin-bottom: 5px;
-}
-
-.error-message {
-    color: red; /* Style for error message */
-    margin-top: 10px;
 }
 
 p {

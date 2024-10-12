@@ -3,7 +3,8 @@ import { Link, useNavigate } from 'react-router-dom';
 import AppBody from "../components/AppBody/AppBody";
 import '../styles/LoginPage.css'
 import Input from "../components/Input/Input";
-import Button from "../components/Button/Button";
+import Button from "../components/Buttons/Button";
+import Message from "../components/Message/Message";
 
 function Login() {
     const [username, setUsername] = useState('');
@@ -74,7 +75,7 @@ function Login() {
                     <Button type="submit" className="login-button">Login</Button>
                 </form>
                 <p>Don't have an account? <Link to="/register">Register here</Link></p>
-                {errorMessage && <p className="error-message">{errorMessage}</p>}
+                {errorMessage && <Message className="error-message">{errorMessage}</Message>}
             </div>
         </AppBody>
     );

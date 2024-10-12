@@ -111,7 +111,7 @@ def search_songs_get(user_id: str=None, user_query: str=None, limit: int=5, offs
         
         # Query the database to find songs with matching titles
         search_query = """
-            SELECT id, title, album, duration
+            SELECT *
             FROM songs
             WHERE LOWER(title) LIKE %s
             LIMIT %s OFFSET %s
@@ -133,7 +133,7 @@ def search_songs_get(user_id: str=None, user_query: str=None, limit: int=5, offs
                 'id': song['id'],
                 'title': song['title'],
                 'duration': song['duration'],
-                'album': get_album_cover(song['album']) 
+                'cover': get_album_cover(song['album']) 
             }
             songs.append(song_data)
 

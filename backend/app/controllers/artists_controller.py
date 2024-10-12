@@ -7,6 +7,7 @@ from app.models.song import Song  # noqa: E501
 from app import util
 from app.models.api_response import ApiResponse
 from app.controllers.authorization_controller import get_spotify_token
+from app.controllers.songs_controller import get_album_cover
 from app.controllers.api_controller import *
 from app.database import *
 
@@ -87,6 +88,7 @@ def get_artist_by_id(user_id: int, artist_id: int, as_response: bool=True) -> Ap
             songs = []
             for song_data in songs_result:
                 song = Song.from_dict(song_data)
+                song.cover = get_album_cover(song.album)
                 songs.append(song)
 
             # Step 4: Check if the user follows this artist
