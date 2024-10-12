@@ -7,6 +7,7 @@ import AppBody from '../components/AppBody/AppBody';
 import LoadingDots from '../components/LoadingDots/LoadingDots';
 import Button from '../components/Button/Button';
 import Input from '../components/Input/Input';
+import InfoMessage from '../components/InfoMessage/InfoMessage';
 
 /**
  * Search component allows users to search for artists and songs by entering a query.
@@ -194,7 +195,7 @@ const Search: React.FC = () => {
                 
                 {/* In case no results match the query*/}
                 {hasSearched && artistResults.length === 0 && songResults.length === 0 && !loading && (
-                <div>No results found</div>
+                <InfoMessage>No results found</InfoMessage>
                 )}
             </AppBody>
         </div>
