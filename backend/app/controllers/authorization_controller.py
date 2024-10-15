@@ -74,34 +74,25 @@ def token_required(f: callable) -> callable:
 def check_login() -> ApiResponse:
     """Checks if a user is logged in by verifying session data.
 
-    This function checks the session for a logged-in user. If found, 
-    it returns a success response; otherwise, it returns an error response.
+    This function checks the session for a logged-in user. If found,
+    it returns a success response with the user's ID and username; 
+    otherwise, it returns an error response.
 
-    :return: Success response if the user is logged in, error response otherwise.
+    :return: Success response with the user data, error response otherwise.
     :rtype: tuple
     """
-
     if 'user.id' in session:
-        username = session.get('username')
-        return success_response(message=f'User {username} is logged in.')
+        user_id = session.get('user.id')
+        username = session.get('username')  # !TODO! This isnt working properly - username doesnt get stored in the session
+        # Returning both username and user_id in the response body
+        body = {
+            'user_id': user_id,
+            'username': username
+        }
+        print(body)
+        return success_response(message=f'User {username} is logged in.', body=body)
     
     return error_response(message='User is not logged in.', code=401)
-
-def current_user() -> ApiResponse:
-    """Returns the currently logged-in user if any.
-
-    This function retrieves the username from the session. If a username
-    is found, it returns a success response; otherwise, it returns an
-    error response indicating no user is logged in.
-
-    :return: Success response with the current user, error response otherwise.
-    :rtype: tuple
-    """
-
-    username = session.get('username')
-    if username:
-        return success_response(message=f'Current user: {username}')
-    return error_response(message='No user logged in', code=401)
 
 def get_spotify_token() -> str | None:
     """Obtains an access token from the Spotify API using client credentials.

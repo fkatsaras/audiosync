@@ -1,12 +1,10 @@
 import connexion
 import six
 
-from flask import jsonify
 import requests
 
 from app.models.inline_response200 import InlineResponse200  # noqa: E501
 from app.models.song import Song  # noqa: E501
-from app.utils import sample_data
 from app.controllers.api_controller import *
 from app.controllers.authorization_controller import get_spotify_token
 
@@ -46,7 +44,7 @@ def get_song_by_id(user_id: int, song_id: int, as_response: bool=True) -> Song |
 
     :param song_id: The ID of the song to fetch
     :type song_id: int
-    :param user_id: The ID of the user liking the song
+    :param user_id: The ID of the user retrieving the song
     :type user_id: int
     :param as_response: A flag to indicate wether the function will return a JSON/Dict or an Object
     :type as_response: bool

@@ -2,7 +2,6 @@
 import connexion
 
 from app import encoder
-from flask import send_from_directory
 from dotenv import load_dotenv
 from flask_cors import CORS
 
@@ -11,6 +10,7 @@ from app.routes.auth import auth_bp
 from app.routes.search import search_bp
 from app.routes.song import song_bp
 from app.routes.artist import artist_bp
+from app.routes.playlist import playlist_bp
 import os
 
 load_dotenv()
@@ -27,7 +27,7 @@ def create_app():
     CORS(flask_app, resources={r"/*": {"origins": "http://localhost:3000"}})
 
     # Register blueprints
-    blueprints = [home_bp, auth_bp, song_bp, artist_bp, search_bp]
+    blueprints = [home_bp, auth_bp, song_bp, artist_bp, search_bp, playlist_bp]
     for blueprint in blueprints:
         flask_app.register_blueprint(blueprint=blueprint)
 

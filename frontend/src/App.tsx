@@ -6,9 +6,10 @@ import Register from './pages/RegisterPage';
 import Home from './pages/HomePage';
 import Search from './pages/SearchPage'
 import NotFound from "./components/NotFound";
-import CheckAuth from "./components/CheckAuth";
+import UserSession from "./components/UserSession";
 import SongPage from "./pages/SongPage";
 import ArtistPage from "./pages/ArtistPage";
+import MyPlaylistsPage from "./pages/MyPlaylistsPage";
 
 const router = createBrowserRouter([
   { path: "/", element: <Landing /> },
@@ -16,18 +17,22 @@ const router = createBrowserRouter([
   { path: "/register", element: <Register /> },
   {
     path: "/home",
-    element: <CheckAuth><Home /></CheckAuth>
+    element: <UserSession><Home /></UserSession>
   },
   { path: "/search",
-    element: <CheckAuth><Search /></CheckAuth>
+    element: <UserSession><Search /></UserSession>
   },
   { 
     path: "/songs/:songId",
-    element: <CheckAuth><SongPage /></CheckAuth> 
+    element: <UserSession><SongPage /></UserSession> 
   },
   { 
     path: "/artists/:artistId",
-    element: <CheckAuth><ArtistPage /></CheckAuth> 
+    element: <UserSession><ArtistPage /></UserSession> 
+  },
+  { 
+    path: "/:userId/my-playlists",
+    element: <UserSession><MyPlaylistsPage /></UserSession> 
   },
   { path: "*", element: <NotFound />}
 ]);

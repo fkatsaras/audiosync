@@ -16,6 +16,6 @@ def register_route():
 def login_route():
     return login_user()
 
-@auth_bp.route('/api/v1/users/logout', methods=['POST']) # Using only POST method for avoiding CSRF attacks
+@auth_bp.route('/api/v1/users/logout', methods=['POST']) 
 def logout_route():
     return logout_user()

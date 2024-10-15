@@ -49,7 +49,6 @@ CREATE TABLE IF NOT EXISTS `songs` (
   `album` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
   `duration` int NOT NULL,
   `cover` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
-  `playlists` json DEFAULT NULL,        -- !TODO! when creating the playlist table , the playlist column must be replaced with playlist id (FOREIGN KEY)
   `is_playing` boolean NOT NULL,
   PRIMARY KEY (`id`),
   CONSTRAINT `fk_artist` FOREIGN KEY (`artist_id`) REFERENCES `artists` (`id`) ON DELETE CASCADE
@@ -76,5 +75,33 @@ CREATE TABLE IF NOT EXISTS `followed_artists` (
     FOREIGN KEY (`artist_id`) REFERENCES `artists`(`id`) ON DELETE CASCADE,
     PRIMARY KEY (`user_id`, `artist_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- Data exported was unselected
+
+-- Dumping structure for table audiosync_db.playlists
+CREATE TABLE IF NOT EXISTS `playlists` (
+  `id` int unsigned NOT NULL AUTO_INCREMENT,
+  `title` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  `owner` int unsigned NOT NULL,  -- Foreign key to users (playlist owner)
+  `cover` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  `edit_mode` boolean NOT NULL DEFAULT false,
+  `is_public` boolean NOT NULL DEFAULT false,
+  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  FOREIGN KEY (`owner`) REFERENCES `users`(`id`) ON DELETE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- Data exported was unselected
+
+
+-- Dumping structure for table audiosync_db.playlist_songs
+CREATE TABLE IF NOT EXISTS `playlist_songs` (
+  `playlist_id` int unsigned NOT NULL,
+  `song_id` int unsigned NOT NULL,
+  FOREIGN KEY (`playlist_id`) REFERENCES `playlists`(`id`) ON DELETE CASCADE,
+  FOREIGN KEY (`song_id`) REFERENCES `songs`(`id`) ON DELETE CASCADE,
+  PRIMARY KEY (`playlist_id`, `song_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- Data exported was unselected

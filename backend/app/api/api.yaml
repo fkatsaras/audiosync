@@ -1006,15 +1006,38 @@ components:
           type: boolean
           description: Flag indicating if the user can edit the playlist
           example: true
+        owner:
+          type: integer
+          description: The user ID of the playlist owner
+          example: 101
+        is_public:
+          type: boolean
+          description: Indicates if the playlist is public or private
+          example: false
+        created_at:
+          type: string
+          format: date-time
+          description: Playlist creation timestamp
+        updated_at:
+          type: string
+          format: date-time
+          description: Playlist last updated timestamp
       example:
-        songs:
-        - null
-        - null
-        editMode: true
         id: 123
         title: My Favorite Songs
+        songs:
+          - id: 1
+            title: Song1
+          - id: 2
+            title: Song2
+        editMode: true
+        owner: 101
+        is_public: false
+        created_at: 2024-10-12T08:40:51.620Z
+        updated_at: 2024-10-12T08:40:51.620Z
       xml:
         name: playlist
+    
     Song:
       type: object
       properties:

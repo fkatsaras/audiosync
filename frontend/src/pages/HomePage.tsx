@@ -6,6 +6,11 @@ import AppBody from '../components/AppBody/AppBody';
 import LoadingDots from '../components/LoadingDots/LoadingDots';
 import Message from '../components/Message/Message';
 
+interface UserSessionProps {
+  userId?: string;
+  username?: string;
+}
+
 type Links = {
   liked_songs?: string;
   recommended?: string;
@@ -14,7 +19,7 @@ type Links = {
   my_playlists?: string;
 };
 
-function Home() {
+const Home: React.FC<UserSessionProps> = ({ userId, username }) => {
   const [links, setLinks] = useState<Links | null>(null); // Initial state as null to handle undefined case
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -23,7 +28,7 @@ function Home() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch('api/v1/home', {
+        const response = await fetch('/api/v1/home', {
           headers: {
             'Authorization': `Bearer ${localStorage.getItem('token')}`
           }
@@ -60,7 +65,7 @@ function Home() {
 
   return (
     <div className='home-container'>
-      <Navbar />
+      <Navbar userId={userId || ''} username={username || ''} />
       <AppBody>
         <h1>Welcome to Your Home Page</h1>
       </AppBody>

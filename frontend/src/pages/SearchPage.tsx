@@ -9,6 +9,12 @@ import Input from '../components/Input/Input';
 import Message from '../components/Message/Message';
 import ResultItem from '../components/ResultItem/ResultItem';
 
+interface UserSessionProps {
+    userId?: string;
+    username?: string;
+  }
+  
+
 /**
  * Search component allows users to search for artists and songs by entering a query.
  * It fetches the search results from the backend and displays them, with options to load more results.
@@ -16,7 +22,7 @@ import ResultItem from '../components/ResultItem/ResultItem';
  * @component
  * @returns {JSX.Element} The Search component UI.
  */
-const Search: React.FC = () => {
+const Search: React.FC<UserSessionProps> = ({ userId, username }) => {
     const [query, setQuery] = useState<string>('');
     const [artistResults, setArtistResults] = useState<Artist[]>([]);
     const [songResults, setSongResults] = useState<Song[]>([]);
@@ -36,6 +42,7 @@ const Search: React.FC = () => {
     * @param {'artists' | 'songs'} type - The type of results to fetch (artists or songs).
     * @param {number} offset - The number of results to skip, for pagination purposes.
     * @returns {Promise<void>} Updates the state with fetched results and handles loading/error states.
+    * 
     */
     const fetchResults = async (type: 'artists' | 'songs', offset: number) => {
         setLoading(true);
@@ -127,7 +134,7 @@ const Search: React.FC = () => {
 
     return (
         <div className='search-container'>
-            <Navbar />
+            <Navbar userId={userId || ''} username={username || ''}/>
             <AppBody>
                 <h1>Search</h1>
                 <Input
