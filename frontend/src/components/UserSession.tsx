@@ -1,6 +1,7 @@
 import React, { ReactNode, useEffect, useState } from 'react';
 import { Navigate } from 'react-router-dom';
 import LoadingDots from './LoadingDots/LoadingDots';
+import { jwtDecode, JwtPayload } from 'jwt-decode';
 
 interface UserSessionProps {
   children: ReactNode;
@@ -15,6 +16,7 @@ const UserSession: React.FC<UserSessionProps> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
+
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (!token) {
@@ -22,7 +24,35 @@ const UserSession: React.FC<UserSessionProps> = ({ children }) => {
       return;
     }
 
+    const checkTokenValidity = () => {
+      const token = localStorage.getItem('token');
+
+      if(!token) {
+        return <Navigate to="/login" />
+      }
+
+      try {
+        const decodedToken = jwtDecode<JwtPayload>(token);
+
+        // Check if token is expired
+        if (decodedToken.exp && decodedToken.exp * 1000 < Date.now()) {
+          localStorage.removeItem('token')
+          alert('Your session has expired. Please log in again.');
+          return <Navigate to="/login" />
+        }
+      } catch (err) {
+        console.error('Error decoding token:', err);  // Handle unexpected errors
+        localStorage.removeItem('token');
+        return <Navigate to="/login" /> 
+      }
+    };
+
+    // Fetch user data if token is valid
     const fetchUserData = async () => {
+
+      checkTokenValidity();
+
+
       try {
         const response = await fetch('/api/v1/users/check-login', {
           headers: {
