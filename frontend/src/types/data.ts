@@ -50,13 +50,14 @@ export interface Artist {
  * Playlist interface representing a user's playlist.
  */
 export interface Playlist {
-    id: number;          // The ID of the playlist
-    title: string;       // The title of the playlist
-    songs?: Song[];       // The list of songs in the playlist
-    edit_mode?: boolean;  // Indicates if the playlist is in edit mode
-    cover?: string;       // URL to the cover image of the playlist
-    owner: number;       // The ID of the owner of the playlist
-    is_public: boolean;  // Indicates if the playlist is public
-    created_at: string;  // Timestamp of when the playlist was created
-    updated_at?: string;  // Timestamp of when the playlist was last updated
+    id: number;             // The ID of the playlist
+    title: string;          // The title of the playlist
+    song_ids: string;     // Array of song id's
+    songs?: Song[];         // Array of song objects
+    edit_mode?: boolean;    // Indicates if the playlist is in edit mode
+    cover?: string;         // URL to the cover image of the playlist
+    owner: number;          // The ID of the owner of the playlist
+    is_public: boolean;     // Indicates if the playlist is public
+    created_at: string;     // Timestamp of when the playlist was created
+    updated_at?: string;    // Timestamp of when the playlist was last updated
 }

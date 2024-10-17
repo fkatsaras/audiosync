@@ -1,6 +1,6 @@
 import React, { useEffect, useState} from "react";
 import { useParams, Link } from "react-router-dom";
-import { Artist } from "../types/dataTypes";
+import { Artist } from "../types/data";
 import '../styles/ArtistPage.css'
 import Button from "../components/Buttons/Button";
 import AppBody from "../components/AppBody/AppBody";

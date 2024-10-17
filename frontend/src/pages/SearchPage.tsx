@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Song, Artist } from '../types/dataTypes';
+import { Song, Artist } from '../types/data';
 import Navbar from '../components/Navbar/Navbar';
 import '../styles/SearchPage.css'
 import AppBody from '../components/AppBody/AppBody';

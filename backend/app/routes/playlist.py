@@ -4,7 +4,7 @@ from app.controllers.authorization_controller import token_required
 
 playlist_bp = Blueprint('playlist', __name__)
 
-@playlist_bp.route('/api/v1/playlist/<int:playlist_id>', methods=['GET'])
+@playlist_bp.route('/api/v1/playlists/<int:playlist_id>', methods=['GET'])
 @token_required
 def playlist_route(current_user: int, playlist_id: int) -> ApiResponse:
     """

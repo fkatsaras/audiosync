@@ -10,6 +10,7 @@ import UserSession from "./components/UserSession";
 import SongPage from "./pages/SongPage";
 import ArtistPage from "./pages/ArtistPage";
 import MyPlaylistsPage from "./pages/MyPlaylistsPage";
+import PlaylistPage from "./pages/PlaylistPage";
 
 const router = createBrowserRouter([
   { path: "/", element: <Landing /> },
@@ -33,6 +34,10 @@ const router = createBrowserRouter([
   { 
     path: "/:userId/my-playlists",
     element: <UserSession><MyPlaylistsPage /></UserSession> 
+  },
+  { 
+    path: "/:userId/playlists/:playlistId",
+    element: <UserSession><PlaylistPage /></UserSession> 
   },
   { path: "*", element: <NotFound />}
 ]);

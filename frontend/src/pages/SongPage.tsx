@@ -1,6 +1,6 @@
 import React , { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import { Song } from "../types/dataTypes";
+import { Song } from "../types/data";
 import AppBody from "../components/AppBody/AppBody";
 import Button from "../components/Buttons/Button";
 import Message from "../components/Message/Message";

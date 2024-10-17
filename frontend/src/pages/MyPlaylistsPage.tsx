@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import {  Playlist } from '../types/dataTypes';
+import { Playlist } from '../types/data';
 import Navbar from '../components/Navbar/Navbar';
 import AppBody from '../components/AppBody/AppBody';
 import LoadingDots from '../components/LoadingDots/LoadingDots';
 import Message from '../components/Message/Message';
 import ResultItem from '../components/ResultItem/ResultItem';
 import Button from '../components/Buttons/Button';
+import defaultCover from '../assets/images/playlist_default_cover.svg';
 // import '../styles/MyPlaylists.css'
 
 interface UserSessionProps {
@@ -26,7 +27,7 @@ const MyPlaylistsPage: React.FC<UserSessionProps> = ({ userId, username }) => {
     const [playlists, setPlaylists] = useState<Playlist[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string>('');
-    // const [hasMorePlaylists, setHasMorePlaylists] = useState<boolean>(true);      // Tracks if there are more playlists
+    // const [hasMorePlaylists, setHasMorePlaylists] = useState<boolean>(true);      // Tracks if there are more playlists !TODO! Implement a show more button here as well
 
 
     useEffect(() => {
@@ -76,10 +77,10 @@ const MyPlaylistsPage: React.FC<UserSessionProps> = ({ userId, username }) => {
                             <li key={playlist.id}>
                                 <ResultItem
                                     id={playlist.id}
-                                    imageSrc={playlist.cover}
+                                    imageSrc={playlist.cover? playlist.cover : defaultCover}
                                     title={playlist.title}
-                                    subtitle={`${playlist.songs?.length} songs`}
-                                    linkPath='/playlists'
+                                    subtitle={playlist.song_ids.split(',').length > 0 ? `${playlist.song_ids.split(',').length} songs` : 'No songs added'}
+                                    linkPath={`/${userId}/playlists`}
                                     altText='Playlist cover'
                                     className='playlist-result-image'
                                 />
