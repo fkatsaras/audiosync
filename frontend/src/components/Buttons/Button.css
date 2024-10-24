@@ -57,3 +57,13 @@ button:visited {
 .default-button.active:hover {
     border-color: #4a148c; /* Darker purple border on hover */
 }
+
+/* Special styles for Spotify Buttons*/
+.default-button.spotify-button { 
+    color: #1db954;
+}
+
+.default-button.spotify-button:hover {
+    background-color: #1db954;
+    color: #f1f1f1;
+}

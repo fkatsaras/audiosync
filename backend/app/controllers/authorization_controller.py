@@ -122,3 +122,39 @@ def get_spotify_token() -> str | None:
     else:
         print(f"Failed to get token: {auth_response.status_code}, {auth_response.text}")
         return None
+    
+def spotify_callback():
+    code = request.args.get('code')
+    if not code:
+        return error_response("Authorization code not provided.", 400)
+
+    token_url = 'https://accounts.spotify.com/api/token'
+    payload = {
+        'grant_type': 'authorization_code',
+        'code': code,
+        'redirect_uri': os.getenv('SPOTIFY_REDIRECT_URI'),
+        'client_id': os.getenv('SPOTIFY_CLIENT_ID'),
+        'client_secret': os.getenv('SPOTIFY_CLIENT_SECRET')
+    }
+
+    response = requests.post(token_url, data=payload)
+    
+    if response.status_code != 200:
+        return error_response("Failed to obtain access token.", response.status_code)
+
+    token_info = response.json()
+
+    if 'access_token' in token_info:
+        access_token = token_info['access_token']
+        refresh_token = token_info.get('refresh_token')
+        
+        # Store the token in the user session
+        session['spotify_player_access_token'] = access_token
+        session['spotify_refresh_token'] = refresh_token
+        
+        return success_response("Access token obtained successfully.", {
+            'access_token': access_token,
+            'refresh_token': refresh_token
+        })
+
+    return error_response("Access token not found in response.", 500)

@@ -11,11 +11,13 @@ import SongPage from "./pages/SongPage";
 import ArtistPage from "./pages/ArtistPage";
 import MyPlaylistsPage from "./pages/MyPlaylistsPage";
 import PlaylistPage from "./pages/PlaylistPage";
+import SpotifyAuth from "./components/SpotifyAuth/SpotifyAuth"
 
 const router = createBrowserRouter([
   { path: "/", element: <Landing /> },
   { path: "/login", element: <Login /> },
   { path: "/register", element: <Register /> },
+  { path: "/authorize", element: <SpotifyAuth /> },
   {
     path: "/home",
     element: <UserSession><Home /></UserSession>

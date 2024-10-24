@@ -295,7 +295,7 @@ def login_user():  # noqa: E501
                 token = jwt.encode({
                     'user_id': p_user_id,
                     'username': username,
-                    'exp': datetime.datetime.utcnow() + datetime.timedelta(hours=1)     #!TODO! Think about how long will the session last
+                    'exp': datetime.datetime.utcnow() + datetime.timedelta(hours=5)     #!TODO! Think about how long will the session last
                 }, os.getenv('JWT_SECRET_KEY'), algorithm="HS256")
 
                 # Store user ID in session
