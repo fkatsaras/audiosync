@@ -1,26 +1,12 @@
 'use strict';
 
 var utils = require('../utils/writer.js');
-var session = require('express-session');  // Assuming you are using express-session
-
-// A sample success and error response generator (assuming you have these utilities)
-const successResponse = (message, body) => ({
-  status: 'success',
-  message: message,
-  body: body
-});
-
-const errorResponse = (message, code) => ({
-  status: 'error',
-  message: message,
-  code: code
-});
 
 module.exports.check_login = function check_login(req, res, next) {
   // Check if the user is logged in by verifying the session data
   if (req.session && req.session['user.id']) {
     const user_id = req.session['user.id'];
-    const username = req.session['username'];  // Make sure this is set during login
+    const username = req.session['username']; 
     
     if (!username) {
       // If the username is not found in session, return an error

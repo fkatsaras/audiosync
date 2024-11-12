@@ -19,7 +19,7 @@ module.exports.get_artist_songs = function get_artist_songs (req, res, next, art
 };
 
 module.exports.get_artist_by_id = async function get_artist_by_id(req, res, next, artistId) {
-  const userId = req.user_id; // Assuming user_id is stored in the request object (maybe from a middleware)
+  const userId = req.user_id; 
   try {
     // Create DB connection
     const connection = createConnection();
@@ -32,7 +32,7 @@ module.exports.get_artist_by_id = async function get_artist_by_id(req, res, next
     const artistResult = await executeQuery(connection, artistQuery, [artistId]);
 
     if (artistResult && artistResult.length > 0) {
-      const artistData = artistResult[0]; // Assuming only one artist is returned
+      const artistData = artistResult[0]; 
 
       // Step 2: Fetch the songs related to the artist from the DB
       const songsQuery = "SELECT * FROM songs WHERE artist_id = ?";

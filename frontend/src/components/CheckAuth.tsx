@@ -8,7 +8,12 @@ interface CheckAuthProps {
 function CheckAuth({ children }: CheckAuthProps) {
   const token = localStorage.getItem('token');
 
-  return token ? children : <Navigate to='/login' />;
+  // Make sure you return a valid JSX element or null
+  if (token) {
+      return <div>{children}</div>; // Wrap the children in a fragment to ensure it's a valid JSX element
+  }
+  
+  return <Navigate to='/login' />;
 }
 
 export default CheckAuth;
