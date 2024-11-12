@@ -302,21 +302,63 @@ exports.get_user_playlists = function(userId) {
  * body Users_login_body 
  * returns inline_response_200_3
  **/
-exports.loginUser = function(body) {
-  return new Promise(function(resolve, reject) {
-    var examples = {};
-    examples['application/json'] = {
-  "message" : "message",
-  "token" : "token"
-};
-    if (Object.keys(examples).length > 0) {
-      resolve(examples[Object.keys(examples)[0]]);
-    } else {
-      resolve();
+exports.loginUser = function(username, password) {
+  return new Promise(async (resolve, reject) => {
+    const connection = dbUtils.createConnection();
+
+    if (!connection) {
+      return reject(apiUtils.errorResponse(null, 'DB connection failed', 500));
+    }
+
+    try {
+      console.log(`Calling stored procedure login_user with username: ${username}`);
+      const [userDetails] = await dbUtils.callProcedure(
+        connection, 
+        'login_user', 
+        [username], 
+        ['p_password_hash', 'p_user_id', 'p_success', 'p_message']
+      );
+
+      console.log('User details retrieved:', userDetails);
+      const [passwordHash, userId, success, message] = userDetails;
+
+      if (success === 1 && passwordHash) {
+        // Validate password using bcrypt
+        if (bcrypt.compareSync(password, passwordHash)) {
+          console.log("Credentials are valid");
+
+          // Generate JWT token
+          const token = jwt.sign(
+            {
+              user_id: userId,
+              username: username,
+              exp: Math.floor(Date.now() / 1000) + (60 * 60)  // 1 hour expiry
+            },
+            process.env.JWT_SECRET_KEY,
+            { algorithm: 'HS256' }
+          );
+
+          // Store user ID in session (express-session or memory store can be used here)
+          // req.session.user_id = userId; // If using sessions, uncomment this line
+
+          // Return the success response with token
+          resolve({ token });
+        } else {
+          console.error("Invalid password");
+          reject({ message: 'Invalid password' });
+        }
+      } else {
+        console.error(message);
+        reject({ message });
+      }
+    } catch (error) {
+      console.error(`Exception during login: ${error.message}`);
+      reject({ message: 'An error occurred during login' });
+    } finally {
+      dbUtils.closeConnection(connection);
     }
   });
-}
-
+};
 
 /**
  * Logs out the current logged-in user session

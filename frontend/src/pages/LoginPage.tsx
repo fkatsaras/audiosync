@@ -15,7 +15,7 @@ function Login() {
         event.preventDefault();
     
         try {
-            const response = await fetch('api/v1/users/login', { // Sends response to the /login route in the backend, with a JSON : {usernamee, password}
+            const response = await fetch('/api/v1/users/login', { // Sends response to the /login route in the backend, with a JSON : {usernamee, password}
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

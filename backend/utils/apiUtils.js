@@ -20,4 +20,7 @@ function errorResponse(res, message, code = 404) {
   return res.status(code).json(response.toObject());
 }
 
-module.exports = { successResponse, errorResponse };
+module.exports = { 
+  successResponse,
+  errorResponse
+};

@@ -13,13 +13,22 @@
   "license": "Unlicense",
   "private": true,
   "dependencies": {
+    "bcrypt": "^5.1.1",
+    "bcryptjs": "^2.4.3",
     "connect": "^3.2.0",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
     "express": "^4.21.1",
     "express-session": "^1.18.1",
     "js-yaml": "^3.3.0",
+    "jsonwebtoken": "^9.0.2",
+    "jwt-simple": "^0.5.6",
     "mysql2": "^3.11.4",
-    "oas3-tools": "^2.2.3"
+    "nodemon": "^3.1.7",
+    "oas3-tools": "^2.2.3",
+    "swagger-jsdoc": "^6.2.8",
+    "swagger-parser": "^10.0.3",
+    "swagger-routes-express": "^3.3.2",
+    "swagger-ui-express": "^5.0.1"
   }
 }

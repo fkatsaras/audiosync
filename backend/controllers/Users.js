@@ -1,7 +1,12 @@
 'use strict';
 
 var utils = require('../utils/writer.js');
-var Users = require('../service/UsersService');
+var Users = require('../service/UsersService.js');
+const jwt = require('jsonwebtoken');
+const bcrypt = require('bcryptjs');
+const dbUtils = require('../utils/dbUtils.js');
+const apiUtils = require('../utils/apiUtils.js');
+const router = require('../routes/index.js');
 
 module.exports.add_liked_song = function add_liked_song (req, res, next, body, userId) {
   Users.add_liked_song(body, userId)
@@ -103,14 +108,31 @@ module.exports.get_user_playlists = function get_user_playlists (req, res, next,
     });
 };
 
-module.exports.loginUser = function loginUser (req, res, next, body) {
-  Users.loginUser(body)
-    .then(function (response) {
-      utils.writeJson(res, response);
-    })
-    .catch(function (response) {
-      utils.writeJson(res, response);
-    });
+module.exports.login_user = async function login_user(req, res) { 
+  const { username, password } = req.body;
+
+  // Validate request body
+  if (!username || !password) {
+    return apiUtils.errorResponse(res, 'Username or password missing', 400);
+  }
+
+  console.log(`Login attempt - Username: ${username}`);
+
+  try {
+    // Call the service to handle login
+    const response = await Users.loginUser(username, password);
+    
+    // If response has a token, it's a success
+    if (response.token) {
+      return apiUtils.successResponse(res, 'Login successful', { token: response.token });
+    } else {
+      // If there's no token in response, it's an error
+      return apiUtils.errorResponse(res, response.message || 'Login failed', 401);
+    }
+  } catch (error) {
+    console.error(`Exception during login: ${error.message}`);
+    return apiUtils.errorResponse(res, 'An error occurred', 500);
+  }
 };
 
 module.exports.logout_user = function logout_user (req, res, next, body) {

@@ -1,4 +1,3 @@
-// index.js
 'use strict';
 
 const path = require('path');
@@ -7,29 +6,25 @@ const express = require('express');
 const oas3Tools = require('oas3-tools');
 const dotenv = require('dotenv');
 const session = require('express-session');
+const routes = require('./routes/index');
 const cors = require('cors');
+const bodyParser = require('body-parser');
 
 // Load environment variables
 dotenv.config();
 
 // Server configuration
-const serverPort = process.env.PORT || 8080;
+const serverPort = process.env.PORT || 5000;
 const app = express();
 
-// Configure session
-app.use(session({
-    secret: process.env.SESSION_SECRET || 'default_secret',
-    resave: false,
-    saveUninitialized: true,
-    cookie: { secure: false }  // Set to `true` if using HTTPS
-}));
+// // Configure session
+// app.use(session({
+//     secret: process.env.SESSION_SECRET || 'default_secret',
+//     resave: false,
+//     saveUninitialized: true,
+//     cookie: { secure: false }  // Set to `true` if using HTTPS
+// }));
 
-// Set up CORS
-const allowedOrigins = process.env.CORS_ORIGIN || 'http://localhost:3000';
-app.use(cors({
-    origin: allowedOrigins,
-    credentials: true
-}));
 
 // Swagger router configuration
 const options = {
@@ -38,17 +33,21 @@ const options = {
     },
 };
 
-// Initialize Swagger middleware with OpenAPI spec
-const expressAppConfig = oas3Tools.expressAppConfig(path.join(__dirname, 'api/openapi.yaml'), options);
-const openapiApp = expressAppConfig.getApp();
 
-// Use OpenAPI app within the Express app
-app.use(openapiApp);
+
+// Register routes
+app.use('/api/v1', routes); // Use '/api/v1' as base path for all routes
+
+// Middleware setup
+app.use(cors()); // Enable Cross-Origin Request
+app.use(bodyParser.json()); // Parse JSON request bodies
+app.use(bodyParser.urlencoded({ extended: true })); // Parse URL-encoded bodies
 
 // Start server
 http.createServer(app).listen(serverPort, () => {
-    console.log(`Your server is listening on port ${serverPort} (http://localhost:${serverPort})`);
+    console.log(`AudioSync backend server is running on port ${serverPort} (http://localhost:${serverPort})`);
     console.log(`Swagger UI is available on http://localhost:${serverPort}/docs`);
 });
 
 module.exports = app;
+

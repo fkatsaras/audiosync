@@ -15,8 +15,6 @@ externalDocs:
   description: Find out more about Swagger
   url: http://swagger.io
 servers:
-- url: https://virtserver.swaggerhub.com/KARDITSAFOTIS/AudioSyncAPI/1.0.11
-  description: SwaggerHub API Auto Mocking
 - url: https://virtserver.swaggerhub.com/KATSARASFOTIS99/swagger-audio_sync_open_api_3_0/1.0.11
   description: Main Production Server
 tags:
