@@ -4,8 +4,8 @@ var utils = require('../utils/writer.js');
 var Users = require('../service/UsersService.js');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
-const dbUtils = require('../utils/dbUtils.js');
-const apiUtils = require('../utils/apiUtils.js');
+const db = require('../utils/dbUtils.js');
+const api = require('../utils/apiUtils.js');
 const router = require('../routes/index.js');
 
 module.exports.add_liked_song = function add_liked_song (req, res, next, body, userId) {
@@ -113,7 +113,7 @@ module.exports.login_user = async function login_user(req, res) {
 
   // Validate request body
   if (!username || !password) {
-    return apiUtils.errorResponse(res, 'Username or password missing', 400);
+    return api.errorResponse(res, 'Username or password missing', 400);
   }
   try {
     // Call the service to handle login
@@ -121,14 +121,14 @@ module.exports.login_user = async function login_user(req, res) {
     
     // If response has a token, it's a success
     if (response.token) {
-      return apiUtils.successResponse(res, 'Login successful', { token: response.token });
+      return api.successResponse(res, 'Login successful', { token: response.token });
     } else {
       // If there's no token in response, it's an error
-      return apiUtils.errorResponse(res, response.message || 'Login failed', 401);
+      return api.errorResponse(res, response.message || 'Login failed', 401);
     }
   } catch (error) {
     console.error(`Exception during login: ${error.message}`);
-    return apiUtils.errorResponse(res, 'An error occurred', 500);
+    return api.errorResponse(res, 'An error occurred', 500);
   }
 };
 
@@ -142,16 +142,15 @@ module.exports.logout_user = function logout_user (req, res, next, body) {
     });
 };
 
-module.exports.registerUser = function registerUser (req, res, next, body) {
-  Users.registerUser(body)
-    .then(function (response) {
-      utils.writeJson(res, response);
+module.exports.register_user = function register_user(req, res, next) {
+  Users.register_user(req.body)
+    .then(response => {
+      api.successResponse(res, response.message, response.body, 201);
     })
-    .catch(function (response) {
-      utils.writeJson(res, response);
+    .catch(error => {
+      api.errorResponse(res, error.message, error.code || 500); 
     });
 };
-
 module.exports.remove_liked_song = function remove_liked_song (req, res, next, userId, songId) {
   Users.remove_liked_song(userId, songId)
     .then(function (response) {

@@ -1,6 +1,8 @@
 'use strict';
 
-const dbUtils = require('../utils/dbUtils');
+const bcrypt = require('bcrypt');
+const db = require('../utils/dbUtils');
+const api = require('../utils/apiUtils');
 
 
 /**
@@ -306,17 +308,17 @@ exports.get_user_playlists = function(userId) {
  **/
 exports.login_user = function(username, password) {
   return new Promise(async (resolve, reject) => {
-    const connection = dbUtils.createConnection();
+    const connection = db.createConnection();
     console.log(`Login attempt - Username: ${username}`);
 
 
     if (!connection) {
-      return reject(apiUtils.errorResponse(null, 'DB connection failed', 500));
+      return reject(api.errorResponse(null, 'DB connection failed', 500));
     }
 
     try {
       console.log(`Calling stored procedure login_user with username: ${username}`);
-      const [userDetails] = await dbUtils.callProcedure(
+      const [userDetails] = await db.callProcedure(
         connection, 
         'login_user', 
         [username], 
@@ -353,13 +355,13 @@ exports.login_user = function(username, password) {
         }
       } else {
         console.error(message);
-        reject({ message });
+        reject(api.errorResponse(null, message, 500));
       }
     } catch (error) {
       console.error(`Exception during login: ${error.message}`);
-      reject({ message: 'An error occurred during login' });
+      reject(api.errorResponse(null, `An error occurred during login: ${error.message}`, 500));
     } finally {
-      dbUtils.closeConnection(connection);
+      db.closeConnection(connection);
     }
   });
 };
@@ -393,19 +395,42 @@ exports.logout_user = function(body) {
  * body Users_register_body 
  * returns inline_response_201
  **/
-exports.registerUser = function(body) {
-  return new Promise(function(resolve, reject) {
-    var examples = {};
-    examples['application/json'] = {
-  "message" : "message"
-};
-    if (Object.keys(examples).length > 0) {
-      resolve(examples[Object.keys(examples)[0]]);
-    } else {
-      resolve();
+exports.register_user = async function(body) {
+  try {
+    // Extract required fields
+    const { username, password, email, first_name, last_name } = body;
+
+    if (!username || !password || !email) {
+      throw { message: "Missing required fields for regisration", code: 400 };
     }
-  });
-}
+
+    const passswordHash = await bcrypt.hash(password, 10);
+
+    const connection = db.createConnection();
+
+    try {
+      const [p_success, p_message] = await db.callProcedure(
+        connection,
+        'register_user',
+        [username, passswordHash, email, first_name, last_name],
+        [p_success, p_message]
+      );
+
+      if (p_success == 1) {
+        return { message: p_message, body: {username, email} };
+      } else {
+        throw { message: p_message, code: 400 };
+      }
+    } catch (error) {
+      connection.rollback();
+      throw { message: `Error registering user: ${error.message}`, code: 500 };
+    } finally {
+      db.closeConnection(connection);
+    }
+  } catch (error) {
+    throw error;
+  }
+};
 
 
 /**

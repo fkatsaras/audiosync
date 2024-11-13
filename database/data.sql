@@ -19,7 +19,7 @@ USE `se2_audiosync_db`;
 /*!40000 ALTER TABLE `songs` DISABLE KEYS */;
 INSERT INTO `songs` (id, title, artist_id, album, duration, cover, is_playing) VALUES
     (1, 'Master of Puppets', 1, 'Master of Puppets', 515, NULL, false),                         -- !TODO! get a placeholder image to display in case spotify api fails
-    (2, 'One', 1, '...And Justice for All', 447, NULL,'[]', false),                                 
+    (2, 'One', 1, '...And Justice for All', 447, NULL, false),                                 
     (3, 'Fade to Black', 1, 'Ride the Lightning', 417, NULL, false),
     (4, 'The Trooper', 2, 'Piece of Mind', 249, NULL, false),
     (5, 'Aces High', 2, 'Powerslave', 296, NULL, false),
@@ -39,7 +39,7 @@ INSERT INTO `songs` (id, title, artist_id, album, duration, cover, is_playing) V
     (19, 'Creeping Death', 1, 'Ride the Lightning', 260, NULL, false),
     (20, 'Tornado of Souls', 4, 'Rust in Peace', 432, NULL, false),
     (21, 'Hangar 18', 4, 'Rust in Peace', 388, NULL, false),
-    (22, 'Aerials', 5, 'Toxicity', 400, NULL,'[]', false),
+    (22, 'Aerials', 5, 'Toxicity', 400, NULL, false),
     (23, 'B.Y.O.B.', 5, 'Mezmerize', 230, NULL, false),
     (24, 'The Pot', 3, '10,000 Days', 337, NULL, false),
     (25, 'Paranoid', 4, 'Peace Sells... But Whos Buying?', 212, NULL, false);
@@ -51,7 +51,7 @@ INSERT INTO `songs` (id, title, artist_id, album, duration, cover, is_playing) V
 INSERT INTO `artists` (id, name, followers, profile_picture) VALUES
     (1, 'Metallica', 100, NULL),
     (2, 'Iron Maiden', 150, NULL),
-    (3, 'Tool', 200, NULL);
+    (3, 'Tool', 200, NULL),
     (4, 'Megadeth', 120, NULL),
     (5, 'System of a Down', 180, NULL);
 /*!40000 ALTER TABLE `artists` ENABLE KEYS */;

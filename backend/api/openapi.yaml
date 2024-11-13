@@ -144,7 +144,7 @@ paths:
       summary: Registers a new user in the system
       description: "Registers a user with the provided username, password, email,\
         \ and personal details."
-      operationId: registerUser
+      operationId: register_user
       requestBody:
         content:
           application/json:
