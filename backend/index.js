@@ -12,7 +12,8 @@ const cors = require('cors');
 dotenv.config();
 
 // Server configuration
-const serverPort = 5000;
+const serverPort = process.env.PORT || 5000;
+
 
 
 // // Configure session

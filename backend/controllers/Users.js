@@ -111,18 +111,13 @@ module.exports.get_user_playlists = function get_user_playlists (req, res, next,
 module.exports.login_user = async function login_user(req, res) { 
   const { username, password } = req.body;
 
-  console.log("It finally worked... ");
-
   // Validate request body
   if (!username || !password) {
     return apiUtils.errorResponse(res, 'Username or password missing', 400);
   }
-
-  console.log(`Login attempt - Username: ${username}`);
-
   try {
     // Call the service to handle login
-    const response = await Users.loginUser(username, password);
+    const response = await Users.login_user(username, password);
     
     // If response has a token, it's a success
     if (response.token) {

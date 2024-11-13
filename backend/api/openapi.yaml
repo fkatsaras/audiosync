@@ -170,7 +170,7 @@ paths:
       - users
       summary: Logs user into the system
       description: Logs in using username and password.
-      operationId: loginUser
+      operationId: login_user
       requestBody:
         content:
           application/json:

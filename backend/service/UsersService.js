@@ -1,5 +1,7 @@
 'use strict';
 
+const dbUtils = require('../utils/dbUtils');
+
 
 /**
  * User likes a song
@@ -302,9 +304,11 @@ exports.get_user_playlists = function(userId) {
  * body Users_login_body 
  * returns inline_response_200_3
  **/
-exports.loginUser = function(username, password) {
+exports.login_user = function(username, password) {
   return new Promise(async (resolve, reject) => {
     const connection = dbUtils.createConnection();
+    console.log(`Login attempt - Username: ${username}`);
+
 
     if (!connection) {
       return reject(apiUtils.errorResponse(null, 'DB connection failed', 500));
