@@ -1,6 +1,6 @@
 # AudioSync
 
-**AudioSync** is a music streaming application designed to allow users to browse and stream songs, explore artists, and create playlists. Built with a **React** frontend and a **Flask** backend, AudioSync integrates withh the **Spotify API** and leverages **MySQL** for data storage.
+**AudioSync** is a music streaming application designed to allow users to browse and stream songs, explore artists, and create playlists. Built with a **React** frontend and a **Express** backend using **OpenAPI**, AudioSync integrates withh the **Spotify API** and leverages **MySQL** for data storage.
 
 
 ## Table of Contents
