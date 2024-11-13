@@ -185,6 +185,168 @@ paths:
                     type: "string"
                   code:
                     type: "integer"
+  /api/v1/songs/{song_id}/like:
+    post:
+      summary: "Toggle song like status"
+      description: "Set or unset a song as liked for the current user."
+      parameters:
+        - name: "song_id"
+          in: "path"
+          required: true
+          schema:
+            type: "integer"
+          description: "The unique identifier for the song."
+      requestBody:
+        description: "Optional user data if any additional information is needed"
+        content:
+          application/json:
+            schema:
+              type: "object"
+      responses:
+        '200':
+          description: "Successfully toggled the like status for the song."
+          content:
+            application/json:
+              schema:
+                type: "object"
+                properties:
+                  message:
+                    type: "string"
+                    description: "A success message indicating the like status was toggled."
+                  body:
+                    type: "object"
+                    properties:
+                      song_id:
+                        type: "integer"
+                        description: "The ID of the song."
+                      liked:
+                        type: "boolean"
+                        description: "The new like status for the song (true if liked, false if unliked)."
+        '400':
+          description: "Bad Request - Invalid song ID or other missing data."
+          content:
+            application/json:
+              schema:
+                type: "object"
+                properties:
+                  message:
+                    type: "string"
+                  code:
+                    type: "integer"
+        '401':
+          description: "Unauthorized - User is not logged in or lacks access."
+          content:
+            application/json:
+              schema:
+                type: "object"
+                properties:
+                  message:
+                    type: "string"
+                  code:
+                    type: "integer"
+        '404':
+          description: "Not Found - The specified song was not found."
+          content:
+            application/json:
+              schema:
+                type: "object"
+                properties:
+                  message:
+                    type: "string"
+                  code:
+                    type: "integer"
+        '500':
+          description: "Internal Server Error - An unexpected error occurred."
+          content:
+            application/json:
+              schema:
+                type: "object"
+                properties:
+                  message:
+                    type: "string"
+                  code:
+                    type: "integer"
+  /api/v1/artists/{artist_id}/follow:
+    post:
+      summary: "Toggle artist follow status"
+      description: "Set or unset the follow status of an artist for the current user."
+      parameters:
+        - name: "artist_id"
+          in: "path"
+          required: true
+          schema:
+            type: "integer"
+          description: "The unique identifier for the artist."
+      requestBody:
+        description: "Optional data if additional information is required"
+        content:
+          application/json:
+            schema:
+              type: "object"
+      responses:
+        '200':
+          description: "Successfully toggled the follow status for the artist."
+          content:
+            application/json:
+              schema:
+                type: "object"
+                properties:
+                  message:
+                    type: "string"
+                    description: "A success message indicating the follow status was toggled."
+                  body:
+                    type: "object"
+                    properties:
+                      artist_id:
+                        type: "integer"
+                        description: "The ID of the artist."
+                      is_followed:
+                        type: "boolean"
+                        description: "The new follow status for the artist (true if followed, false if unfollowed)."
+        '400':
+          description: "Bad Request - Invalid artist ID or missing data."
+          content:
+            application/json:
+              schema:
+                type: "object"
+                properties:
+                  message:
+                    type: "string"
+                  code:
+                    type: "integer"
+        '401':
+          description: "Unauthorized - User is not logged in or lacks access."
+          content:
+            application/json:
+              schema:
+                type: "object"
+                properties:
+                  message:
+                    type: "string"
+                  code:
+                    type: "integer"
+        '404':
+          description: "Not Found - The specified artist was not found."
+          content:
+            application/json:
+              schema:
+                type: "object"
+                properties:
+                  message:
+                    type: "string"
+                  code:
+                    type: "integer"
+        '500':
+          description: "Internal Server Error - An unexpected error occurred."
+          content:
+            application/json:
+              schema:
+                type: "object"
+                properties:
+                  message:
+                    type: "string"
+                  code:
+                    type: "integer"
   /api/v1/users/register:
     post:
       tags:
