@@ -111,6 +111,8 @@ module.exports.get_user_playlists = function get_user_playlists (req, res, next,
 module.exports.login_user = async function login_user(req, res) { 
   const { username, password } = req.body;
 
+  console.log("It finally worked... ");
+
   // Validate request body
   if (!username || !password) {
     return apiUtils.errorResponse(res, 'Username or password missing', 400);
