@@ -142,6 +142,18 @@ module.exports.logout_user = function logout_user (req, res, next, body) {
     });
 };
 
+/**
+ * Registers a new user by calling the user service with the provided request body data
+ * 
+ * @function register_user
+ * @param {Object} req - The request object, containing the request data in req.body 
+ * @param {Object} res - The response object used to send the success or error of user registration 
+ * @param {Function} next - The next middleware function
+ * 
+ * @returns {Object} JSON response indicating success or error of user registration.
+ * 
+ * @throws {Object} Sends an error response with message and status code if registration fails
+ */
 module.exports.register_user = function register_user(req, res, next) {
   Users.register_user(req.body)
     .then(response => {

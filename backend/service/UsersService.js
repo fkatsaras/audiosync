@@ -1,6 +1,7 @@
 'use strict';
 
 const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 const db = require('../utils/dbUtils');
 const api = require('../utils/apiUtils');
 const { resolve } = require('swagger-parser');
@@ -319,7 +320,7 @@ exports.login_user = function(username, password) {
 
     try {
       console.log(`Calling stored procedure login_user with username: ${username}`);
-      const [userDetails] = await db.callProcedure(
+      const userDetails = await db.callProcedure(
         connection,
         'login_user',
         [username],
@@ -331,7 +332,7 @@ exports.login_user = function(username, password) {
         throw new Error("Unexpected data structure for user details.");
       }
 
-      const [passwordHash, userId, success, message] = userDetails;
+      const [ success, passwordHash, userId, message] = userDetails;
 
       if (success === 1 && passwordHash) {
         if (bcrypt.compareSync(password, passwordHash)) {
@@ -350,7 +351,7 @@ exports.login_user = function(username, password) {
           resolve({ token });
         } else {
           console.error("Invalid password");
-          reject({ message: 'Invalid password', code: 401 });
+          reject({ message: 'Invalid username or password', code: 401 });
         }
       } else {
         console.error(message);
