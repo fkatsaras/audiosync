@@ -389,12 +389,21 @@ exports.logout_user = function(body) {
 
 
 /**
- * Registers a new user in the system
- * Registers a user with the provided username, password, email, and personal details.
+ * Handles the registration of a new user.
  *
- * body Users_register_body 
- * returns inline_response_201
- **/
+ * @async
+ * @function register_user
+ * @param {Object} body - The request body containing user details.
+ * @param {string} body.username - The user's username.
+ * @param {string} body.password - The user's password.
+ * @param {string} body.email - The user's email.
+ * @param {string} [body.first_name] - The user's first name (optional).
+ * @param {string} [body.last_name] - The user's last name (optional).
+ * 
+ * @returns {Promise<Object>} - Resolves with a success message and user details if registration is successful.
+ * 
+ * @throws {Object} - Throws an error object with message and code if registration fails.
+ */
 exports.register_user = async function(body) {
   try {
     // Extract required fields
