@@ -9,7 +9,7 @@ const session = require('express-session');
 const cors = require('cors');
 
 // Load environment variables
-dotenv.config();
+dotenv.config({ path: path.resolve(__dirname, '../.env') });
 
 // Server configuration
 const serverPort = process.env.PORT || 5000;

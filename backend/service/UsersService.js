@@ -413,7 +413,7 @@ exports.register_user = async function(body) {
         connection,
         'register_user',
         [username, passswordHash, email, first_name, last_name],
-        [p_success, p_message]
+        ['p_success', 'p_message']
       );
 
       if (p_success == 1) {
