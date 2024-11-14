@@ -3,6 +3,7 @@
 const bcrypt = require('bcrypt');
 const db = require('../utils/dbUtils');
 const api = require('../utils/apiUtils');
+const { resolve } = require('swagger-parser');
 
 
 /**
@@ -300,40 +301,42 @@ exports.get_user_playlists = function(userId) {
 
 
 /**
- * Logs user into the system
- * Logs in using username and password.
+ * Authenticates a user and generates a JWT token if the credentials are valid.
  *
- * body Users_login_body 
- * returns inline_response_200_3
- **/
+ * @function login_user
+ * @param {string} username - The username of the user attempting to log in.
+ * @param {string} password - The password provided by the user for authentication.
+ * @returns {Promise<Object>} - A promise that resolves with a JWT token if successful, or an error object if not.
+ */
 exports.login_user = function(username, password) {
   return new Promise(async (resolve, reject) => {
     const connection = db.createConnection();
     console.log(`Login attempt - Username: ${username}`);
 
-
-    if (!connection) {
-      return reject(api.errorResponse(null, 'DB connection failed', 500));
+    if(!connection) {
+      return reject({ message: 'DB connection failed', code: 500 });
     }
 
     try {
       console.log(`Calling stored procedure login_user with username: ${username}`);
       const [userDetails] = await db.callProcedure(
-        connection, 
-        'login_user', 
-        [username], 
+        connection,
+        'login_user',
+        [username],
         ['p_password_hash', 'p_user_id', 'p_success', 'p_message']
       );
 
-      console.log('User details retrieved:', userDetails);
+     // Check if userDetails is an array with expected values
+     if (!Array.isArray(userDetails) || userDetails.length < 4) {
+        throw new Error("Unexpected data structure for user details.");
+      }
+
       const [passwordHash, userId, success, message] = userDetails;
 
       if (success === 1 && passwordHash) {
-        // Validate password using bcrypt
         if (bcrypt.compareSync(password, passwordHash)) {
           console.log("Credentials are valid");
 
-          // Generate JWT token
           const token = jwt.sign(
             {
               user_id: userId,
@@ -344,28 +347,23 @@ exports.login_user = function(username, password) {
             { algorithm: 'HS256' }
           );
 
-          // Store user ID in session (express-session or memory store can be used here)
-          // req.session.user_id = userId; // If using sessions, uncomment this line
-
-          // Return the success response with token
           resolve({ token });
         } else {
           console.error("Invalid password");
-          reject({ message: 'Invalid password' });
+          reject({ message: 'Invalid password', code: 401 });
         }
       } else {
         console.error(message);
-        reject(api.errorResponse(null, message, 500));
+        reject({ message, code: 500 });
       }
     } catch (error) {
       console.error(`Exception during login: ${error.message}`);
-      reject(api.errorResponse(null, `An error occurred during login: ${error.message}`, 500));
+      reject({ message: `An error occurred during login: ${error.message}`, code: 500 });
     } finally {
       db.closeConnection(connection);
     }
   });
 };
-
 /**
  * Logs out the current logged-in user session
  * Logs out the user by clearing their session information.

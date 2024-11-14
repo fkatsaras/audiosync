@@ -42,6 +42,7 @@ function executeQuery(connection, query, values = []) {
                 console.error(`An error occurred during query execution: ${err}`);
                 reject(err);
             } else {
+                // console.log('Raw result from executeQuery:', JSON.stringify(results, null, 2));
                 resolve(results);
             }
         });
@@ -52,34 +53,36 @@ function executeQuery(connection, query, values = []) {
 function callProcedure(connection, procedureName, inParams = [], outParams = []) {
     return new Promise(async (resolve, reject) => {
         try {
-            // Prepare placeholders for IN parameters
+            // Prepare placeholders for IN and OUT parameters
             const inPlaceholders = inParams.map(() => '?').join(', ');
-            // Prepare placeholders for OUT parameters
             const outPlaceholders = outParams.map(param => `@${param}`).join(', ');
 
-            // Prepare the procedure call query
+            // Call the stored procedure
             const query = `CALL ${procedureName}(${inPlaceholders}, ${outPlaceholders});`;
-
-            // Execute the procedure call with IN parameters
             await executeQuery(connection, query, inParams);
 
             // Fetch OUT parameters
             const outputQuery = `SELECT ${outParams.map(param => `@${param}`).join(', ')};`;
             const outputResult = await executeQuery(connection, outputQuery);
 
-            if (outputResult && outputResult.length > 0) {
-                // Extract the OUT parameters in the correct order
-                const outValues = outParams.map(param => outputResult[0][`@${param}`]);
+            if (outputResult && Array.isArray(outputResult) && outputResult.length > 0) {
+                // Extract each output parameter in the order specified by outParams
+                const outValues = outParams.map(param => outputResult[0][`@${param}`] ?? null);
+
+                // Log for debugging
+                console.log('Output values from stored procedure:', outValues);
+                
                 resolve(outValues);
             } else {
+                console.error(`Unexpected output structure from procedure ${procedureName}.`);
                 reject(new Error(`No output returned from procedure ${procedureName}`));
             }
         } catch (err) {
+            console.error(`Error calling stored procedure ${procedureName}: ${err.message}`);
             reject(new Error(`Error calling stored procedure ${procedureName}: ${err.message}`));
         }
     });
 }
-
 
 // Exporting functions
 module.exports = {
