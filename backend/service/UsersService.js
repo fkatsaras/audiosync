@@ -327,12 +327,7 @@ exports.login_user = function(username, password) {
         ['p_password_hash', 'p_user_id', 'p_success', 'p_message']
       );
 
-     // Check if userDetails is an array with expected values
-     if (!Array.isArray(userDetails) || userDetails.length < 4) {
-        throw new Error("Unexpected data structure for user details.");
-      }
-
-      const [ success, passwordHash, userId, message] = userDetails;
+      const [ success, passwordHash, userId, message ] = userDetails;
 
       if (success === 1 && passwordHash) {
         if (bcrypt.compareSync(password, passwordHash)) {
@@ -348,11 +343,12 @@ exports.login_user = function(username, password) {
             { algorithm: 'HS256' }
           );
 
-          resolve({ token });
+          resolve({ userId, username, token });
         } else {
           console.error("Invalid password");
           reject({ message: 'Invalid username or password', code: 401 });
         }
+
       } else {
         console.error(message);
         reject({ message, code: 500 });

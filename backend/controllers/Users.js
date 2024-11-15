@@ -2,11 +2,7 @@
 
 var utils = require('../utils/writer.js');
 var Users = require('../service/UsersService.js');
-const jwt = require('jsonwebtoken');
-const bcrypt = require('bcryptjs');
-const db = require('../utils/dbUtils.js');
 const api = require('../utils/apiUtils.js');
-const router = require('../routes/index.js');
 
 module.exports.add_liked_song = function add_liked_song (req, res, next, body, userId) {
   Users.add_liked_song(body, userId)
@@ -121,6 +117,17 @@ module.exports.login_user = async function login_user(req, res) {
     
     // If response has a token, it's a success
     if (response.token) {
+
+      console.log('Session object:', req.session);
+
+
+      // Store user info in the session
+      req.session.user = {
+        id: response.userId,
+        username: response.username,
+      };
+
+      console.log(`Session set for user: ${req.session.user.username}`);
       return api.successResponse(res, 'Login successful', { token: response.token });
     } else {
       // If there's no token in response, it's an error
@@ -128,7 +135,7 @@ module.exports.login_user = async function login_user(req, res) {
     }
   } catch (error) {
     console.error(`Exception during login: ${error.message}`);
-    return api.errorResponse(res, 'An error occurred', 500);
+    return api.errorResponse(res, error.message, 500);
   }
 };
 
