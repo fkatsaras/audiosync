@@ -34,15 +34,18 @@ paths:
       description: "Retrieve the home page GUI data, including links to various user-related\
         \ features."
       operationId: home
-      parameters:
-      - name: current_user
-        in: query
-        description: The username extracted from the token.
-        required: true
-        style: form
-        explode: true
-        schema:
-          type: string
+      security:
+        - BearerAuth: []
+      
+      # parameters:
+      # - name: current_user
+      #   in: query
+      #   description: The username extracted from the token.
+      #   required: true
+      #   style: form
+      #   explode: true
+      #   schema:
+      #     type: string
       responses:
         "200":
           description: Home page data retrieved successfully.
@@ -1329,19 +1332,10 @@ components:
           id: 0
           title: title
   securitySchemes:
-    AudioSync_auth:
-      type: oauth2
-      flows:
-        authorizationCode:
-          authorizationUrl: https://example.com/oauth/authorize
-          tokenUrl: https://example.com/oauth/token
-          scopes:
-            read: Grants read access
-            write: Grants write access
-      x-tokenInfoFunc: app.controllers.authorization_controller.check_AudioSync_auth
-      x-scopeValidateFunc: app.controllers.authorization_controller.validate_scope_AudioSync_auth
-    api_key:
-      type: apiKey
-      name: api_key
-      in: header
-      x-apikeyInfoFunc: app.controllers.authorization_controller.check_api_key
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      
+security:
+  - BearerAuth: []

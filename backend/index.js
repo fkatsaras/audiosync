@@ -8,8 +8,10 @@ const express = require('express');
 const session = require('express-session');
 const cors = require('cors');
 
+const tokenRequired = require('./utils/tokenRequired');
+
 // Load environment variables
-dotenv.config({ path: path.resolve(__dirname, '../.env') });
+dotenv.config({ path: path.resolve(__dirname, '../.env')});
 
 // Server configuration
 const serverPort = process.env.PORT || 5000;
@@ -32,6 +34,16 @@ const sessionMiddleware = session({
 // Apply global middleware
 app.use(express.urlencoded({ extended: true })); // Parse URL-encoded data
 app.use(sessionMiddleware); // Session middleware
+app.use((req, res, next) => {
+    // Skip token validation for the login route
+    if (req.path === '/api/v1/users/login') {
+        return next();
+    }
+    if (req.openapi && req.openapi.security && req.openapi.security.includes('BearerAuth')) {   // TODO : Move this in utils
+        return tokenRequired(req, res, next);
+    }
+    next();
+});
 
 // CORS configuration
 const corsOptions = {

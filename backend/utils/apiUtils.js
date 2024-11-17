@@ -1,4 +1,4 @@
-const ApiResponse = require('../models/apiResponse');
+const ApiResponse = require('../models/ApiResponse');
 
 /**
  * Sends a standardized success response to the client.
@@ -8,6 +8,8 @@ const ApiResponse = require('../models/apiResponse');
  * @param {string} message - The success message to send in the response.
  * @param {Object|null} [body=null] - Optional data to include in the response body.
  * @param {number} [code=200] - HTTP status code for the response.
+ * @param {body} JSON - The response payload JSON body.
+ * 
  * 
  * @returns {Object} - JSON object containing the response.
  */
@@ -28,6 +30,7 @@ function successResponse(res, message, body = null, code = 200) {
  * @param {Object} res - The response object.
  * @param {string} message - The error message to send in the response.
  * @param {number} [code=404] - HTTP status code for the error response.
+ * @param {body} JSON - The response payload JSON body.
  * 
  * @returns {Object} - JSON object containing the error response.
  */
