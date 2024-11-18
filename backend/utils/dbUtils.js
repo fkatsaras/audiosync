@@ -42,7 +42,6 @@ function executeQuery(connection, query, values = []) {
                 console.error(`An error occurred during query execution: ${err}`);
                 reject(err);
             } else {
-                // console.log('Raw result from executeQuery:', JSON.stringify(results, null, 2));
                 resolve(results);
             }
         });

@@ -117,10 +117,6 @@ module.exports.login_user = async function login_user(req, res) {
     
     // If response has a token, it's a success
     if (response.token) {
-
-      console.log('Session object:', req.session);
-
-
       // Store user info in the session
       req.session.user = {
         id: response.userId,
@@ -135,7 +131,9 @@ module.exports.login_user = async function login_user(req, res) {
     }
   } catch (error) {
     console.error(`Exception during login: ${error.message}`);
-    return api.errorResponse(res, error.message, 500);
+
+    const statusCode = error.code || 500;
+    return api.errorResponse(res, error.message, statusCode);
   }
 };
 

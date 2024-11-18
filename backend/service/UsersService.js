@@ -327,10 +327,10 @@ exports.login_user = function(username, password) {
         ['p_password_hash', 'p_user_id', 'p_success', 'p_message']
       );
 
-      const [ success, passwordHash, userId, message ] = userDetails;
+      const [ userId, passwordHash, success, message ] = userDetails; // TODO: Ordering of proc return values is weird
 
-      if (success === 1 && passwordHash) {
-        if (bcrypt.compareSync(password, passwordHash)) {
+      if (success === 1 && passwordHash) {  // If user exists in the database
+        if (bcrypt.compareSync(password, passwordHash)) { // If the users password is correct
           console.log("Credentials are valid");
 
           const token = jwt.sign(
@@ -349,9 +349,11 @@ exports.login_user = function(username, password) {
           reject({ message: 'Invalid username or password', code: 401 });
         }
 
+      } else if (success == 0){   // User doesnt exist in the database
+        reject({ message: message || "User not found", code: 404 });
       } else {
         console.error(message);
-        reject({ message, code: 500 });
+        reject({ message: message || 'Unexpected login failure', code: 500 });
       }
     } catch (error) {
       console.error(`Exception during login: ${error.message}`);

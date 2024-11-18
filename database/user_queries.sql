@@ -72,7 +72,7 @@ BEGIN
         SET `p_message` = 'User exists, password hash retrieved';
     ELSE
         SET `p_success` = 0;
-        SET `p_message` = 'Invalid username';
+        SET `p_message` = 'User not found';
     END IF;
 END //
 

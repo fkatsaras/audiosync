@@ -50,9 +50,10 @@ app.use((req, res, next) => {
 
 // CORS configuration
 const corsOptions = {
-    origin: process.env.CORS_ORIGIN || 'http://localhost:3000',
-    credentials: true // Allow sending cookies 
+    origin: ['http://localhost:3000', 'https://localhost:4000'],
+    credentials: true
 };
+
 app.use(cors(corsOptions));
 
 // Configure oas3Tools
@@ -71,10 +72,31 @@ const oas3App = oas3Tools.expressAppConfig(
 // Mount the oas3App routes into the main app
 app.use(oas3App);
 
-// Start the server
-http.createServer(app).listen(serverPort, function () {
-    console.log('Your server is listening on port %d (http://localhost:%d)', serverPort, serverPort);
-    console.log('Swagger-ui is available on http://localhost:%d/docs', serverPort);
-});
+/**
+ * Create and return an HTTP server instance af the app
+ * 
+ * @param {number} port - The port to listen to.
+ * @returns {Promise<http.Server>}
+ *  */
+function createServer(port=serverPort) {
+    return new Promise((resolve, reject) => {
+        const server = http.createServer(app);
 
+        server.listen(port, () => {
+            console.log('Your server is listening on port %d (http://localhost:%d)', port, port);
+            console.log('Swagger-ui is available on http://localhost:%d/docs', port);
+            resolve(server);
+        });
 
+        server.on('error', (err) => {
+            console.error('Error starting the server:', err);
+            reject(err);
+        });
+    });
+}
+
+if (require.main == module) {
+    createServer();
+}
+
+module.exports = { createServer };

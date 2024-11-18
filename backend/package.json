@@ -6,7 +6,9 @@
   "scripts": {
     "prestart": "npm install",
     "start": "node index.js",
-    "test": "c8 ava"
+    "dev": "nodemon index.js --watch .",
+    "test": "c8 ava",
+    "vtest": "c8 ava --verbose"
   },
   "keywords": [
     "swagger"
@@ -25,7 +27,6 @@
     "jsonwebtoken": "^9.0.2",
     "jwt-simple": "^0.5.6",
     "mysql2": "^3.11.4",
-    "nodemon": "^3.1.7",
     "oas3-tools": "^2.2.3",
     "swagger-jsdoc": "^6.2.8",
     "swagger-parser": "^10.0.3",
@@ -36,6 +37,7 @@
     "ava": "^5.3.1",
     "c8": "^8.0.1",
     "got": "^11.8.3",
+    "nodemon": "^3.1.7",
     "sinon": "^19.0.2"
   }
 }
