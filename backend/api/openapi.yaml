@@ -148,6 +148,7 @@ paths:
       description: "Registers a user with the provided username, password, email,\
         \ and personal details."
       operationId: register_user
+      security: []
       requestBody:
         content:
           application/json:
@@ -180,6 +181,7 @@ paths:
             schema:
               $ref: '#/components/schemas/users_login_body'
         required: true
+      security: []
       responses:
         "200":
           description: "Login successful, returns a JWT token."

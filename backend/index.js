@@ -35,15 +35,18 @@ const sessionMiddleware = session({
 app.use(express.urlencoded({ extended: true })); // Parse URL-encoded data
 app.use(sessionMiddleware); // Session middleware
 app.use((req, res, next) => {
-    // Skip token validation for the login route
-    if (req.path === '/api/v1/users/login') {
+    const openRoutes = ['/api/v1/users/login', '/api/v1/users/register'];
+    // Skip token validation for open routes
+    if (openRoutes.includes(req.path)) {
         return next();
     }
-    if (req.openapi && req.openapi.security && req.openapi.security.includes('BearerAuth')) {   // TODO : Move this in utils
+    // Apply token validation for routes requiring BearerAuth
+    if (req.openapi && req.openapi.security && req.openapi.security.includes('BearerAuth')) {
         return tokenRequired(req, res, next);
     }
     next();
 });
+
 
 // CORS configuration
 const corsOptions = {
