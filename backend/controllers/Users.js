@@ -104,34 +104,27 @@ module.exports.get_user_playlists = function get_user_playlists (req, res, next,
     });
 };
 
-module.exports.login_user = async function login_user(req, res) { 
+module.exports.login_user = async function login_user(req, res) {
   const { username, password } = req.body;
 
   // Validate request body
   if (!username || !password) {
-    return api.errorResponse(res, 'Username or password missing', 400);
+    return api.errorResponse(res, 'Username and password are required', 400);
   }
+
   try {
-    // Call the service to handle login
     const response = await Users.login_user(username, password);
-    
-    // If response has a token, it's a success
-    if (response.token) {
-      // Store user info in the session
-      req.session.user = {
-        id: response.userId,
-        username: response.username,
-      };
 
-      console.log(`Session set for user: ${req.session.user.username}`);
-      return api.successResponse(res, 'Login successful', { token: response.token });
-    } else {
-      // If there's no token in response, it's an error
-      return api.errorResponse(res, response.message || 'Login failed', 401);
-    }
+    // Set session for the user
+    req.session.user = {
+      id: response.userId,
+      username: response.username,
+    };
+
+    console.log(`User logged in: ${response.username}`);
+    return api.successResponse(res, 'Login successful', { token: response.token });
   } catch (error) {
-    console.error(`Exception during login: ${error.message}`);
-
+    console.error(`Login failed for ${username}: ${error.details || error.message}`);
     const statusCode = error.code || 500;
     return api.errorResponse(res, error.message, statusCode);
   }
@@ -148,26 +141,35 @@ module.exports.logout_user = function logout_user (req, res, next, body) {
 };
 
 /**
- * Registers a new user by calling the user service with the provided request body data
+ * Registers a new user by calling the user service with the provided request body data.
  * 
  * @function register_user
- * @param {Object} req - The request object, containing the request data in req.body 
- * @param {Object} res - The response object used to send the success or error of user registration 
- * @param {Function} next - The next middleware function
+ * @param {Object} req - The request object, containing user data in `req.body`.
+ * @param {Object} res - The response object used to send success or error responses.
  * 
  * @returns {Object} JSON response indicating success or error of user registration.
- * 
- * @throws {Object} Sends an error response with message and status code if registration fails
  */
-module.exports.register_user = function register_user(req, res, next) {
-  Users.register_user(req.body)
-    .then(response => {
-      api.successResponse(res, response.message, response.body, 201);
-    })
-    .catch(error => {
-      api.errorResponse(res, error.message, error.code || 500); 
-    });
+module.exports.register_user = async function register_user(req, res) {
+  const { username, password, email } = req.body;
+
+  // Validate request body
+  if (!username || !password || !email) {
+    return api.errorResponse(res, 'Missing required fields: username, password, or email', 400);
+  }
+
+  try {
+    const response = await Users.register_user(req.body);
+
+    console.log(`User registered: ${response.body.username}`);
+    return api.successResponse(res, response.message, response.body, 201);
+  } catch (error) {
+    console.error(`Registration failed for user ${username}: ${error.details || error.message}`);
+    const statusCode = error.code || 500;
+    return api.errorResponse(res, error.message, statusCode);
+  }
 };
+
+
 module.exports.remove_liked_song = function remove_liked_song (req, res, next, userId, songId) {
   Users.remove_liked_song(userId, songId)
     .then(function (response) {

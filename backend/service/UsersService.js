@@ -312,14 +312,12 @@ exports.get_user_playlists = function(userId) {
 exports.login_user = function(username, password) {
   return new Promise(async (resolve, reject) => {
     const connection = db.createConnection();
-    console.log(`Login attempt - Username: ${username}`);
 
-    if(!connection) {
-      return reject({ message: 'DB connection failed', code: 500 });
+    if (!connection) {
+      return reject({ message: 'Database connection failed', code: 500 });
     }
 
     try {
-      console.log(`Calling stored procedure login_user with username: ${username}`);
       const userDetails = await db.callProcedure(
         connection,
         'login_user',
@@ -327,37 +325,29 @@ exports.login_user = function(username, password) {
         ['p_password_hash', 'p_user_id', 'p_success', 'p_message']
       );
 
-      const [ userId, passwordHash, success, message ] = userDetails; // TODO: Ordering of proc return values is weird
+      const [userId, passwordHash, success, message] = userDetails;
 
-      if (success === 1 && passwordHash) {  // If user exists in the database
-        if (bcrypt.compareSync(password, passwordHash)) { // If the users password is correct
-          console.log("Credentials are valid");
-
+      if (success === 1 && passwordHash) {  // User exists in the database
+        if (bcrypt.compareSync(password, passwordHash)) {
           const token = jwt.sign(
             {
               user_id: userId,
               username: username,
-              exp: Math.floor(Date.now() / 1000) + (60 * 60)  // 1 hour expiry
+              exp: Math.floor(Date.now() / 1000) + 60 * 60, // 1-hour expiry
             },
             process.env.JWT_SECRET_KEY,
             { algorithm: 'HS256' }
           );
-
-          resolve({ userId, username, token });
+          return resolve({ userId, username, token });
         } else {
-          console.error("Invalid password");
-          reject({ message: 'Invalid username or password', code: 401 });
+          return reject({ message: 'Invalid username or password', code: 401 });
         }
-
-      } else if (success == 0){   // User doesnt exist in the database
-        reject({ message: message || "User not found", code: 404 });
-      } else {
-        console.error(message);
-        reject({ message: message || 'Unexpected login failure', code: 500 });
       }
+
+      // User not found
+      return reject({ message: message || 'User not found', code: 404 });
     } catch (error) {
-      console.error(`Exception during login: ${error.message}`);
-      reject({ message: `An error occurred during login: ${error.message}`, code: 500 });
+      return reject({ message: 'Internal server error', code: 500, details: error.message });
     } finally {
       db.closeConnection(connection);
     }
@@ -386,9 +376,8 @@ exports.logout_user = function(body) {
 
 
 /**
- * Handles the registration of a new user.
+ * Handles the registration of a new user using a Promise-based approach.
  *
- * @async
  * @function register_user
  * @param {Object} body - The request body containing user details.
  * @param {string} body.username - The user's username.
@@ -398,44 +387,45 @@ exports.logout_user = function(body) {
  * @param {string} [body.last_name] - The user's last name (optional).
  * 
  * @returns {Promise<Object>} - Resolves with a success message and user details if registration is successful.
- * 
- * @throws {Object} - Throws an error object with message and code if registration fails.
  */
-exports.register_user = async function(body) {
-  try {
-    // Extract required fields
+exports.register_user = function(body) {
+  return new Promise(async (resolve, reject) => {
     const { username, password, email, first_name, last_name } = body;
 
-    if (!username || !password || !email) {
-      throw { message: "Missing required fields for regisration", code: 400 };
+    const connection = db.createConnection();
+    if (!connection) {
+      return reject({ message: 'Database connection failed', code: 500 });
     }
 
-    const passswordHash = await bcrypt.hash(password, 10);
-
-    const connection = db.createConnection();
-
     try {
+      // Hash the password
+      const passwordHash = await bcrypt.hash(password, 10);
+
+      // Call the database procedure for user registration
       const [p_success, p_message] = await db.callProcedure(
         connection,
         'register_user',
-        [username, passswordHash, email, first_name, last_name],
+        [username, passwordHash, email, first_name, last_name],
         ['p_success', 'p_message']
       );
 
-      if (p_success == 1) {
-        return { message: p_message, body: {username, email} };
+      if (p_success === 1) {
+        // User registered successfully
+        return resolve({
+          message: p_message || 'User registered successfully',
+          body: { username, email },
+        });
       } else {
-        throw { message: p_message, code: 400 };
+        // Registration failed due to conflict or other issues
+        return reject({ message: p_message || 'Username or email already exists', code: 400 });
       }
     } catch (error) {
-      connection.rollback();
-      throw { message: `Error registering user: ${error.message}`, code: 500 };
+      console.error(`Registration error for user ${username}: ${error.message}`);
+      return reject({ message: 'Internal server error', code: 500, details: error.message });
     } finally {
       db.closeConnection(connection);
     }
-  } catch (error) {
-    throw error;
-  }
+  });
 };
 
 

@@ -17,6 +17,7 @@ USE `se2_audiosync_db`;
 -- Creating stored procedure for registering a user
 DELIMITER //
 
+DROP PROCEDURE IF EXISTS `register_user`; 
 CREATE PROCEDURE `register_user` (
     IN `p_username` VARCHAR(255),
     IN `p_password_hash` VARCHAR(255),
@@ -52,6 +53,7 @@ DELIMITER ;
 -- Creating stored procedure for logging in a user
 DELIMITER //
 
+DROP PROCEDURE IF EXISTS `login_user`; 
 CREATE PROCEDURE `login_user` (
     IN `p_username` VARCHAR(255),
     OUT `p_user_id` INT,                    -- WARNING: Order of the out params matters!
