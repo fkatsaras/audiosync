@@ -1,27 +1,37 @@
 'use strict';
 
-var utils = require('../utils/writer.js');
-var Home = require('../service/HomeService');
+const Home = require('../service/HomeService');
 const api = require('../utils/apiUtils.js');
 
-module.exports.home = function home (req, res, next) {
-  const current_user = req.query.current_user;  // Extracted by middleware
+module.exports.home = function home(req, res, next) {
 
-  if(!current_user) {
-    api.errorResponse(
+  console.log(req.current_user);
+  const current_user = req.current_user; // Extracted by middleware
+
+  if (!current_user) {
+    return api.errorResponse(
       res,
-      message="current user query parameter required.",
-      code=400,
-      body=null
+      'current user query parameter required.', // Error message
+      400, // HTTP status code
+      null // Response body
     );
-    return;
   }
 
   Home.home(current_user)
-    .then(function(response) {
-      api.successResponse(res=res, body=response);
+    .then((response) => {
+      // Successfully retrieved home page links
+      api.successResponse(
+        res,
+        response.message, // Success message
+        response.body // Response body containing links
+      );
     })
-    .catch(function(error) {
-      api.errorResponse(res=res, message=`Internal server error: ${error}`, code=500);
+    .catch((error) => {
+      // Handle errors from the service
+      const message = error.message || 'Internal server error';
+      const code = error.code || 500;
+      const body = error.body || null;
+
+      api.errorResponse(res, message, code, body);
     });
 };

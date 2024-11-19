@@ -8,7 +8,7 @@ const express = require('express');
 const session = require('express-session');
 const cors = require('cors');
 
-const tokenRequired = require('./utils/tokenRequired');
+const auth = require('./utils/auth');
 
 // Load environment variables
 dotenv.config({ path: path.resolve(__dirname, '../.env')});
@@ -40,11 +40,8 @@ app.use((req, res, next) => {
     if (openRoutes.includes(req.path)) {
         return next();
     }
-    // Apply token validation for routes requiring BearerAuth
-    if (req.openapi && req.openapi.security && req.openapi.security.includes('BearerAuth')) {
-        return tokenRequired(req, res, next);
-    }
-    next();
+    // Apply token validation for all other routes
+    auth.tokenRequired(req, res, next);
 });
 
 
