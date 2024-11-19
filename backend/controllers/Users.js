@@ -3,6 +3,7 @@
 var utils = require('../utils/writer.js');
 var Users = require('../service/UsersService.js');
 const api = require('../utils/apiUtils.js');
+const { response } = require('express');
 
 module.exports.add_liked_song = function add_liked_song (req, res, next, body, userId) {
   Users.add_liked_song(body, userId)
@@ -137,29 +138,34 @@ module.exports.login_user = async function login_user(req, res) {
  * @param {Object} res - Express response object
  */
 module.exports.logout_user = async function logout_user(req, res) {
+  const response = await Users.logout_user(req.body);
   try {
     // Destroy the session to log the user out
     req.session.destroy((err) => {
       if (err) {
-        return api.errorResponse({
-          message: 'Failed to log out',
-          code: 500,
-        });
+        return api.errorResponse(
+          res,
+          'Failed to log out',
+          500
+        );
       }
       
       // Clear the session cookie
       res.clearCookie('connect.sid');
       
-      return api.successResponse({
-        message: 'Logout successful',
-      });
+      return api.successResponse(
+        res,
+        'Logout successful',
+        { username: response.username }
+      );
     });
   } catch (error) {
     console.error(`Logout failed: ${error.message}`);
-    return api.errorResponse({
-      message: 'Internal server error',
-      code: 500,
-    });
+    return api.errorResponse(
+      res,
+      'Internal server error',
+      500
+    );
   }
 };
 

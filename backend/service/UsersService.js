@@ -369,7 +369,7 @@ exports.logout_user = function(body) {
         console.info(`User ${username} logged out.`);
       }
       
-      resolve({ message: 'Logout successful' });
+      resolve({ message: 'Logout successful' , username});
     } catch (error) {
       reject({ message: 'Logout failed', code: 500, details: error.message });
     }

@@ -217,6 +217,8 @@ paths:
       summary: Logs out the current logged-in user session
       description: Logs out the user by clearing their session information.
       operationId: logout_user
+      security:
+        - BearerAuth: []
       requestBody:
         content:
           application/json:

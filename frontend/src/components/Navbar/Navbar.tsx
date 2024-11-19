@@ -21,10 +21,32 @@ const Navbar: React.FC<UserSessionProps> = ({ userId, username }) => {
     };
 
 
-    const handleLogout = () => {
-        localStorage.removeItem('token');
-        navigate('/login');
-    }
+    const handleLogout = async () => {
+
+        try {
+            const response = await fetch('/api/v1/users/logout', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    username: username,  // Send the username as part of the body
+                }),
+            
+            });
+
+            if(response.ok) {
+                // If the logout call is successful remove the token
+                localStorage.removeItem('token');
+                navigate('/login');
+            } else {
+                console.error('Logout failed:', await response.text());
+            }
+        } catch (error) {
+            console.error('Error during logout:', error);
+        }
+    };
 
     return (
         <div>
