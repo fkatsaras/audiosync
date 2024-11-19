@@ -65,7 +65,42 @@ async function getArtistProfilePicture(artistName) {
   }
 }
 
+/**
+ * Get song data from Spotify by album name.
+ *
+ * @param {string} albumName Artist name to search for.
+ * @returns {Promise<Object|null>} Song data or null if not found.
+ */
+async function getSongCover(albumName) {
+    try {
+        const token = await getSpotifyToken();
+
+        if(!token) {
+            throw new Error('Failed to retrieve Spotify token.');
+        }
+
+        const searchUrl = `https://api.spotify.com/v1/search?q=${encodeURIComponent(albumName)}&type=album`
+        const response = await axios.get(searchUrl, {
+            headers: {
+                'Authorization': `Bearer ${token}`,
+            }
+        });
+
+        const albums = response.data.albums.items;
+
+        if(albums && albums.length > 0) {
+            return albums[0].images[0]?.url || null
+        } else {
+            return null;
+        }   
+    } catch (error) {
+        console.error('Error while fetching song album cover:', error);
+        return null;
+    }
+}
+
 module.exports = {
     getArtistProfilePicture,
-    getSpotifyToken
+    getSpotifyToken,
+    getSongCover
 }

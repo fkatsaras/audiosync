@@ -1,4 +1,4 @@
-class Artist {
+class Artist {  // TODO : Convert this to ES6
     /**
      * Constructs an Artist instance
      * @param {number} id - Unique identifier for the artist

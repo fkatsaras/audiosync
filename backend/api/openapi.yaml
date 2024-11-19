@@ -106,54 +106,63 @@ paths:
       x-swagger-router-controller: Search
   /api/v1/search/songs:
     get:
+      tags:
+      - search
       summary: Search for songs
-      description: Retrieve search results for songs based on the user's query.
-      operationId: apiV1SearchSongsGET
+      description: Retrieve search results for songs based on a query string.
+      operationId: search_songs_get
       parameters:
-      - name: user-id
-        in: query
-        description: The ID of the user making the search.
-        required: false
-        style: form
-        explode: true
-        schema:
-          type: string
-      - name: user_query
-        in: query
-        description: Search query string for songs.
-        required: true
-        style: form
-        explode: true
-        schema:
-          type: string
+        - name: q
+          in: query
+          description: Search query string for songs. The query will be used to search for partial matches in song titles.
+          required: true
+          style: form
+          explode: true
+          schema:
+            type: string
+        - name: limit
+          in: query
+          description: The number of results to return per page. Default is 5.
+          required: false
+          schema:
+            type: integer
+            default: 5
+        - name: offset
+          in: query
+          description: The number of results to skip. Default is 0 (i.e., no offset).
+          required: false
+          schema:
+            type: integer
+            default: 0
       security:
         - BearerAuth: []
       responses:
         "200":
-          description: A list of songs that match the search query.
+          description: Search results retrieved successfully.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/inline_response_200_2'
         "400":
-          description: Bad Request - Search query is empty.
+          description: Bad request. This happens when the search query is empty or invalid.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/inline_response_400'
         "404":
-          description: Not Found - No songs found for the query.
+          description: Song not found. No songs were found matching the search query.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/inline_response_400'
         "500":
-          description: Internal Server Error - An unexpected error occurred.
+          description: Server error. There was an issue processing the request or connecting to the database.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/inline_response_400'
-      x-swagger-router-controller: Default
+      x-openapi-router-controller: app.controllers.search_controller
+      x-swagger-router-controller: Search
   /api/v1/users/register:
     post:
       tags:
