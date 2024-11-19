@@ -1,7 +1,7 @@
 const mysql = require('mysql2');
 require('dotenv').config();
 
-function createConnection() {
+function createConnection(test = false) {
     const connection = mysql.createConnection({
         host: process.env.DB_HOST,
         user: process.env.DB_USER,
@@ -36,6 +36,8 @@ function closeConnection(connection) {
 
 function executeQuery(connection, query, values = []) {
     return new Promise((resolve, reject) => {
+
+        let fQuery = query;
         // Log the query with the values for debugging purposes
         // Replace placeholders (?)
         if (values.length > 0) {
