@@ -55,6 +55,8 @@ const Search: React.FC<UserSessionProps> = ({ userId, username }) => {
     
             const data = await response.json();
 
+            if (!response.ok) throw new Error(data.message || 'Error fetching results');
+
             // Check if data.body is null
             if (!data.body) {
                 if (type === 'artists') {

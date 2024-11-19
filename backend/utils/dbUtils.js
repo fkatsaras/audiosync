@@ -34,8 +34,36 @@ function closeConnection(connection) {
     }
 }
 
-
 function executeQuery(connection, query, values = []) {
+    return new Promise((resolve, reject) => {
+        // Log the query with the values for debugging purposes
+        // Replace placeholders (?)
+        if (values.length > 0) {
+            fQuery = query.replace(/\?/g, () => {
+                // Pop the first element from the values array and replace the placeholder
+                const value = values.shift();
+                // For safety, you might want to sanitize or format this value for logging
+                return typeof value === 'string' ? `'${value}'` : value;
+            });
+        }
+
+        console.log("Executing query: ", fQuery);  // Log the final query with values
+
+        // Execute the query
+        connection.execute(fQuery, (err, results, fields) => {
+            if (err) {
+                console.error(`An error occurred during query execution: ${err}`);
+                reject(err);
+            } else {
+                console.log(results);
+                console.log(fields);
+                resolve(results);
+            }
+        });
+    });
+}
+
+function executeProcQuery(connection, query, values = []) {
     return new Promise((resolve, reject) => {
         connection.execute(query, values, (err, results) => {
             if (err) {
@@ -48,7 +76,6 @@ function executeQuery(connection, query, values = []) {
     });
 }
 
-
 function callProcedure(connection, procedureName, inParams = [], outParams = []) {
     return new Promise(async (resolve, reject) => {
         try {
@@ -58,11 +85,11 @@ function callProcedure(connection, procedureName, inParams = [], outParams = [])
 
             // Call the stored procedure
             const query = `CALL ${procedureName}(${inPlaceholders}, ${outPlaceholders});`;
-            await executeQuery(connection, query, inParams);
+            await executeProcQuery(connection, query, inParams);
 
             // Fetch OUT parameters
             const outputQuery = `SELECT ${outParams.map(param => `@${param}`).join(', ')};`;
-            const outputResult = await executeQuery(connection, outputQuery);
+            const outputResult = await executeProcQuery(connection, outputQuery);
 
             if (outputResult && Array.isArray(outputResult) && outputResult.length > 0) {
                 // Extract each output parameter in the order specified by outParams

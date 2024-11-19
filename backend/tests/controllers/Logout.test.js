@@ -61,4 +61,3 @@ test.serial('Logout succeeds for logged-in user', async (t) => {
     t.is(logoutBody.message, 'Logout successful', 'Logout message should be sent');
     t.is(logoutBody.body.username, validLoginData.username, 'Username in response should match username in login request');
 });
-
