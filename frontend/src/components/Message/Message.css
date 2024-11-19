@@ -1,0 +1,70 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700&display=swap');
+
+.message-container {
+    display: flex;
+    align-items: center;
+    background-color: #181818;
+    color: #f1f1f1;
+    padding: 10px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);    /* Shadow effect */
+    margin: 10px 0;
+    width: auto;
+    transition: background-color 0.3s ease;
+}
+
+.message-container:hover {
+    background-color: #2a2a2a;
+}
+
+.message-icon {
+    background-color: #d3d3d3;
+    color: #000;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1rem;
+    font-weight: bold;
+    margin-right: 10px;
+}
+
+.message-text {
+    font-size: 0.9rem;
+    margin: 0;
+    color: #f1f1f1;
+    line-height: 1.5;
+}
+
+/* Styles specific to info messages */
+.info-message .message-text {
+    color: #000;
+    font-family: 'Montserrat', sans-serif;
+}
+
+.info-message .message-text {
+    color: #f1f1f1;
+}
+
+/* Styles specific to success messages */
+.success-message .message-icon {
+    background-color: #6a1b9a;
+    color: #fff;
+}
+
+.success-message .message-text {
+    color: #6a1b9a;
+}
+
+
+/* Styles specific to error messages */
+.error-messsage .message-icon {
+    background-color: #ff4d4d;
+    color: #000;
+}
+
+.error-messsage .message-text {
+    color: #ff4d4d;
+}

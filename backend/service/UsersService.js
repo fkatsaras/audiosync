@@ -3,8 +3,6 @@
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const db = require('../utils/dbUtils');
-const api = require('../utils/apiUtils');
-const { resolve } = require('swagger-parser');
 
 
 /**
@@ -353,27 +351,30 @@ exports.login_user = function(username, password) {
     }
   });
 };
+
+
 /**
+ * 
  * Logs out the current logged-in user session
- * Logs out the user by clearing their session information.
- *
- * body Users_logout_body  (optional)
- * returns inline_response_200_4
- **/
+ * 
+ * @param {Object} body - The request body containing optional user information
+ * @returns {Promise} Resolves with a success message or rejects with an error
+ */
 exports.logout_user = function(body) {
-  return new Promise(function(resolve, reject) {
-    var examples = {};
-    examples['application/json'] = {
-  "message" : "Logged out successfully!"
-};
-    if (Object.keys(examples).length > 0) {
-      resolve(examples[Object.keys(examples)[0]]);
-    } else {
-      resolve();
+  return new Promise((resolve, reject) => {
+    try {
+      const username = body?.username;
+      
+      if (username) {
+        console.info(`User ${username} logged out.`);
+      }
+      
+      resolve({ message: 'Logout successful' });
+    } catch (error) {
+      reject({ message: 'Logout failed', code: 500, details: error.message });
     }
   });
-}
-
+};
 
 /**
  * Handles the registration of a new user using a Promise-based approach.

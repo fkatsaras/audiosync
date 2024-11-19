@@ -2,7 +2,8 @@ import React, { useState } from "react";
 import { useNavigate , Link } from "react-router-dom";
 import AppBody from "../components/AppBody/AppBody";
 import Input from "../components/Input/Input";
-import Button from "../components/Button/Button";
+import Button from "../components/Buttons/Button";
+import Message from "../components/Message/Message";
 
 function Register() {
     const [username, setUsername] = useState('');
@@ -132,8 +133,8 @@ function Register() {
                     <Button type="submit">Register</Button>
                 </form>
                 <p>Already have an account? <Link to="/login">Login here</Link></p>
-                {errorMessage && <p className="error-message">{errorMessage}</p>}
-                {successMessage && <p className="success-message">{successMessage}</p>}
+                {errorMessage && <Message className="error-message">{errorMessage}</Message>}
+                {successMessage && <Message className="success-message">{successMessage}</Message>}
             </div>
         </AppBody>
     );

@@ -130,15 +130,39 @@ module.exports.login_user = async function login_user(req, res) {
   }
 };
 
-module.exports.logout_user = function logout_user (req, res, next, body) {
-  Users.logout_user(body)
-    .then(function (response) {
-      utils.writeJson(res, response);
-    })
-    .catch(function (response) {
-      utils.writeJson(res, response);
+/**
+ * Controller to handle user logout
+ *
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ */
+module.exports.logout_user = async function logout_user(req, res) {
+  try {
+    // Destroy the session to log the user out
+    req.session.destroy((err) => {
+      if (err) {
+        return api.errorResponse({
+          message: 'Failed to log out',
+          code: 500,
+        });
+      }
+      
+      // Clear the session cookie
+      res.clearCookie('connect.sid');
+      
+      return api.successResponse({
+        message: 'Logout successful',
+      });
     });
+  } catch (error) {
+    console.error(`Logout failed: ${error.message}`);
+    return api.errorResponse({
+      message: 'Internal server error',
+      code: 500,
+    });
+  }
 };
+
 
 /**
  * Registers a new user by calling the user service with the provided request body data.

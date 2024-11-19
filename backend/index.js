@@ -35,7 +35,7 @@ const sessionMiddleware = session({
 app.use(express.urlencoded({ extended: true })); // Parse URL-encoded data
 app.use(sessionMiddleware); // Session middleware
 app.use((req, res, next) => {
-    const openRoutes = ['/api/v1/users/login', '/api/v1/users/register'];
+    const openRoutes = ['/api/v1/users/login', '/api/v1/users/register', '/api/v1/users/check-login'];
     // Skip token validation for open routes
     if (openRoutes.includes(req.path)) {
         return next();

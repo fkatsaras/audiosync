@@ -1,13 +1,19 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom'; 
-import { Song, Artist } from '../types/dataTypes';
+import { Song, Artist } from '../types/data';
 import Navbar from '../components/Navbar/Navbar';
 import '../styles/SearchPage.css'
 import AppBody from '../components/AppBody/AppBody';
 import LoadingDots from '../components/LoadingDots/LoadingDots';
-import Button from '../components/Button/Button';
+import Button from '../components/Buttons/Button';
 import Input from '../components/Input/Input';
-import InfoMessage from '../components/InfoMessage/InfoMessage';
+import Message from '../components/Message/Message';
+import ResultItem from '../components/ResultItem/ResultItem';
+
+interface UserSessionProps {
+    userId?: string;
+    username?: string;
+  }
+  
 
 /**
  * Search component allows users to search for artists and songs by entering a query.
@@ -16,7 +22,7 @@ import InfoMessage from '../components/InfoMessage/InfoMessage';
  * @component
  * @returns {JSX.Element} The Search component UI.
  */
-const Search: React.FC = () => {
+const Search: React.FC<UserSessionProps> = ({ userId, username }) => {
     const [query, setQuery] = useState<string>('');
     const [artistResults, setArtistResults] = useState<Artist[]>([]);
     const [songResults, setSongResults] = useState<Song[]>([]);
@@ -36,6 +42,7 @@ const Search: React.FC = () => {
     * @param {'artists' | 'songs'} type - The type of results to fetch (artists or songs).
     * @param {number} offset - The number of results to skip, for pagination purposes.
     * @returns {Promise<void>} Updates the state with fetched results and handles loading/error states.
+    * 
     */
     const fetchResults = async (type: 'artists' | 'songs', offset: number) => {
         setLoading(true);
@@ -127,7 +134,7 @@ const Search: React.FC = () => {
 
     return (
         <div className='search-container'>
-            <Navbar />
+            <Navbar userId={userId || ''} username={username || ''}/>
             <AppBody>
                 <h1>Search</h1>
                 <Input
@@ -142,45 +149,38 @@ const Search: React.FC = () => {
                     <Button onClick={() => handleSearch('artists')} className='search-button'>Artists</Button>
                     <Button onClick={() => handleSearch('songs')} className='search-button'>Songs</Button>
                 </div>
-
-                {loading && <LoadingDots />}
-                {error && <div>{error}</div>}
-
                 <ul>
                     {/*Artists results*/}
                     {artistResults.length > 0 && artistResults.map((artist, index) => (
                         <li key={artist.id}>
-                            <Link to={`/artists/${artist.id}`} className='result-container'>
-                                <div className='result-content'>
-                                    {artist.profile_picture && 
-                                    <img
-                                        src={artist.profile_picture}
-                                        alt='Artist profile'
-                                        className='artist-result-image'
-                                    />}
-                                    <h3>{artist.name}</h3>
-                                </div>
-                            </Link>
+                            <ResultItem 
+                                id={artist.id}
+                                imageSrc={artist.profile_picture}
+                                title={artist.name}
+                                subtitle=''
+                                linkPath='/artists'
+                                altText='Artist profile'
+                                className='artist-result-image'
+                            />
                         </li>
                     ))}
 
                     {/* Song results*/}
                     {songResults.length > 0 && songResults.map((song, index) => (
                         <li key={song.id}>
-                            <Link to={`/songs/${song.id}`} className='result-container'>
-                                <div className='result-content'>
-                                    {song.album && 
-                                    <img
-                                        src={song.album}
-                                        alt='Song cover'
-                                        className='song-result-image'
-                                    />}
-                                    <h3>{song.title}</h3>
-                                    <p className='song-result-duration'>{song.duration}</p>
-                                </div>
-                            </Link>
+                            <ResultItem 
+                                id={song.id}
+                                imageSrc={song.cover}
+                                title={song.title}
+                                subtitle={String(song.duration)}
+                                linkPath='/songs'
+                                altText='Song cover'
+                                className='song-result-image'
+                            />
                         </li>
                     ))}
+                    {loading && <LoadingDots />}
+                    {error && <Message className='error-message'>{error}</Message>}
 
                     {/* Show more */}
                     {hasMoreArtists && !loading && artistResults.length > 0 && (
@@ -195,7 +195,7 @@ const Search: React.FC = () => {
                 
                 {/* In case no results match the query*/}
                 {hasSearched && artistResults.length === 0 && songResults.length === 0 && !loading && (
-                <InfoMessage>No results found</InfoMessage>
+                <Message className='info-message'>No results found</Message>
                 )}
             </AppBody>
         </div>

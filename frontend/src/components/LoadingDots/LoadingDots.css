@@ -30,3 +30,10 @@
 .loading-dot:nth-child(3) {
     animation-delay: 0.4s;  /* Delay for the third dot */
 }
+
+.loading-message {
+    font-size: 0.8rem; /* Adjust font size as needed */
+    color: white;
+    margin-top: 8px;  /* Add some space between dots and message */
+    text-align: center; /* Center the message */
+}

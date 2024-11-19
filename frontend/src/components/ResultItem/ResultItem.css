@@ -1,0 +1,75 @@
+.result-container {
+    display: flex; /* Make the whole container clickable */
+    text-decoration: none; /* Remove the underline from the link */
+    background-color: #181818;
+    border-radius: 8px;
+    padding: 10px;
+    min-height: 5vh;
+    margin: 10px 0;
+    transition: border 0.1s ease; /* Smooth transition for border */
+    justify-content: flex-start;
+    align-items: center; /* vertically center its contents */
+    border: 2px solid transparent /* Add transparent border to prevent other content from shifting around */
+}
+
+.result-title {
+    color: white;
+    margin: 0;
+    font-size: 1.2rem;
+}
+
+.result-subtitle {
+    color: #6a1b9a;
+    align-items: flex-end;
+}
+
+.result-container:hover h3 {
+    color:white;
+}
+
+li {
+    list-style-type: none;
+    color: #f1f1f1;
+}
+
+.result-container:hover {
+    border: 2px solid #2a2a2a;    /* Highlight border n hover */
+    box-shadow:  0 0 10px rgba(0, 0, 0, 0.2);   /* Shadow effect */
+}
+
+.result-content {
+    display: flex;
+    align-items: center;
+}
+
+/* Different styling based on item type */
+.result-container:hover .playlist-result-image,
+.result-container:hover .artist-result-image,
+.result-container:hover .song-result-image {
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.5); /* Shadow effect instead of a border */
+}
+
+/* Different styling based on item type */
+.result-container .playlist-result-image,
+.result-container .artist-result-image,
+.result-container .song-result-image {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%; /* Circular image for artists */
+    /* border: 2px solid white; White border around the image */
+    margin-right: 10px;
+}
+
+.result-container .song-result-image,
+.result-container .playlist-result-image {
+    border-radius: 5px; /* Rectangular shape for song album cover */
+}
+
+.result-content h3 {
+    margin-right: auto;
+}
+
+.song-result-duration {
+    margin-left: auto; /* Align duration to the far right */
+    color: #6a1b9a; /* Spotify green */
+}
