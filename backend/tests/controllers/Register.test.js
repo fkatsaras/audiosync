@@ -3,11 +3,11 @@ const index = require('../../index');
 const db = require('../../utils/dbUtils');
 const { registerRequest } = require('../utils');
 
+process.env.NODE_ENV = 'test';
+
+
 let server;
 const PORT = 4001;
-const BASE_URL = `http://localhost:${PORT}`;
-
-
 
 test.before(async (t) => {
     t.timeout(2000); 

@@ -3,6 +3,9 @@ const got = require('got');
 const index = require('../../index');
 const { loginRequest, logoutRequest } = require('../utils');
 
+process.env.NODE_ENV = 'test';
+
+
 let server;
 const PORT = 4002;
 const BASE_URL = `http://localhost:${PORT}`;

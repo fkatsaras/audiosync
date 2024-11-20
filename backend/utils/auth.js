@@ -9,13 +9,8 @@ const tokenRequired = (req, res, next) => {
       code: 401,
     });
   }
-
-  console.log(authHeader);
-
+  
   const token = authHeader.split(' ')[1];
-
-  console.log(token);
-
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);

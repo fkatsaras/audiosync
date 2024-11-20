@@ -1,12 +1,16 @@
 const mysql = require('mysql2');
 require('dotenv').config();
 
-function createConnection(test = false) {
+function createConnection() {
+    
+    const isTest = process.env.NODE_ENV === 'test' // Check if the environment is test
+    const dbName = isTest ? process.env.TEST_DB_NAME : process.env.DB_NAME;
+
     const connection = mysql.createConnection({
         host: process.env.DB_HOST,
         user: process.env.DB_USER,
         password: process.env.DB_PASSWORD,
-        database: process.env.DB_NAME,
+        database: dbName,
         port: process.env.DB_PORT
     });
 
@@ -15,12 +19,11 @@ function createConnection(test = false) {
             console.error(`An error occurred during connection: ${err}`);
             return null;
         }
-        console.log("Connection to MySQL DB was successful");
+        console.log(`Connection to ${dbName} was successful`);
     });
 
     return connection;
 }
-
 
 function closeConnection(connection) {
     if (connection && connection.state !== 'disconnected') {

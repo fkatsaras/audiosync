@@ -1,8 +1,9 @@
 const test = require('ava');
-const got = require('got');
 const index = require('../../index');
-const db = require('../../utils/dbUtils');
-const { loginRequest, searchRequest } = require('../utils');
+const { loginRequest, searchRequest, seedArtists, clearArtists } = require('../utils');
+
+process.env.NODE_ENV = 'test';
+
 
 let server;
 const PORT = 4003
@@ -18,38 +19,13 @@ test.after.always(() => {
     if (server) server.close();
 });
 
-// Helper function to add artists to the db for testing 
-const seedArtists = async (artists) => {
-    const connection = db.createConnection(true); // Connect to the test db
-
-    const query = "INSERT INTO artists (id, name, followers) VALUES ?";
-    const values = artists.map((artist) => [artist.id, artist.name, artist.followers]);
-
-    return new Promise((resolve, reject) => {
-        connection.query(query, [values], (err, results) => {
-            if (err) {
-                console.error(`Error seeding artists: ${err.message}`);
-                reject(err);
-            } else {
-                console.log("Artists seeded successfully:", results);
-                resolve(results);
-            }
-        });
-    });
-};
-// Helper function to clear the test db
-const clearArtists = async () => {
-    const connection = db.createConnection(true);   // Connect to the test db
-    await db.executeQuery(connection, "DELETE FROM artists WHERE name LIKE 'Artist%'");
-};
-
 test.serial('Search artists succeeds with valid query', async (t) => {
     
     // Arrange: Seed db with artists
     await clearArtists();
     await seedArtists([
-        { id: 500, name: 'Artist One', followers: 0 },
-        { id: 501, name: 'Artist Two', followers: 0 }
+        { id: 1, name: 'Artist One', followers: 0 },
+        { id: 2, name: 'Artist Two', followers: 0 }
     ]);
 
     // Arrange: Login as a test user
@@ -70,7 +46,7 @@ test.serial('Search artists succeeds with valid query', async (t) => {
     const limit = 10;
     const offset = 0;
 
-    const response = await searchRequest(PORT, token, searchQuery, limit, offset);
+    const response = await searchRequest(PORT, token, 'artists', searchQuery, limit, offset);
 
     // Assert: Verify the response
     const body = response.body;
@@ -99,7 +75,7 @@ test.serial('Search artists fails with empty query', async (t) => {
     t.truthy(token, 'Login response should contain a token');
 
     // Act: Make the API call with an empty query
-    const response = await searchRequest(PORT, token, null)
+    const response = await searchRequest(PORT, token, 'artists', null)
 
     // Assert: verify error response
     const body = response.body;
@@ -126,7 +102,7 @@ test.serial('Search artists returns 404 when no artists match given query', asyn
 
     // Act: Make the API call request with a query that has no matches
     const searchQuery = 'nonexistent';
-    const response = await searchRequest(PORT, token, searchQuery);
+    const response = await searchRequest(PORT, token, 'artists', searchQuery);
 
     // Assert: Verify 404 response
     const body = response.body;

@@ -2,6 +2,9 @@ const test = require('ava');
 const index = require('../../index');
 const { loginRequest } = require('../utils'); 
 
+process.env.NODE_ENV = 'test';
+
+
 let server;
 const PORT = 4000;
 
