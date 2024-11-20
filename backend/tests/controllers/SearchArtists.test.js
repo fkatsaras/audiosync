@@ -107,6 +107,6 @@ test.serial('Search artists returns 404 when no artists match given query', asyn
     // Assert: Verify 404 response
     const body = response.body;
     t.is(body.code, 404);
-    t.is(body.message, `No artists found for query.`);
+    t.is(body.message, `No artists found for given query.`);
 })
 

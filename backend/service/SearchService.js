@@ -48,7 +48,7 @@ exports.search_artists_get = function(userId, userQuery, limit, offset) {
 
       if (results.length === 0) {
         return reject({
-          message: `No artists found for query.`,
+          message: `No artists found for given query.`,
           body : {
             artists: [],
             pagination: {
@@ -133,7 +133,7 @@ exports.search_songs_get = function(userId, userQuery, limit, offset) {
 
       if (results.length === 0) {
         return reject({
-          message: `No songs found for query '${userQuery}'`,
+          message: `No songs found for given query.`,
           code: 404, 
         });
       }

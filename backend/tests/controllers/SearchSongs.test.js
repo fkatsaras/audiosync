@@ -66,3 +66,54 @@ test.serial('Search songs succeeds with valid query', async (t) => {
 });
 
 
+// Test: Empty search query
+test.serial('Search songs fails with empty query', async (t) => {
+    // Arrange: Login as a test user
+    const validLoginData = { username: 'testuser', password: 'test_password' };
+
+    const loginResponse = await loginRequest(validLoginData, PORT);
+    const { body: loginBody } = loginResponse;
+
+    t.is(loginBody.message, 'Login successful');
+    t.is(loginBody.code, 200);
+
+    // Extract token from the response
+    const token = loginBody.body.token;
+    t.truthy(token, 'Login response should contain a token');
+
+    // Act: Make the API call with an empty query
+    const response = await searchRequest(PORT, token, 'songs', null)
+
+    // Assert: verify error response
+    const body = response.body;
+    t.is(body.code, 400);
+    t.is(body.message, 'Search query is empty.');
+});
+
+// Test: No songs found
+test.serial('Search songs returns 404 when no songs match given query', async (t) => {
+    // Arrange: Clear DB
+    await clearSongs();
+    await clearArtists();
+    // Arrange: Login as a test user
+    const validLoginData = { username: 'testuser', password: 'test_password' };
+
+    const loginResponse = await loginRequest(validLoginData, PORT);
+    const { body: loginBody } = loginResponse;
+
+    t.is(loginBody.message, 'Login successful');
+    t.is(loginBody.code, 200);
+
+    // Extract token from the response
+    const token = loginBody.body.token;
+    t.truthy(token, 'Login response should contain a token');
+
+    // Act: Make the API call request with a query that has no matches
+    const searchQuery = 'nonexistent';
+    const response = await searchRequest(PORT, token, 'songs', searchQuery);
+
+    // Assert: Verify 404 response
+    const body = response.body;
+    t.is(body.code, 404);
+    t.is(body.message, `No songs found for given query.`);
+})
