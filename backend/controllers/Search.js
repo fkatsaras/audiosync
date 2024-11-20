@@ -20,7 +20,7 @@ module.exports.search_artists_get = function search_artists_get(req, res, next) 
 };
 
 module.exports.search_songs_get = function search_songs_get(req, res, next) {
-  const userId = req.query["user-id"]; // Get userId
+  const userId = req.current_user; // Get userId
   const userQuery = req.query.q; // Get parameters from URL
   const limit = parseInt(req.query.limit) || 5;
   const offset = parseInt(req.query.offset) || 0; 

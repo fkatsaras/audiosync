@@ -4,73 +4,74 @@
 __pycache__/
 *.py[cod]
 *$py.class
-*.egg-info/
-*.eggs/
-*.pyd
-*.so
-*.dll
 
 # C extensions
 *.so
 *.o
 *.obj
 
+# Node.js dependencies
+node_modules/
+
 # Distribution / packaging
-.Python
-env/
 build/
-develop-eggs/
 dist/
-downloads/
-eggs/
-.eggs/
-lib/
-lib64/
-parts/
-sdist/
-var/
 *.egg-info/
 .installed.cfg
 *.egg
 
-# PyInstaller
-#  Usually these files are written by a python script from a template
-#  before PyInstaller builds the exe, so as to inject date/other infos into it.
-*.manifest
-*.spec
+# Environment files
+.env
+.env.*
 
-# Installer logs
-pip-log.txt
-pip-delete-this-directory.txt
+# Logs
+*.log
+logs/
 
-# Unit test / coverage reports
+# Temporary and cache files
+*.tmp
+*.temp
+.cache/
+*.pid
+*.seed
+*.bak
+
+# Test coverage and reports
+coverage/
+*.coverage
+*.lcov
 htmlcov/
 .tox/
-.coverage
-.coverage.*
-.cache
 nosetests.xml
 coverage.xml
 *,cover
-.hypothesis/
+
+# Python environments
 venv/
-.python-version
+env/
+.Python
 
-# Translations
-*.mo
-*.pot
-
-# Django stuff:
-*.log
-
-# Sphinx documentation
+# Documentation
 docs/_build/
 
-# PyBuilder
-target/
+# Ignore local configuration files
+*.local
+*.config.json
 
-#Ipython Notebook
-.ipynb_checkpoints
+# Ignore IDE-specific files
+.vscode/
+.idea/
+*.sublime-workspace
+*.sublime-project
+
+# Miscellaneous
+.DS_Store
+Thumbs.db
+*.swp
+
+# Custom ignore rules based on your structure
+coverage/tmp/
+tests/__pycache__/
 
 ### Frontend ###
 
