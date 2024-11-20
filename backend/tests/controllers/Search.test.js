@@ -1,9 +1,8 @@
 const test = require('ava');
 const got = require('got');
-const http = require('http');
 const index = require('../../index');
 const db = require('../../utils/dbUtils');
-const { connect } = require('http2');
+const { loginRequest, searchRequest } = require('../utils');
 
 let server;
 const PORT = 4003
@@ -18,16 +17,6 @@ test.before(async (t) => {
 test.after.always(() => {
     if (server) server.close();
 });
-
-// Helper function to perform login request
-const loginRequest = async (credentials) => {
-    return await got.post(`${BASE_URL}/api/v1/users/login`, {
-        json: credentials,
-        responseType: 'json',
-        throwHttpErrors: false,
-    });
-};
-
 
 // Helper function to add artists to the db for testing 
 const seedArtists = async (artists) => {
@@ -66,7 +55,7 @@ test.serial('Search artists succeeds with valid query', async (t) => {
     // Arrange: Login as a test user
     const validLoginData = { username: 'testuser', password: 'test_password' };
 
-    const loginResponse = await loginRequest(validLoginData);
+    const loginResponse = await loginRequest(validLoginData, PORT);
     const { body: loginBody } = loginResponse;
 
     t.is(loginBody.message, 'Login successful');
@@ -81,20 +70,7 @@ test.serial('Search artists succeeds with valid query', async (t) => {
     const limit = 10;
     const offset = 0;
 
-    const response = await got(`${BASE_URL}/api/v1/search/artists`, {
-        headers: {
-            'Authorization': `Bearer ${token}`
-        },
-        searchParams: {
-            q: searchQuery,
-            limit,
-            offset,
-        },
-        responseType: 'json',
-        throwHttpErrors: false
-    });
-
-    console.log(response.body);
+    const response = await searchRequest(PORT, token, searchQuery, limit, offset);
 
     // Assert: Verify the response
     const body = response.body;
@@ -106,4 +82,55 @@ test.serial('Search artists succeeds with valid query', async (t) => {
         ['Artist One', 'Artist Two']
     );
 });
+
+// Test: Empty search query
+test.serial('Search artists fails with empty query', async (t) => {
+    // Arrange: Login as a test user
+    const validLoginData = { username: 'testuser', password: 'test_password' };
+
+    const loginResponse = await loginRequest(validLoginData, PORT);
+    const { body: loginBody } = loginResponse;
+
+    t.is(loginBody.message, 'Login successful');
+    t.is(loginBody.code, 200);
+
+    // Extract token from the response
+    const token = loginBody.body.token;
+    t.truthy(token, 'Login response should contain a token');
+
+    // Act: Make the API call with an empty query
+    const response = await searchRequest(PORT, token, null)
+
+    // Assert: verify error response
+    const body = response.body;
+    t.is(body.code, 400);
+    t.is(body.message, 'Search query is empty.');
+});
+
+// Test: No artists found
+test.serial('Search artists returns 404 when no artists match given query', async (t) => {
+    // Arrange: Clear DB
+    await clearArtists();
+    // Arrange: Login as a test user
+    const validLoginData = { username: 'testuser', password: 'test_password' };
+
+    const loginResponse = await loginRequest(validLoginData, PORT);
+    const { body: loginBody } = loginResponse;
+
+    t.is(loginBody.message, 'Login successful');
+    t.is(loginBody.code, 200);
+
+    // Extract token from the response
+    const token = loginBody.body.token;
+    t.truthy(token, 'Login response should contain a token');
+
+    // Act: Make the API call request with a query that has no matches
+    const searchQuery = 'nonexistent';
+    const response = await searchRequest(PORT, token, searchQuery);
+
+    // Assert: Verify 404 response
+    const body = response.body;
+    t.is(body.code, 404);
+    t.is(body.message, `No artists found for query.`);
+})
 

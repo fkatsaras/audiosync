@@ -17,6 +17,14 @@ exports.search_artists_get = function(userId, userQuery, limit, offset) {
       if (!userQuery || !userQuery.trim()) {
         return reject({
           message: 'Search query is empty.',
+          body : {
+            artists: [],
+            pagination: {
+              limit,
+              offset,
+              count: 0,
+            }
+          },
           code: 400,
         });
       }
@@ -40,7 +48,15 @@ exports.search_artists_get = function(userId, userQuery, limit, offset) {
 
       if (results.length === 0) {
         return reject({
-          message: `No artists found for query '${userQuery}'`,
+          message: `No artists found for query.`,
+          body : {
+            artists: [],
+            pagination: {
+              limit,
+              offset,
+              count: 0,
+            }
+          },
           code: 404, 
         });
       }

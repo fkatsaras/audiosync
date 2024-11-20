@@ -1,20 +1,9 @@
 const test = require('ava');
-const got = require('got');
-const http = require('http');
 const index = require('../../index');
+const { loginRequest } = require('../utils'); 
 
 let server;
 const PORT = 4000;
-const BASE_URL = `http://localhost:${PORT}`;
-
-// Helper function to perform login request
-const loginRequest = async (credentials) => {
-    return await got.post(`${BASE_URL}/api/v1/users/login`, {
-        json: credentials,
-        responseType: 'json',
-        throwHttpErrors: false,
-    });
-};
 
 test.before(async t => {
     t.timeout(2000);    // Set timeout to 2 sec
@@ -31,7 +20,7 @@ test.serial('Login succeeds with valid credentials', async (t) => {
     const validCredentials = { username: 'testuser', password: 'test_password' };
 
     // Act: Make the login request using valid credentials
-    const { body } = await loginRequest(validCredentials);
+    const { body } = await loginRequest(validCredentials, PORT);
     const response = body;
 
     // Assert: Verify the response
@@ -48,7 +37,7 @@ test.serial('Login fails with invalid credentials', async (t) => {
     };
 
     // Act: Make the login request
-    const { body } = await loginRequest(invalidCredentials);
+    const { body } = await loginRequest(invalidCredentials, PORT);
     const response = body;
 
     // Assert: Verify the response
@@ -62,7 +51,7 @@ test.serial('Login fails with non-existent user', async (t) => {
     const nonExistentUser = { username: 'nonexistentuser', password: 'somepassword' };
 
     // Act: Make the login request using the non-existent user's credentials
-    const { body } = await loginRequest(nonExistentUser);
+    const { body } = await loginRequest(nonExistentUser, PORT);
     const response = body;
 
     // Assert: Verify the response for a non-existent user

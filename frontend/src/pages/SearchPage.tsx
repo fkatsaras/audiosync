@@ -47,7 +47,7 @@ const Search: React.FC<UserSessionProps> = ({ userId, username }) => {
     const fetchResults = async (type: 'artists' | 'songs', offset: number) => {
         setLoading(true);
         try {
-            const response = await fetch(`/api/v1/search/${type}?q=${query}&offset=${offset}&limit=5`, {
+            const response = await fetch(`/api/v1/search/${type}${query ? `?q=${query}&offset=${offset}&limit=5` : ''}`, {
                 headers: {
                     'Authorization': `Bearer ${localStorage.getItem('token')}`
                 }
@@ -86,8 +86,8 @@ const Search: React.FC<UserSessionProps> = ({ userId, username }) => {
             setLoading(false);
             setHasSearched(true);
         } catch (err) {
-            setError('Failed to fetch results.');
-            setLoading(false);
+            (err instanceof Error) ? 
+                setError(err.message || 'Failed to fetch results.') : setError('An unknown error occurred.')
         } finally {
             setLoading(false);
         }
@@ -102,6 +102,7 @@ const Search: React.FC<UserSessionProps> = ({ userId, username }) => {
     * @param {'artists' | 'songs'} type - The type of results to search for (artists or songs).
     */
     const handleSearch = (type: 'artists' | 'songs') => {
+        setError('');
         setArtistResults([]);
         setSongResults([]);
         setArtistOffset(0);

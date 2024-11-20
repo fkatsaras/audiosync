@@ -68,7 +68,7 @@ paths:
         - name: q
           in: query
           description: Search query string for artists. The query will be used to search for partial matches in artist names.
-          required: true
+          required: false
           style: form
           explode: true
           schema:
@@ -115,7 +115,7 @@ paths:
         - name: q
           in: query
           description: Search query string for songs. The query will be used to search for partial matches in song titles.
-          required: true
+          required: false
           style: form
           explode: true
           schema:

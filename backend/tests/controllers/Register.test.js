@@ -1,21 +1,13 @@
 const test = require('ava');
-const got = require('got');
-const http = require('http');
 const index = require('../../index');
 const db = require('../../utils/dbUtils');
+const { registerRequest } = require('../utils');
 
 let server;
 const PORT = 4001;
 const BASE_URL = `http://localhost:${PORT}`;
 
-// Helper function to perform register request
-const registerRequest = async (userData) => {
-    return await got.post(`${BASE_URL}/api/v1/users/register`, {
-        json: userData,
-        responseType: 'json',
-        throwHttpErrors: false
-    });
-};
+
 
 test.before(async (t) => {
     t.timeout(2000); 
@@ -38,7 +30,7 @@ test.serial('Registration succeeds with valid data', async (t) => {
     };
 
     // Act: Make the registration request
-    const { body } = await registerRequest(validData);
+    const { body } = await registerRequest(validData, PORT);
     const response = body;
 
     // Assert: Verify the response
@@ -68,7 +60,7 @@ test.serial('Registration fails with existing username', async (t) => {
   };
 
   // Act: Make the registration request with an existing username
-  const { body } = await registerRequest(existingUserData);
+  const { body } = await registerRequest(existingUserData, PORT);
   const response = body;
 
   // Assert: Verify the response for existing user
