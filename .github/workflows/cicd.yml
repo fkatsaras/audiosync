@@ -18,6 +18,7 @@ jobs:
         ports:
           - 3306:3306
     steps:
+      - uses: actions/checkout@v4
       - name: Wait for MySQL to initialize
         run: |
           for i in {1..10}; do
