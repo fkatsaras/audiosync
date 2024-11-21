@@ -22,7 +22,7 @@ jobs:
       - name: Wait for MySQL to initialize
         run: |
           for i in {1..10}; do
-            if mysqladmin ping -h127.0.0.1 -uroot -proot --silent; then
+            if mysqladmin ping -hlocalhost -uroot -proot --silent; then
               echo "MySQL is up and running"
               break
             fi
@@ -34,8 +34,8 @@ jobs:
         run: |
           pwd
           ls -lrt ./
-          mysql -h127.0.0.1 -uroot -proot se2_audiosync_test_db < ./database/test_tables.sql
-          mysql -h127.0.0.1 -uroot -proot se2_audiosync_test_db < ./database/test_data.sql
+          mysql -hlocalhost -uroot -proot se2_audiosync_test_db < ./database/test_tables.sql
+          mysql -hlocalhost -uroot -proot se2_audiosync_test_db < ./database/test_data.sql
 
   backend-tests:
     runs-on: ubuntu-latest
@@ -56,7 +56,7 @@ jobs:
       - name: Run backend tests
         working-directory: backend
         env:
-          DB_HOST: 127.0.0.1
+          DB_HOST: localhost
           DB_USER: root
           DB_PASSWORD: root
           DB_NAME: se2_audiosync_test_db
