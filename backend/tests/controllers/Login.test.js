@@ -1,6 +1,6 @@
 const test = require('ava');
 const index = require('../../index');
-const { loginRequest } = require('../utils'); 
+const { loginRequest } = require('../../utils/testUtils'); 
 
 process.env.NODE_ENV = 'test';
 

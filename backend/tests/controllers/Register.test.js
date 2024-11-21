@@ -1,7 +1,7 @@
 const test = require('ava');
 const index = require('../../index');
 const db = require('../../utils/dbUtils');
-const { registerRequest } = require('../utils');
+const { registerRequest } = require('../../utils/testUtils');
 
 process.env.NODE_ENV = 'test';
 

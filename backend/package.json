@@ -11,11 +11,6 @@
     "vtest": "c8 ava --verbose",
     "test-file": "c8 ava tests/controllers/$npm_config_test_file"
   },
-  "ava": {
-    "files": [
-      "backend/tests/**/*.test.js"
-    ]
-  },
   "keywords": [
     "swagger"
   ],

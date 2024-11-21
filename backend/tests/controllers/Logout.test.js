@@ -1,7 +1,7 @@
 const test = require('ava');
 const got = require('got');
 const index = require('../../index');
-const { loginRequest, logoutRequest } = require('../utils');
+const { loginRequest, logoutRequest } = require('../../utils/testUtils');
 
 process.env.NODE_ENV = 'test';
 

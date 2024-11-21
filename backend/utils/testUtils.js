@@ -1,6 +1,6 @@
 const got = require('got');
 const test = require('ava');
-const db = require('../utils/dbUtils');
+const db = require('./dbUtils');
 const BASE_URL = `http:localhost`;
 
 const loginRequest = async (credentials, PORT) => {
