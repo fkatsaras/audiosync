@@ -32,10 +32,9 @@ jobs:
       - name: Initialize Database
         run: |
           pwd
-          ls -l database/
-          ls -l /home/runner/work/teogr99/audiosync/
-          mysql -h127.0.0.1 -uroot -proot se2_audiosync_test_db < database/test_tables.sql
-          mysql -h127.0.0.1 -uroot -proot se2_audiosync_test_db < database/test_data.sql
+          ls -lrt /home/runner/work/audiosync/audiosync
+          mysql -h127.0.0.1 -uroot -proot /home/runner/work/audiosync/audiosync/se2_audiosync_test_db < database/test_tables.sql
+          mysql -h127.0.0.1 -uroot -proot /home/runner/work/audiosync/audiosyncse2_audiosync_test_db < database/test_data.sql
 
   backend-tests:
     runs-on: ubuntu-latest
