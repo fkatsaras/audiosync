@@ -4,7 +4,7 @@ const Search = require('../service/SearchService');
 const { successResponse, errorResponse } = require('../utils/apiUtils');
 
 module.exports.search_artists_get = function search_artists_get(req, res, next) {
-  const userId = req.current_user;
+  const userId = req.session.user.id;
   const userQuery = req.query.q; // Get parameters from URL
 
   const limit = parseInt(req.query.limit) || 5;
@@ -20,7 +20,7 @@ module.exports.search_artists_get = function search_artists_get(req, res, next) 
 };
 
 module.exports.search_songs_get = function search_songs_get(req, res, next) {
-  const userId = req.current_user; // Get userId
+  const userId = req.session.user.id; // Get userId
   const userQuery = req.query.q; // Get parameters from URL
   const limit = parseInt(req.query.limit) || 5;
   const offset = parseInt(req.query.offset) || 0; 

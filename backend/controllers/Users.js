@@ -3,15 +3,29 @@
 var utils = require('../utils/writer.js');
 var Users = require('../service/UsersService.js');
 const api = require('../utils/apiUtils.js');
-const { response } = require('express');
+const { successResponse, errorResponse } = require('../utils/apiUtils.js');
 
-module.exports.add_liked_song = function add_liked_song (req, res, next, body, userId) {
-  Users.add_liked_song(body, userId)
+module.exports.like_song = function like_song (req, res, next) {
+  const songId = req.query.songId;
+  const userId = req.session.user.id;
+  Users.like_song(userId, songId)
     .then(function (response) {
-      utils.writeJson(res, response);
+      successResponse(res, response.message, response.body);
     })
-    .catch(function (response) {
-      utils.writeJson(res, response);
+    .catch(function (error) {
+      errorResponse(res, error.message, error.code);
+    });
+};
+
+module.exports.unlike_song = function unlike_song (req, res, next) {
+  const songId = req.query.songId;
+  const userId = req.session.user.id;
+  Users.unlike_song(userId, songId)
+    .then(function (response) {
+      successResponse(res, response.message, response.body);
+    })
+    .catch(function (error) {
+      errorResponse(res, error.message, error.code);
     });
 };
 
@@ -198,17 +212,6 @@ module.exports.register_user = async function register_user(req, res) {
     const statusCode = error.code || 500;
     return api.errorResponse(res, error.message, statusCode);
   }
-};
-
-
-module.exports.remove_liked_song = function remove_liked_song (req, res, next, userId, songId) {
-  Users.remove_liked_song(userId, songId)
-    .then(function (response) {
-      utils.writeJson(res, response);
-    })
-    .catch(function (response) {
-      utils.writeJson(res, response);
-    });
 };
 
 module.exports.unfollow_artist = function unfollow_artist (req, res, next, userId, artistId) {

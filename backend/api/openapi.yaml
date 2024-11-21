@@ -446,7 +446,7 @@ paths:
         "404":
           description: Song not found
       x-swagger-router-controller: Songs
-  /api/v1/users/{user-id}/liked-songs:
+  /api/v1/users/{userId}/liked-songs:
     get:
       tags:
       - users
@@ -454,7 +454,7 @@ paths:
       description: Retrieve the list of songs liked by a specific user
       operationId: get_liked_songs
       parameters:
-      - name: user-id
+      - name: userId
         in: path
         description: ID of the user whose liked songs are to be fetched
         required: true
@@ -478,58 +478,60 @@ paths:
       x-swagger-router-controller: Users
     post:
       tags:
-      - users
+        - users
       summary: User likes a song
       description: Add a new song to the list of liked songs for a specific user
-      operationId: add_liked_song
+      operationId: like_song
       parameters:
-      - name: user-id
-        in: path
-        description: ID of the user to add the liked song
-        required: true
-        style: simple
-        explode: false
-        schema:
-          type: integer
-      requestBody:
-        description: Song object to be added to liked songs
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Song'
-        required: true
+        - name: userId
+          in: path
+          description: ID of the user to add the liked song
+          required: true
+          style: simple
+          explode: false
+          schema:
+            type: integer
+        - name: songId
+          in: query
+          description: ID of the song to be added to liked songs
+          required: true
+          style: form
+          explode: true
+          schema:
+            type: integer
       responses:
         "201":
           description: Liked song added successfully
         "400":
-          description: Invalid request body
+          description: Invalid request
         "404":
           description: User not found
       x-openapi-router-controller: app.controllers.users_controller
       x-swagger-router-controller: Users
+
     delete:
       tags:
-      - users
+        - users
       summary: User unlikes a song
       description: Remove a specific song from the list of liked songs for a user
-      operationId: remove_liked_song
+      operationId: unlike_song
       parameters:
-      - name: user-id
-        in: path
-        description: ID of the user to remove the liked song from
-        required: true
-        style: simple
-        explode: false
-        schema:
-          type: integer
-      - name: song-id
-        in: query
-        description: ID of the song to be removed from liked songs
-        required: true
-        style: form
-        explode: true
-        schema:
-          type: integer
+        - name: userId
+          in: path
+          description: ID of the user to remove the liked song from
+          required: true
+          style: simple
+          explode: false
+          schema:
+            type: integer
+        - name: songId
+          in: query
+          description: ID of the song to be removed from liked songs
+          required: true
+          style: form
+          explode: true
+          schema:
+            type: integer
       responses:
         "204":
           description: Liked song removed successfully

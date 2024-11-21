@@ -5,7 +5,6 @@ const api = require('../utils/apiUtils.js');
 
 module.exports.home = function home(req, res, next) {
 
-  console.log(req.current_user);
   const current_user = req.current_user; // Extracted by middleware
 
   if (!current_user) {

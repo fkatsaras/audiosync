@@ -149,7 +149,7 @@ test.serial('Search songs succeeds with valid query', async (t) => {
     // Assert: Verify the response
     const body = response.body;
     t.is(body.code, 200);
-    t.is(body.message, `Songs successfully found by user testuser`);
+    t.is(body.message, `Songs successfully found by user 1`);
     t.is(body.body.pagination.count, 2, 'Should return two songs');
     
     // Assert that the correct song titles are returned

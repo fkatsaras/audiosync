@@ -6,8 +6,11 @@ import Button from "../components/Buttons/Button";
 import Message from "../components/Message/Message";
 import LoadingDots from "../components/LoadingDots/LoadingDots";
 
+interface SongPageProps {
+    userId?: string;
+}
 
-const SongPage: React.FC = () => {
+const SongPage: React.FC<SongPageProps> = ({ userId }) => {
     const { songId } = useParams<{ songId: string }>(); // Get song ID from URL parameters
     const [song, setSong] = useState<Song | null>(null);
     const [loading, setLoading] = useState(true);
@@ -41,28 +44,29 @@ const SongPage: React.FC = () => {
     }, [songId]);
 
     const handleLikeToggle = async () => {
-        if (song) {
+        if (!song) return;
 
-            const response = await fetch(`/api/v1/songs/${songId}/like`, {
-                method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`,
-                    'Content-type': 'application/json', 
-                },
-            });
+        const action = song.liked ? 'DELETE' : 'POST';
+        const endpoint = `/api/v1/users/${userId}/liked-songs?songId=${songId}`;
 
-            if (response.ok) {
-                const data = await response.json();
-                setSong(prevSong => ({
-                    ...prevSong!,
-                    liked: data.body.liked,
-                    // followers: data.body.is_followed? prevArtist!.followers + 1 : prevArtist!.followers - 1, TODO Add a total likes or sth here (mabye total plays like spotify)
-                }))
-                setMessage(data.message);
-            } else {
-                const errorData = await response.json();
-                setMessage(errorData.message);
-            }
+        const response = await fetch(endpoint, {
+            method: action,
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                'Content-type': 'application/json',
+            },
+        });
+
+        if (response.ok) {
+            const data = await response.json();
+            setSong(prevSong => ({
+                ...prevSong!,
+                liked: data.body.liked  // Update the songs liked status
+            }));
+            setMessage(data.message);
+        } else {
+            const errorData = await response.json();
+            setMessage(errorData.message);
         }
     };
 

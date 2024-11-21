@@ -13,11 +13,81 @@ const db = require('../utils/dbUtils');
  * userId Integer ID of the user to add the liked song
  * no response value expected for this operation
  **/
-exports.add_liked_song = function(body,userId) {
-  return new Promise(function(resolve, reject) {
-    resolve();
+exports.like_song = function(userId, songId) {
+  return new Promise(async (resolve, reject) => {
+
+    const connection = db.createConnection();
+    try {
+      // Step 1: Insert the song into the liked_songs table
+      const insertQuery = `
+        INSERT INTO liked_songs (user_id, song_id)
+        VALUES (?, ?)
+      `;
+
+      const insertSuccess = await db.executeQuery(connection, insertQuery, [userId, songId]);
+
+      if (insertSuccess.affectedRows > 0) {
+        // Successfully liked the song
+        resolve({
+          message: 'Song liked successfully',
+          body: {
+            liked: true
+          }
+        });
+      } else {
+        reject({
+          message: 'Failed to like song.',
+        });
+      }
+    } catch (error) {
+      console.log(`Unexpected: ${error}`);
+      reject({
+        message: 'Unexpected error'
+      });
+    } finally {
+      // Ensure db connection is closed at the end
+      db.closeConnection(connection);
+    }
   });
-}
+};
+
+exports.unlike_song = function(userId, songId) {
+  return new Promise(async (resolve, reject) => {
+
+    const connection = db.createConnection();
+    try {
+      // Step 1: Delete the song from the liked_songs table
+      const deleteQuery = `
+        DELETE FROM liked_songs
+        WHERE user_id = ? AND song_id = ?
+      `;
+
+      const deleteSuccess = await db.executeQuery(connection, deleteQuery, [userId, songId]);
+
+      if (deleteSuccess.affectedRows > 0) {
+        // Successfully unliked the song
+        resolve({
+          message: 'Song unliked successfully.',
+          body: {
+            liked: false
+          }
+        });
+      } else {
+        reject({
+          message: 'Failed to unlike the song.',
+        });
+      }
+    } catch (error) {
+      console.log(`Unexpected: ${error}`);
+      reject({
+        message: 'Unexpected error'
+      });
+    } finally {
+      // Ensure db connection is closed at the end
+      db.closeConnection(connection);
+    }
+  });
+};
 
 
 /**
@@ -438,11 +508,42 @@ exports.register_user = function(body) {
  * songId Integer ID of the song to be removed from liked songs
  * no response value expected for this operation
  **/
-exports.remove_liked_song = function(userId,songId) {
-  return new Promise(function(resolve, reject) {
-    resolve();
+exports.unlike_song = function(userId, songId) {
+  return new Promise(async (resolve, reject) => {
+    const connection = db.createConnection();
+    try {
+      // Step 1: Delete the song from the liked_songs table
+      const deleteQuery = `
+        DELETE FROM liked_songs
+        WHERE user_id = ? AND song_id = ?
+      `;
+
+      const deleteSuccess = await db.executeQuery(connection, deleteQuery, [userId, songId]);
+
+      if (deleteSuccess.affectedRows > 0) {
+        // Successfully unliked the song
+        resolve({
+          message: 'Song unliked successfully.',
+          body: {
+            liked: false
+          }
+        });
+      } else {
+        reject({
+          message: 'Failed to unlike the song.',
+        });
+      }
+    } catch (error) {
+      console.log(`Unexpected: ${error}`);
+      reject({
+        message: 'Unexpected error'
+      });
+    } finally {
+      // Ensure db connection is closed at the end
+      db.closeConnection(connection);
+    }
   });
-}
+};
 
 
 /**
