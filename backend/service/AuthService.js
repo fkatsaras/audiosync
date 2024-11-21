@@ -9,7 +9,7 @@
  **/
 exports.checkLogin = function(req) {
   return new Promise(function(resolve, reject) {
-    console.log(req.session);
+    console.log(req.session.user);
     if (req.session && req.session.user.id) {
       const user_id = req.session.user.id;
       const username = req.session.user.username;

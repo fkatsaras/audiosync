@@ -15,7 +15,11 @@ const tokenRequired = (req, res, next) => {
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
     req.current_user = decoded.username; // Set username from token payload
-    req.current_user_id = decoded.user_id; // If user_id exists in payload
+    // Set session for the user
+    req.session.user = {
+      id: decoded.user_id,
+      username: decoded.username,
+    };
     next(); // Proceed to next middleware or route
   } catch (error) {
     console.log(error);
