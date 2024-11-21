@@ -14,7 +14,8 @@ async function getSpotifyToken() {
         headers: {
           'Authorization': `Basic ${encodedCredentials}`,
           'Content-Type': 'application/x-www-form-urlencoded',
-        }
+        },
+        timeout: 5000, // Timeout in milliseconds
       }
     );
 
@@ -48,7 +49,8 @@ async function getArtistProfilePicture(artistName) {
     const response = await axios.get(searchUrl, {
       headers: {
         'Authorization': `Bearer ${token}`
-      }
+      },
+      timeout: 5000, // Timeout in milliseconds
     });
 
     const artists = response.data.artists.items;
@@ -83,7 +85,8 @@ async function getSongCover(albumName) {
         const response = await axios.get(searchUrl, {
             headers: {
                 'Authorization': `Bearer ${token}`,
-            }
+            },
+            timeout: 5000, // Timeout in milliseconds
         });
 
         const albums = response.data.albums.items;

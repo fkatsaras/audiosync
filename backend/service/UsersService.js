@@ -453,7 +453,7 @@ exports.remove_liked_song = function(userId,songId) {
  * artist_id Integer The ID of the artist to unfollow
  * no response value expected for this operation
  **/
-exports.unfollow_artist = function(userId,artist_id) {
+exports.unfollow_artist = function(userId,artistId) {
   return new Promise(function(resolve, reject) {
     resolve();
   });

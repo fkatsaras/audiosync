@@ -211,8 +211,8 @@ module.exports.remove_liked_song = function remove_liked_song (req, res, next, u
     });
 };
 
-module.exports.unfollow_artist = function unfollow_artist (req, res, next, userId, artist_id) {
-  Users.unfollow_artist(userId, artist_id)
+module.exports.unfollow_artist = function unfollow_artist (req, res, next, userId, artistId) {
+  Users.unfollow_artist(userId, artistId)
     .then(function (response) {
       utils.writeJson(res, response);
     })

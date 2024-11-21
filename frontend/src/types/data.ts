@@ -32,7 +32,7 @@ export interface Song {
  * @interface Artist
  * @property {number} id - The unique identifier for the artist.
  * @property {string} name - The name of the artist.
- * @property {string} [profile_picture] - Optional URL for the artist's profile picture.
+ * @property {string} [profilePicture] - Optional URL for the artist's profile picture.
  * @property {Song[]} songs - An array of songs associated with the artist.
  * @property {number} followers - The number of followers the artist has.
  * @property {boolean} is_followed - Indicates if the user is following the artist.

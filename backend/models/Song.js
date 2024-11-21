@@ -4,7 +4,7 @@ class Song {
    *
    * @param {number} id - Unique identifier for the song.
    * @param {string} title - Title or name of the song.
-   * @param {number} artistId - ID of the artist who created the song.
+   * @param {number} artist_id - ID of the artist who created the song.
    * @param {string} artist - Name of the artist who created the song.
    * @param {string} album - Name of the album containing the song.
    * @param {number} duration - Duration of the song in seconds.
@@ -16,7 +16,7 @@ class Song {
   constructor(
     id = null,
     title = null,
-    artistId = null,
+    artist_id = null,
     artist = null,
     album = null,
     duration = null,
@@ -27,7 +27,7 @@ class Song {
   ) {
     this._id = id;
     this._title = title;
-    this._artistId = artistId;
+    this._artist_id = artist_id;
     this._artist = artist;
     this._album = album;
     this._duration = duration;
@@ -37,11 +37,11 @@ class Song {
     this._isPlaying = isPlaying;
   }
 
-  static fromDict(data) {
+  static fromObject(data) {
     return new Song(
       data.id,
       data.title,
-      data.artistId,
+      data.artist_id,
       data.artist,
       data.album,
       data.duration,
@@ -60,7 +60,7 @@ class Song {
     return {
       id: this.id,
       title: this._title,
-      artistId: this._artistId,
+      artist_id: this._artist_id,
       artist: this._artist,
       album: this._album,
       duration: this._duration,
@@ -87,12 +87,12 @@ class Song {
     this._title = value;
   }
 
-  get artistId() {
-    return this._artistId;
+  get artist_id() {
+    return this._artist_id;
   }
 
-  set artistId(value) {
-    this._artistId = value;
+  set artist_id(value) {
+    this._artist_id = value;
   }
 
   get artist() {

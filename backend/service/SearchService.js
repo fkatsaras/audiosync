@@ -138,7 +138,7 @@ exports.search_songs_get = function(userId, userQuery, limit, offset) {
         });
       }
 
-      // Add profile pictures
+      // Add album covers
       const songs = await Promise.all(
         results.map(async (song) => {
 

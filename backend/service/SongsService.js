@@ -28,9 +28,10 @@ exports.get_song_by_id = function(userId, songId) {
       if (songResult.length > 0) {
         const songData = songResult[0];
         songData.artist = songData.artist_name;
+        console.log(songData);
 
         // Create a Song instance with the retrieved data
-        const song = Song.fromDict(songData);
+        const song = Song.fromObject(songData);
 
         // Fetch album cover and set it
         song.cover = await getSongCover(song.album);
@@ -46,21 +47,21 @@ exports.get_song_by_id = function(userId, songId) {
 
         // Respond with song data
         return resolve({
-          message: 'Song retrieved successfully',
+          message: 'Song retrieved successfully.',
           body: song.toJSON()
         });
 
       } else {
         // Song not found 
         return reject({
-          message: `Song with ID: ${songId} not found`,
+          message: `Song with ID: ${songId} not found.`,
           code: 404
         });
       }
     } catch (error) {
       console.error('Error in retrieving song:', error.message);
       reject({
-        message: `Unexpected`,
+        message: error.message,
         body: 500
       });
     }

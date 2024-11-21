@@ -262,15 +262,15 @@ paths:
                 $ref: '#/components/schemas/inline_response_400_1'
       x-openapi-router-controller: app.controllers.users_controller
       x-swagger-router-controller: Users
-  /api/v1/artists/{artist-id}:
+  /api/v1/artists/{artistId}:
     get:
       tags:
       - artists
       summary: Get artist by id
       description: Retrieve information about a specific artist
-      operationId: gett_artist_by_id
+      operationId: get_artist_by_id
       parameters:
-      - name: artist-id
+      - name: artistId
         in: path
         description: The ID of the artist to fetch
         required: true
@@ -278,6 +278,8 @@ paths:
         explode: false
         schema:
           type: integer
+      security:
+        - BearerAuth: []
       responses:
         "200":
           description: successful operation
