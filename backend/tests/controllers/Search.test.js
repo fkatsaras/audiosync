@@ -51,7 +51,7 @@ test.serial('Search artists succeeds with valid query', async (t) => {
     // Assert: Verify the response
     const body = response.body;
     t.is(body.code, 200);
-    t.is(body.message, `Artists successfully found by user testuser`);
+    t.is(body.message, `Artists successfully found by user 1`);
     t.is(body.body.pagination.count, 2, 'Should return two artists');
     t.deepEqual(
         body.body.artists.map((artist) => artist.name),
