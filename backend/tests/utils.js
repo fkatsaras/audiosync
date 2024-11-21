@@ -1,4 +1,5 @@
 const got = require('got');
+const test = require('ava');
 const db = require('../utils/dbUtils');
 const BASE_URL = `http:localhost`;
 
