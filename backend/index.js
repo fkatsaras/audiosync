@@ -25,7 +25,7 @@ const sessionMiddleware = session({
     resave: false, // Do not save session if unmodified
     saveUninitialized: true, // Save new sessions even if they are empty
     cookie: {
-        secure: process.env.NODE_ENV === 'production' ? true : false,
+        secure: false,
         httpOnly: true, // Prevents JavaScript access to cookies
         maxAge: 60 * 60 * 1000 // 1 hour
     }

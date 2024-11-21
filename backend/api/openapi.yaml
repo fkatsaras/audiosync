@@ -414,7 +414,7 @@ paths:
           description: Artist not found
       x-openapi-router-controller: app.controllers.artists_controller
       x-swagger-router-controller: Artists
-  /api/v1/songs/{song-id}:
+  /api/v1/songs/{songId}:
     get:
       tags:
       - songs
@@ -422,7 +422,7 @@ paths:
       description: Retrieve information about a specific song
       operationId: get_song_by_id
       parameters:
-      - name: song-id
+      - name: songId
         in: path
         description: The ID of the song to fetch
         required: true
@@ -430,6 +430,8 @@ paths:
         explode: false
         schema:
           type: integer
+      security:
+        - BearerAuth: []
       responses:
         "200":
           description: successful operation
@@ -441,7 +443,6 @@ paths:
           description: Invalid ID supplied
         "404":
           description: Song not found
-      x-openapi-router-controller: app.controllers.songs_controller
       x-swagger-router-controller: Songs
   /api/v1/users/{user-id}/liked-songs:
     get:

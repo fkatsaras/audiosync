@@ -1,5 +1,9 @@
 'use strict';
 
+const db = require('../utils/dbUtils');
+const Song = require('../models/Song');
+const { getSongCover } = require('../utils/spotify');
+
 
 /**
  * Get song by ID
@@ -8,36 +12,59 @@
  * songId Integer The ID of the song to fetch
  * returns Song
  **/
-exports.get_song_by_id = function(songId) {
-  return new Promise(function(resolve, reject) {
-    var examples = {};
-    examples['application/json'] = {
-  "duration" : 300,
-  "cover" : "https://1.bp.blogspot.com/-e2j5SK7JAC8/XmHhBKZJyEI/AAAAAAAABto/A1cfumUwHuA_8MFlAEtdpN5rLHlpVOd6ACLcBGAsYHQ/s1600/Iron%2BMaiden%2B-%2BPowerslave%2B%25281984%2529%2Bfront%2Bback%2Balbum%2Bcovers.jpg",
-  "artist" : "Iron Maiden",
-  "album" : "Powerslave",
-  "playlists" : [ {
-    "songs" : [ null, null ],
-    "editMode" : true,
-    "id" : 123,
-    "title" : "My Favorite Songs"
-  }, {
-    "songs" : [ null, null ],
-    "editMode" : true,
-    "id" : 123,
-    "title" : "My Favorite Songs"
-  } ],
-  "is_playing" : false,
-  "id" : 456,
-  "title" : "Aces High",
-  "liked" : true
-};
-    if (Object.keys(examples).length > 0) {
-      resolve(examples[Object.keys(examples)[0]]);
-    } else {
-      resolve();
+exports.get_song_by_id = function(userId, songId) {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const connection = db.createConnection();
+
+      const query = `
+        SELECT songs.*, artists.name AS artist_name
+        FROM songs
+        JOIN artists ON songs.artist_id = artists.id
+        WHERE songs.id = ?
+      `;
+      const songResult = await db.executeQuery(connection, query, [songId]);
+
+      if (songResult.length > 0) {
+        const songData = songResult[0];
+        songData.artist = songData.artist_name;
+
+        // Create a Song instance with the retrieved data
+        const song = Song.fromDict(songData);
+
+        // Fetch album cover and set it
+        song.cover = await getSongCover(song.album);
+
+        // Check if the song has been liked by the user
+        const likeQuery = `
+          SELECT 1 FROM liked_songs
+          WHERE user_id = ? AND song_id = ?
+        `;
+
+        const likeResult = await db.executeQuery(connection, likeQuery, [userId, songId]);
+        song.liked = Boolean(likeResult.length);
+
+        // Respond with song data
+        return resolve({
+          message: 'Song retrieved successfully',
+          body: song.toJSON()
+        });
+
+      } else {
+        // Song not found 
+        return reject({
+          message: `Song with ID: ${songId} not found`,
+          code: 404
+        });
+      }
+    } catch (error) {
+      console.error('Error in retrieving song:', error.message);
+      reject({
+        message: `Unexpected`,
+        body: 500
+      });
     }
-  });
+  })
 }
 
 

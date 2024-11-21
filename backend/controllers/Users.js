@@ -123,6 +123,7 @@ module.exports.login_user = async function login_user(req, res) {
     };
 
     console.log(`User logged in: ${response.username}`);
+    console.log(req.session);
     return api.successResponse(res, 'Login successful', { token: response.token });
   } catch (error) {
     console.error(`Login failed for ${username}: ${error.details || error.message}`);

@@ -1,15 +1,17 @@
 'use strict';
 
-var utils = require('../utils/writer.js');
 var Songs = require('../service/SongsService');
+const { successResponse, errorResponse } = require('../utils/apiUtils');
 
-module.exports.get_song_by_id = function get_song_by_id (req, res, next, songId) {
-  Songs.get_song_by_id(songId)
+module.exports.get_song_by_id = function get_song_by_id (req, res, next) {
+  const songId = req.openapi.pathParams.songId;
+  const userId = req.current_user; 
+  Songs.get_song_by_id(userId, songId)
     .then(function (response) {
-      utils.writeJson(res, response);
+      successResponse(res, response.message, response.body);
     })
-    .catch(function (response) {
-      utils.writeJson(res, response);
+    .catch(function (error) {
+      errorResponse(res, error.message, error.code || 500);
     });
 };
 

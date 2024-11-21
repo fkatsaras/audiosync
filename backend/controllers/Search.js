@@ -1,7 +1,7 @@
 'use strict';
 
 const Search = require('../service/SearchService');
-const api = require('../utils/apiUtils');
+const { successResponse, errorResponse } = require('../utils/apiUtils');
 
 module.exports.search_artists_get = function search_artists_get(req, res, next) {
   const userId = req.current_user;
@@ -12,10 +12,10 @@ module.exports.search_artists_get = function search_artists_get(req, res, next) 
 
   Search.search_artists_get(userId, userQuery, limit, offset)
     .then((response) => {
-      api.successResponse(res, response.message, response.body);
+      successResponse(res, response.message, response.body);
     })
     .catch((error) => {
-      api.errorResponse(res, error.message, error.code || 500);
+      errorResponse(res, error.message, error.code || 500);
     });
 };
 
@@ -27,10 +27,10 @@ module.exports.search_songs_get = function search_songs_get(req, res, next) {
 
   Search.search_songs_get(userId, userQuery, limit, offset)
     .then((response) => {
-      api.successResponse(res, response.message, response.body);
+      successResponse(res, response.message, response.body);
     })
     .catch((error) => {
-      api.errorResponse(res, error.message, error.code || 500);
+      errorResponse(res, error.message, error.code || 500);
     });
 };
 
