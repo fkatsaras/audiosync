@@ -37,6 +37,7 @@ jobs:
         run: |
           mysql -h127.0.0.1 -uroot -proot se2_audiosync_test_db < ./database/test_tables.sql
           mysql -h127.0.0.1 -uroot -proot se2_audiosync_test_db < ./database/test_data.sql
+          mysql -h127.0.0.1 -uroot -proot se2_audiosync_test_db < ./database/test_queries.sql
 
       - name: Set up Node.js
         uses: actions/setup-node@v3
