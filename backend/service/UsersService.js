@@ -51,9 +51,16 @@ exports.like_song = function(userId, songId) {
   });
 };
 
+/**
+ * User unlikes a song
+ * Remove a specific song from the list of liked songs for a user
+ *
+ * userId Integer ID of the user to remove the liked song from
+ * songId Integer ID of the song to be removed from liked songs
+ * no response value expected for this operation
+ **/
 exports.unlike_song = function(userId, songId) {
   return new Promise(async (resolve, reject) => {
-
     const connection = db.createConnection();
     try {
       // Step 1: Delete the song from the liked_songs table
@@ -154,11 +161,137 @@ exports.delete_user_playlist = function(userId,playlistId) {
  * userId Integer The ID of the user
  * no response value expected for this operation
  **/
-exports.follow_artist = function(body,userId) {
-  return new Promise(function(resolve, reject) {
-    resolve();
+exports.follow_artist = function(artistId,userId) {
+  return new Promise(async (resolve, reject) => {
+
+    const connection = db.createConnection();
+    try {
+      //  Insert the artist into the followed artists table
+      const insertQuery = `
+        INSERT INTO followed_artists (user_id, artist_id)
+        VALUES (?, ?)
+      `;
+
+      const insertSuccess = await db.executeQuery(connection, insertQuery, [userId, artistId]);
+
+      if (insertSuccess.affectedRows > 0) {
+        // Successfully followed the artist, update the artists followers 
+        const updateQuery = `
+          UPDATE artists
+          SET followers = followers + 1
+          WHERE id = ?
+        `;
+
+        const updateSuccess = await db.executeQuery(connection, updateQuery, [artistId]);
+
+        if (updateSuccess.affectedRows > 0) {
+          resolve({
+            message: 'Artist followed successfully',
+            body: {
+              is_followed: true
+            },
+          });
+        } else {
+          // Roll back the insertion if the update failed
+          const rollbackQuery = `
+            DELETE 
+            FROM folowed_artists
+            WHERE
+              user_id = ? AND artist_id = ?
+          `;
+
+          await db.executeQuery(connection, rollbackQuery, [userId, artistId]);
+
+          reject({
+            message:  'Failed to update followers count, rolled back follow operation.'
+          })
+        }
+      } else {
+        reject({
+          message: 'Failed to follow artist.',
+        });
+      }
+    } catch (error) {
+      console.log(`Unexpected: ${error}`);
+      reject({
+        message: 'Unexpected error'
+      });
+    } finally {
+      // Ensure db connection is closed at the end
+      db.closeConnection(connection);
+    }
   });
 }
+
+/**
+ * Unfollow an artist
+ * Remove an artist from the user's followed artists
+ *
+ * userId Integer The ID of the user
+ * artist_id Integer The ID of the artist to unfollow
+ * no response value expected for this operation
+ **/
+exports.unfollow_artist = function(artistId,userId) {
+  return new Promise(async (resolve, reject) => {
+    const connection = db.createConnection();
+    try {
+      // Delete artist from followed artists table
+      const deleteQuery = `
+        DELETE 
+        FROM followed_artists
+        WHERE
+          user_id = ? AND artist_id = ?
+      `;
+
+      const deleteSuccess = await db.executeQuery(connection, deleteQuery, [userId, artistId]);
+
+      if (deleteSuccess.affectedRows > 0) {
+        // Successfully deleted the artist from the table, now update their followers count
+        const updateQuery = `
+          UPDATE artists
+          SET followers = GREATEST(followers - 1, 0)
+          WHERE id = ?
+        `;
+
+        const updateSuccess = await db.executeQuery(connection, updateQuery, [artistId]);
+
+        if (updateSuccess.affectedRows > 0) {
+          resolve({
+            message: 'Artist unfollowed successfully',
+            body: {
+              is_followed: false
+            },
+          });
+        } else {
+          // Roll back the delete if the update failed
+          const rollbackQuery = `
+            INSERT INTO followed_artists (user_id, artist_id)
+            VALUES (?, ?)
+          `;
+
+          await db.executeQuery(connection, rollbackQuery, [userId, artistId]);
+
+          reject({
+            message:  'Failed to update followers count, rolled back follow operation.'
+          })
+        }
+      } else {
+        reject({
+          message: 'Failed to unfollow artist.',
+        });
+      }
+    } catch (error) {
+      console.log(`Unexpected: ${error}`);
+      reject({
+        message: 'Unexpected error'
+      });
+    } finally {
+      // Ensure db connection is closed at the end
+      db.closeConnection(connection);
+    }
+  });
+}
+
 
 
 /**
@@ -498,68 +631,6 @@ exports.register_user = function(body) {
     }
   });
 };
-
-
-/**
- * User unlikes a song
- * Remove a specific song from the list of liked songs for a user
- *
- * userId Integer ID of the user to remove the liked song from
- * songId Integer ID of the song to be removed from liked songs
- * no response value expected for this operation
- **/
-exports.unlike_song = function(userId, songId) {
-  return new Promise(async (resolve, reject) => {
-    const connection = db.createConnection();
-    try {
-      // Step 1: Delete the song from the liked_songs table
-      const deleteQuery = `
-        DELETE FROM liked_songs
-        WHERE user_id = ? AND song_id = ?
-      `;
-
-      const deleteSuccess = await db.executeQuery(connection, deleteQuery, [userId, songId]);
-
-      if (deleteSuccess.affectedRows > 0) {
-        // Successfully unliked the song
-        resolve({
-          message: 'Song unliked successfully.',
-          body: {
-            liked: false
-          }
-        });
-      } else {
-        reject({
-          message: 'Failed to unlike the song.',
-        });
-      }
-    } catch (error) {
-      console.log(`Unexpected: ${error}`);
-      reject({
-        message: 'Unexpected error'
-      });
-    } finally {
-      // Ensure db connection is closed at the end
-      db.closeConnection(connection);
-    }
-  });
-};
-
-
-/**
- * Unfollow an artist
- * Remove an artist from the user's followed artists
- *
- * userId Integer The ID of the user
- * artist_id Integer The ID of the artist to unfollow
- * no response value expected for this operation
- **/
-exports.unfollow_artist = function(userId,artistId) {
-  return new Promise(function(resolve, reject) {
-    resolve();
-  });
-}
-
 
 /**
  * Update details of a specific playlist

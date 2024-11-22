@@ -29,6 +29,31 @@ module.exports.unlike_song = function unlike_song (req, res, next) {
     });
 };
 
+module.exports.follow_artist = function follow_artist (req, res, next) {
+  const artistId = req.query.artistId;
+  const userId = req.session.user.id;
+  Users.follow_artist(artistId, userId)
+    .then(function (response) {
+      successResponse(res, response.message, response.body);
+    })
+    .catch(function (error) {
+      errorResponse(res, error.message, error.code);
+    });
+};
+
+module.exports.unfollow_artist = function unfollow_artist (req, res, next) {
+  const artistId = req.query.artistId;
+  const userId = req.session.user.id;
+  Users.unfollow_artist(artistId, userId)
+    .then(function (response) {
+      successResponse(res, response.message, response.body);
+    })
+    .catch(function (error) {
+      errorResponse(res, error.message, error.code);
+    });
+};
+
+
 module.exports.create_user_playlist = function create_user_playlist (req, res, next, body, userId) {
   Users.create_user_playlist(body, userId)
     .then(function (response) {
@@ -51,16 +76,6 @@ module.exports.delete_playlist_by_id = function delete_playlist_by_id (req, res,
 
 module.exports.delete_user_playlist = function delete_user_playlist (req, res, next, userId, playlistId) {
   Users.delete_user_playlist(userId, playlistId)
-    .then(function (response) {
-      utils.writeJson(res, response);
-    })
-    .catch(function (response) {
-      utils.writeJson(res, response);
-    });
-};
-
-module.exports.follow_artist = function follow_artist (req, res, next, body, userId) {
-  Users.follow_artist(body, userId)
     .then(function (response) {
       utils.writeJson(res, response);
     })
@@ -212,16 +227,6 @@ module.exports.register_user = async function register_user(req, res) {
     const statusCode = error.code || 500;
     return api.errorResponse(res, error.message, statusCode);
   }
-};
-
-module.exports.unfollow_artist = function unfollow_artist (req, res, next, userId, artistId) {
-  Users.unfollow_artist(userId, artistId)
-    .then(function (response) {
-      utils.writeJson(res, response);
-    })
-    .catch(function (response) {
-      utils.writeJson(res, response);
-    });
 };
 
 module.exports.update_playlist_by_id = function update_playlist_by_id (req, res, next, body, userId, playlistId) {

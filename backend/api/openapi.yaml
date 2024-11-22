@@ -293,7 +293,7 @@ paths:
           description: Artist not found
       x-openapi-router-controller: app.controllers.artists_controller
       x-swagger-router-controller: Artists
-  /api/v1/users/{user-id}/my-artists:
+  /api/v1/users/{userId}/artists:
     get:
       tags:
       - users
@@ -301,7 +301,7 @@ paths:
       description: Retrieve the list of artists followed by the user
       operationId: get_user_followed_artists
       parameters:
-      - name: user-id
+      - name: userId
         in: path
         description: The ID of the user
         required: true
@@ -332,7 +332,7 @@ paths:
       description: Add an artist to the user's followed artists
       operationId: follow_artist
       parameters:
-      - name: user-id
+      - name: userId
         in: path
         description: The ID of the user
         required: true
@@ -340,13 +340,14 @@ paths:
         explode: false
         schema:
           type: integer
-      requestBody:
-        description: Artist object that needs to be followed
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Artist'
+      - name: artistId
+        in: query
+        description: The ID of the artist to follow
         required: true
+        style: form
+        explode: true
+        schema:
+          type: integer
       responses:
         "201":
           description: Artist followed successfully
@@ -361,7 +362,7 @@ paths:
       description: Remove an artist from the user's followed artists
       operationId: unfollow_artist
       parameters:
-      - name: user-id
+      - name: userId
         in: path
         description: The ID of the user
         required: true
@@ -369,7 +370,7 @@ paths:
         explode: false
         schema:
           type: integer
-      - name: artist_id
+      - name: artistId
         in: query
         description: The ID of the artist to unfollow
         required: true

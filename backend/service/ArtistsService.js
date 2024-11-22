@@ -127,12 +127,12 @@ exports.get_artist_by_id = function(userId, artistId) {
         `;
 
         const followResult = await db.executeQuery(connection, followQuery, [userId, artistId]);
-        const isFollowed = Boolean(followResult.length);
+        const is_followed = Boolean(followResult.length);
 
         // Step 5: Create the artist obj
         const artist = Artist.fromObject(artistData);
         artist.songs = songs; 
-        artist.isFollowed = isFollowed;
+        artist.is_followed = is_followed;
 
         // Fetch artists pfp 
         const artistsPfp = await getArtistProfilePicture(artist.name);

@@ -7,8 +7,12 @@ import AppBody from "../components/AppBody/AppBody";
 import ResultItem from "../components/ResultItem/ResultItem";
 import LoadingDots from "../components/LoadingDots/LoadingDots";
 
+interface ArtistPageProps {
+    userId?: string
+}
 
-const ArtistPage: React.FC = () => {
+
+const ArtistPage: React.FC<ArtistPageProps> = ({ userId }) => {
     const { artistId } = useParams<{ artistId: string }>(); // Get artist ID from URL params
     const [artist, setArtist] = useState<Artist | null>(null);
     const [loading, setLoading] = useState(true);
@@ -42,28 +46,30 @@ const ArtistPage: React.FC = () => {
     }, [artistId]);
 
     const handleFollowToggle = async () => {
-        if (artist) {
+        if (!artist) return;
 
-            const response = await fetch(`/api/v1/artists/${artistId}/follow`, {
-                method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`,
-                    'Content-type': 'application/json', 
-                },
-            });
+        const action = artist.is_followed? 'DELETE' : 'POST';
+        const endpoint = `/api/v1/users/${userId}/artists?artistId=${artistId}`;
 
-            if (response.ok) {
-                const data = await response.json();
-                setArtist(prevArtist => ({
-                    ...prevArtist!,
-                    is_followed: data.body.is_followed,
-                    followers: data.body.is_followed? prevArtist!.followers + 1 : prevArtist!.followers - 1,
-                }))
-                setMessage(data.message);
-            } else {
-                const errorData = await response.json();
-                setMessage(errorData.message);
-            }
+        const response = await fetch(endpoint, {
+            method: action,
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                'Content-type': 'application/json',
+            },
+        });
+
+        if (response.ok) {
+            const data = await response.json();
+            setArtist(prevArtist => ({
+                ...prevArtist!,
+                is_followed: data.body.is_followed, // Update the artists followed status
+                followers: data.body.is_followed? prevArtist!.followers + 1 : prevArtist!.followers - 1,
+            }));
+            setMessage(data.message);
+        } else {
+            const errorData = await response.json();
+            setMessage(errorData.message);
         }
     };
 
