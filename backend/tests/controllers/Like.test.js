@@ -1,6 +1,6 @@
 const test = require('ava');
 const index = require('../../index');
-const { loginRequest, likeSongRequest, seedSongs, clearLikedSongs, clearSongs, seedArtists, getUsernameFromToken, clearArtists } = require('../../utils/testUtils');
+const { loginRequest, likeSongRequest, unlikeSongRequest, seedSongs, clearLikedSongs, clearSongs, seedArtists, seedLikedSongs, clearArtists } = require('../../utils/testUtils');
 
 process.env.NODE_ENV = 'test';
 
@@ -58,3 +58,48 @@ test.serial('Like song succeeds with valid user and song', async (t) => {
     await clearArtists();
 });
 
+test.serial('Unlike song succeeds with valid user and song', async (t) => {
+    // Arrange seed DB with appropriate data
+    await clearArtists();
+    await clearLikedSongs(1);
+    await clearSongs();
+    await seedArtists([
+        { id: 6, name: 'Artist Six', followers: 209 }
+    ]);
+    await seedSongs([
+        { id: 4, title: 'Song Four', artist_id: 6, album: 'Album idk', duration: 505, cover: 'cover2.jpg', is_playing: false }
+    ]);
+
+    // Precondition: Ensure song is liked :
+    await seedLikedSongs([
+        { user_id: 1, song_id: 4 }
+    ]);
+
+    // Arrange: Login as a test user:
+    const validLoginData = { username: 'testuser', password: 'test_password' };
+    const loginResponse = await loginRequest(validLoginData, PORT);
+    const { body: loginBody } = loginResponse;
+
+    t.is(loginBody.message, 'Login successful');
+    t.is(loginBody.code, 200);
+
+    // Extract token from the response
+    const token = loginBody.body.token;
+    t.truthy(token, 'Response should have a token');
+
+    const userId = 1    // **TODO** This would normally be retrieved using the session middleware
+
+    // Act: Make the unlike request
+    const songId = 4;   // **TODO** This would normally be retrieved using the session middleware
+    const response = await unlikeSongRequest(PORT, token, userId, songId);
+
+    // Assert: verify the response
+    const body = JSON.parse(response.body);
+    t.is(body.message, 'Song unliked successfully.');
+    t.falsy(body.body.liked, 'Song should now be marked as unliked');
+
+    // Cleanup: 
+    await clearArtists();
+    await clearLikedSongs(1);
+    await clearSongs();
+});

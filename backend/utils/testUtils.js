@@ -79,6 +79,20 @@ const likeSongRequest = async (PORT, token, userId, songId) => {
     return await got.post(URL, options);
 }
 
+const unlikeSongRequest = async (PORT, token, userId, songId) => {
+    const URL = `${BASE_URL}:${PORT}/api/v1/users/${userId}/liked-songs?songId=${songId}`;
+
+    const options = {
+        headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-type': 'application/json',
+        },
+    }
+
+    return await got.delete(URL, options);
+}
+
+
 // Helper function to seed data to the db for testing 
 const seedData = async (tableName, columns, data) => {
     const connection = db.createConnection(); // Connect to the test db
@@ -161,6 +175,17 @@ const clearSongs = async () => {
 }
 };
 
+// Specific seeding for liked songs
+const seedLikedSongs = async (users_songs) => {
+    try {
+    return await seedData('liked_songs', ['user_id', 'song_id'], users_songs);
+} catch (error) {
+    console.log(`Failed to seedData in test DB`);
+    throw Error;
+}
+};
+
+
 // Specific clearing for liked songs for specific user
 const clearLikedSongs = async (user_id) => {
     try {
@@ -183,5 +208,7 @@ module.exports = {
     clearSongs,
     clearLikedSongs,
     getUsernameFromToken,
-    likeSongRequest
+    likeSongRequest,
+    unlikeSongRequest,
+    seedLikedSongs
 }
