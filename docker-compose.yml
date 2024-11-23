@@ -1,28 +1,51 @@
-version: '3'
-
+version: '3.9'
 services:
   backend:
     build:
       context: ./backend
     ports:
       - "5000:5000"
-    environment:
-      - FLASK_ENV=production
-    # Uncomment if using custom Docker network:
-    # networks:
-    #   - app-network
+    env_file: .env
+    volumes:
+      - ./backend:/usr/src/app
+    depends_on:
+      - db
+    networks:
+      - audiosync-net
 
   frontend:
     build:
       context: ./frontend
     ports:
-      - "3000:80"  # Adjusted port mapping to match typical Nginx default port
-    # Uncomment if using custom Docker network:
-    # networks:
-    #   - app-network
+      - "3000:80" # Map port 80 on the container to port 3000 on the host
+    networks:
+      - audiosync-net
+    depends_on:
+      - backend
 
-# Uncomment if using custom Docker network:
-# networks:
-#   app-network:
-#     driver: bridge
+  db:
+    image: mysql:8.0
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: se2_audiosync_db
+    volumes:
+      - db_data:/var/lib/mysql
+    networks:
+      - audiosync-net
 
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8080:8080
+    networks:
+      - audiosync-net
+
+volumes:
+  db_data:
+
+
+networks:
+  audiosync-net:
