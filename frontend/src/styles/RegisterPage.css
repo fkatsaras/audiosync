@@ -12,6 +12,12 @@
     max-width: 500px;
 }
 
+form {
+    display: flex;
+    flex-direction: column;
+    width: 100%; /* Ensure form takes the container's width */
+}
+
 h1 {
     color: #ffffff;
     font-size: 2rem;
