@@ -34,7 +34,7 @@
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/yourusername/audiosync.git
+   git clone https://github.com/teogr99/audiosync.git
    ```
 
 2. Navigate to the backend directory
