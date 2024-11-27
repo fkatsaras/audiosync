@@ -15,6 +15,7 @@ jobs:
         env:
           MYSQL_ROOT_PASSWORD: root
           MYSQL_DATABASE: se2_audiosync_test_db
+          NODE_ENV: test
         ports:
           - 3306:3306
 
