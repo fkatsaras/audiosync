@@ -19,7 +19,7 @@ function createConnection() {
             console.error(`An error occurred during connection: ${err}`);
             return null;
         }
-        console.log(`Connection to ${dbName} was successful`);
+        // console.log(`Connection to ${dbName} was successful`);
     });
 
     return connection;
@@ -31,7 +31,7 @@ function closeConnection(connection) {
             if (err) {
                 console.error(`An error occurred while closing the connection: ${err}`);
             } else {
-                console.log("Connection to MySQL DB closed.");
+                // console.log("Connection to MySQL DB closed.");
             }
         });
     }
@@ -52,7 +52,7 @@ function executeQuery(connection, query, values = []) {
             });
         }
 
-        console.log("Executing query: ", fQuery);  // Log the final query with values
+        // console.log("Executing query: ", fQuery);  // Log the final query with values
 
         // Execute the query
         connection.execute(fQuery, (err, results, fields) => {
@@ -60,8 +60,8 @@ function executeQuery(connection, query, values = []) {
                 console.error(`An error occurred during query execution: ${err}`);
                 reject(err);
             } else {
-                console.log(results);
-                console.log(fields);
+                // console.log(results);
+                // console.log(fields);
                 resolve(results);
             }
         });
@@ -101,7 +101,7 @@ function callProcedure(connection, procedureName, inParams = [], outParams = [])
                 const outValues = outParams.map(param => outputResult[0][`@${param}`] ?? null);
 
                 // Log for debugging
-                console.log('Output values from stored procedure:', outValues);
+                // console.log('Output values from stored procedure:', outValues);
                 
                 resolve(outValues);
             } else {

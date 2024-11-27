@@ -134,7 +134,7 @@ const seedData = async (tableName, columns, data) => {
                 db.closeConnection(connection);
                 reject(err);
             } else {
-                console.log(`${tableName} seeded successfully:`, results);
+                // console.log(`${tableName} seeded successfully:`, results);
                 db.closeConnection(connection);
                 resolve(results);
             }
@@ -154,7 +154,7 @@ const clearData = async (tableName, condition = '') => {
                 db.closeConnection(connection);
                 reject(err);
             } else {
-                console.log(`${tableName} cleared successfully:`, results);
+                // console.log(`${tableName} cleared successfully:`, results);
                 db.closeConnection(connection);
                 resolve(results);
             }
@@ -183,9 +183,9 @@ const seedSongs = async (songs) => {
 };
 
 // Specific clearing for artists
-const clearArtists = async () => {
+const clearArtists = async (artist_name_str='Artist') => {
     try {
-    return await clearData('artists', "WHERE name LIKE 'Artist%'");
+    return await clearData('artists', `WHERE name LIKE '${artist_name_str}%'`);
     } catch (error) {
     console.log(`Failed to clearData in test DB`);
     throw Error;
@@ -193,9 +193,9 @@ const clearArtists = async () => {
 };
 
 // Specific clearing for songs
-const clearSongs = async () => {
+const clearSongs = async (song_title_str) => {
     try {
-    return await clearData('songs', "WHERE title LIKE 'Song%'");
+    return await clearData('songs', `WHERE title LIKE '${song_title_str}%'`);
     } catch (error) {
     console.log(`Failed to clearData in test DB`);
     throw Error;

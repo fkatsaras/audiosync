@@ -21,7 +21,7 @@ test.after.always(() => {
 test.serial('Like song succeeds with valid user and song', async (t) => {
     //Arrange: Seed  DB with song data
     await clearArtists();
-    await clearLikedSongs(1);
+    await clearLikedSongs(2);
     await clearSongs();
     await seedArtists([
         { id: 5, name: 'Artist Five', followers: 100 }
@@ -31,7 +31,7 @@ test.serial('Like song succeeds with valid user and song', async (t) => {
     ]);
 
     // Arrange: Login as a test user
-    const validLoginData = { username: 'testuser', password: 'test_password' };
+    const validLoginData = { username: 'testuser2', password: 'test_password' };
     const loginResponse = await loginRequest(validLoginData, PORT);
     const { body: loginBody } = loginResponse;
  
@@ -42,7 +42,7 @@ test.serial('Like song succeeds with valid user and song', async (t) => {
     const token = loginBody.body.token;
     t.truthy(token, 'Response should contain a token');
 
-    const userId = 1;   //**NOTE** This should normally be retrieved with a request
+    const userId = 2;   //**NOTE** This should normally be retrieved with a request
 
     // Act: Make the song like request
     const songId = 3;   // **NOTE** This should normally be retrieved with a request
@@ -56,12 +56,14 @@ test.serial('Like song succeeds with valid user and song', async (t) => {
 
     // Cleanup:
     await clearArtists();
+    await clearLikedSongs(2);
+    await clearSongs();
 });
 
 test.serial('Unlike song succeeds with valid user and song', async (t) => {
     // Arrange seed DB with appropriate data
     await clearArtists();
-    await clearLikedSongs(1);
+    await clearLikedSongs(2);
     await clearSongs();
     await seedArtists([
         { id: 6, name: 'Artist Six', followers: 209 }
@@ -72,11 +74,11 @@ test.serial('Unlike song succeeds with valid user and song', async (t) => {
 
     // Precondition: Ensure song is liked :
     await seedLikedSongs([
-        { user_id: 1, song_id: 4 }
+        { user_id: 2, song_id: 4 }
     ]);
 
     // Arrange: Login as a test user:
-    const validLoginData = { username: 'testuser', password: 'test_password' };
+    const validLoginData = { username: 'testuser2', password: 'test_password' };
     const loginResponse = await loginRequest(validLoginData, PORT);
     const { body: loginBody } = loginResponse;
 
@@ -87,7 +89,7 @@ test.serial('Unlike song succeeds with valid user and song', async (t) => {
     const token = loginBody.body.token;
     t.truthy(token, 'Response should have a token');
 
-    const userId = 1    // **TODO** This would normally be retrieved using the session middleware
+    const userId = 2;    // **TODO** This would normally be retrieved using the session middleware
 
     // Act: Make the unlike request
     const songId = 4;   // **TODO** This would normally be retrieved using the session middleware
@@ -100,6 +102,6 @@ test.serial('Unlike song succeeds with valid user and song', async (t) => {
 
     // Cleanup: 
     await clearArtists();
-    await clearLikedSongs(1);
+    await clearLikedSongs(2);
     await clearSongs();
 });
