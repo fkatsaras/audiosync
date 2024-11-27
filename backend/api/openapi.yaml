@@ -540,7 +540,7 @@ paths:
           description: User or song not found
       x-openapi-router-controller: app.controllers.users_controller
       x-swagger-router-controller: Users
-  /api/v1/users/{userId}/playlists/{playlistId}:
+  /api/v1/users/{userId}/playlists:
     get:
       tags:
       - playlists
@@ -557,11 +557,9 @@ paths:
         schema:
           type: integer
       - name: playlistId
-        in: path
+        in: query
         description: ID of the playlist to fetch details for
         required: true
-        style: simple
-        explode: false
         schema:
           type: integer
       security:

@@ -15,27 +15,29 @@ exports.get_playlist_by_id = function(userId,playlistId) {
         const connection = db.createConnection();
         try {
             const selectQuery = `
-                SELECT
-                    playlists.*,
+                 SELECT
+                    playlists.id AS playlist_id,
+                    playlists.title AS playlist_title,
+                    playlists.cover AS playlist_cover,
+                    playlists.created_at,
+                    playlists.updated_at,
                     songs.id AS song_id,
                     songs.title AS song_title,
-                    songs.artist_id,
                     artists.name AS artist_name
                 FROM playlists
                 JOIN playlist_songs ON playlists.id = playlist_songs.playlist_id
-                JOIN song ON playlist_songs.song_id = song.id
+                JOIN songs ON playlist_songs.song_id = songs.id
                 JOIN artists ON songs.artist_id = artists.id
-                WHERE playlists.id = ?
-                AND playlists.owner = ? 
+                WHERE playlists.id = ? AND playlists.owner = ? 
             `;
 
             const selectResult = await db.executeQuery(connection, selectQuery, [playlistId, userId]);
 
             if (selectResult.length > 0) {
                 const playlistData = {
-                    id: selectResult[0].id,
-                    title: selectResult[0].title,
-                    cover: selectResult[0].cover,
+                    id: selectResult[0].playlist_id,
+                    title: selectResult[0].playlist_title,
+                    cover: selectResult[0].playlist_cover,
                     created_at: selectResult[0].created_at,
                     updated_at: selectResult[0].updated_at,
                     songs: []
@@ -45,7 +47,7 @@ exports.get_playlist_by_id = function(userId,playlistId) {
                 selectResult.forEach(row => {
                     playlistData.songs.push({
                         id: row.song_id,
-                        title: row.title,
+                        title: row.song_title,
                         artist: row.artist_name
                     });
                 });

@@ -5,8 +5,8 @@ const { successResponse, errorResponse } = require('../utils/apiUtils');
 
 module.exports.get_playlist_by_id = function get_playlist_by_id (req, res, next) {
     const userId = req.session.user.id;
-    const playlistId = req.openApi.pathParams.playlistId;
-    Users.get_playlist_by_id(userId, playlistId)
+    const playlistId = req.query.playlistId;
+    Playlists.get_playlist_by_id(userId, playlistId)
       .then(function (response) {
         successResponse(res, response.message, response.body);
       })
