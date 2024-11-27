@@ -3,7 +3,8 @@ name: CI/CD Workflow
 on:
   push:
     branches:
-      - master
+      - master  # Trigger only on pushes to the mian branch
+
 
 jobs:
   backend-tests:
@@ -13,7 +14,7 @@ jobs:
         image: mysql:8.0
         env:
           MYSQL_ROOT_PASSWORD: root
-          MYSQL_DATABASE: ${{ secrets.TEST_DB_NAME }}
+          MYSQL_DATABASE: se2_audiosync_test_db
         ports:
           - 3306:3306
 
@@ -32,22 +33,11 @@ jobs:
             sleep 3
           done
 
-      - name: Verify Database
-        env:
-          TEST_DB_NAME: ${{ secrets.TEST_DB_NAME }}
-        run: |
-          if ! mysql -h127.0.0.1 -uroot -proot -e se2_audiosync_test_db; then
-            echo "Database does not exist. Exiting."
-            exit 1
-          fi
-
       - name: Initialize Database
-        env:
-          TEST_DB_NAME: ${{ secrets.TEST_DB_NAME }}
         run: |
-          mysql -h127.0.0.1 -uroot -proot se2_audiosync_test_db" < ./database/create_test_tables.sql
-          mysql -h127.0.0.1 -uroot -proot se2_audiosync_test_db" < ./database/seed_test_data.sql
-          mysql -h127.0.0.1 -uroot -proot se2_audiosync_test_db" < ./database/test_queries.sql
+          mysql -h127.0.0.1 -uroot -proot se2_audiosync_test_db < ./database/create_test_tables.sql
+          mysql -h127.0.0.1 -uroot -proot se2_audiosync_test_db < ./database/seed_test_data.sql
+          mysql -h127.0.0.1 -uroot -proot se2_audiosync_test_db < ./database/test_queries.sql
 
       - name: Set up Node.js
         uses: actions/setup-node@v3
