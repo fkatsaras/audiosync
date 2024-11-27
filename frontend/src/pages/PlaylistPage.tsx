@@ -25,7 +25,7 @@ const PlaylistPage: React.FC<UserSessionProps> = ({ userId, username })  => {
     useEffect(() => {
         const fetchPlaylist = async () => {
             try {
-                const response = await fetch(`/api/v1/playlists/${playlistId}`, {
+                const response = await fetch(`/api/v1/users/${userId}/playlists?playlistId=${playlistId}`, {
                     headers: {
                         'Authorization' : `Bearer ${localStorage.getItem('token')}`
                     },
@@ -76,12 +76,12 @@ const PlaylistPage: React.FC<UserSessionProps> = ({ userId, username })  => {
                                     <ResultItem 
                                         key={song.id}
                                         id={song.id}
-                                        imageSrc={song.cover? song.cover : defaultSongCover}
+                                        imageSrc={song.cover ? song.cover : defaultSongCover}
                                         title={song.title}
-                                        subtitle={String(song.duration)}
-                                        linkPath="/songs"
+                                        subtitle={`${song.artist}`}
+                                        linkPath={`/songs`}
                                         altText={`${song.title} cover`}
-                                        className="song-result-image"    
+                                        className="song-result-image"     
                                     />
                                 ))}
                             </ul>

@@ -34,7 +34,7 @@ const MyPlaylistsPage: React.FC<UserSessionProps> = ({ userId, username }) => {
         const fetchPlaylists = async () => {
             setLoading(true);
             try {
-                const response = await fetch(`/api/v1/users/my-playlists`, {
+                const response = await fetch(`/api/v1/users/${userId}/my-playlists`, {
                     method: 'GET',
                     headers: {
                         'Authorization' : `Bearer ${localStorage.getItem('token')}`,
@@ -79,7 +79,11 @@ const MyPlaylistsPage: React.FC<UserSessionProps> = ({ userId, username }) => {
                                     id={playlist.id}
                                     imageSrc={playlist.cover? playlist.cover : defaultCover}
                                     title={playlist.title}
-                                    subtitle={playlist.song_ids.split(',').length > 0 ? `${playlist.song_ids.split(',').length} songs` : 'No songs added'}
+                                    subtitle={
+                                        playlist.song_ids && playlist.song_ids.length > 0
+                                            ? `${playlist.song_ids.length} songs`
+                                            : 'No songs added'
+                                    }
                                     linkPath={`/${userId}/playlists`}
                                     altText='Playlist cover'
                                     className='playlist-result-image'

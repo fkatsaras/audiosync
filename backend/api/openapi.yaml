@@ -540,15 +540,15 @@ paths:
           description: User or song not found
       x-openapi-router-controller: app.controllers.users_controller
       x-swagger-router-controller: Users
-  /api/v1/users/{user-id}/playlists/{playlist-id}:
+  /api/v1/users/{userId}/playlists:
     get:
       tags:
-      - users
+      - playlists
       summary: Get details of a specific playlist
       description: Retrieve details of a specific playlist created by a user
       operationId: get_playlist_by_id
       parameters:
-      - name: user-id
+      - name: userId
         in: path
         description: ID of the user who owns the playlist
         required: true
@@ -556,14 +556,14 @@ paths:
         explode: false
         schema:
           type: integer
-      - name: playlist-id
-        in: path
+      - name: playlistId
+        in: query
         description: ID of the playlist to fetch details for
         required: true
-        style: simple
-        explode: false
         schema:
           type: integer
+      security:
+        - BearerAuth: []
       responses:
         "200":
           description: Playlist details retrieved successfully
@@ -574,15 +574,17 @@ paths:
         "404":
           description: User or playlist not found
       x-openapi-router-controller: app.controllers.users_controller
-      x-swagger-router-controller: Users
+      x-swagger-router-controller: Playlists
     put:
       tags:
-      - users
+      - playlists
       summary: Update details of a specific playlist
       description: Update details of a specific playlist owned by a user
       operationId: update_playlist_by_id
+      security:
+        - BearerAuth: []
       parameters:
-      - name: user-id
+      - name: userId
         in: path
         description: ID of the user who owns the playlist
         required: true
@@ -590,7 +592,7 @@ paths:
         explode: false
         schema:
           type: integer
-      - name: playlist-id
+      - name: playlistId
         in: path
         description: ID of the playlist to update
         required: true
@@ -613,15 +615,17 @@ paths:
         "404":
           description: User or playlist not found
       x-openapi-router-controller: app.controllers.users_controller
-      x-swagger-router-controller: Users
+      x-swagger-router-controller: Playlists
     delete:
       tags:
-      - users
+      - playlists
       summary: Delete a specific playlist
       description: Delete a specific playlist created by a user
       operationId: delete_playlist_by_id
+      security:
+        - BearerAuth: []
       parameters:
-      - name: user-id
+      - name: userId
         in: path
         description: ID of the user who owns the playlist
         required: true
@@ -629,7 +633,7 @@ paths:
         explode: false
         schema:
           type: integer
-      - name: playlist-id
+      - name: playlistId
         in: path
         description: ID of the playlist to delete
         required: true
@@ -643,8 +647,8 @@ paths:
         "404":
           description: User or playlist not found
       x-openapi-router-controller: app.controllers.users_controller
-      x-swagger-router-controller: Users
-  /api/v1/users/{user-id}/my-playlists:
+      x-swagger-router-controller: Playlists
+  /api/v1/users/{userId}/my-playlists:
     get:
       tags:
       - users
@@ -652,7 +656,7 @@ paths:
       description: Retrieve the playlists created by a specific user
       operationId: get_user_playlists
       parameters:
-      - name: user-id
+      - name: userId
         in: path
         description: ID of the user whose playlists are to be fetched
         required: true
@@ -681,7 +685,7 @@ paths:
       description: Create a new playlist for a specific user
       operationId: create_user_playlist
       parameters:
-      - name: user-id
+      - name: userId
         in: path
         description: ID of the user to create the playlist for
         required: true
