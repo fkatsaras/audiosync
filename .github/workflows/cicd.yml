@@ -33,17 +33,21 @@ jobs:
           done
 
       - name: Verify Database
+        env:
+          TEST_DB_NAME: ${{ secrets.TEST_DB_NAME }}
         run: |
-          if ! mysql -h127.0.0.1 -uroot -proot -e "USE ${{ secrets.TEST_DB_NAME }}"; then
+          if ! mysql -h127.0.0.1 -uroot -proot -e "USE $TEST_DB_NAME"; then
             echo "Database does not exist. Exiting."
             exit 1
           fi
 
       - name: Initialize Database
+        env:
+          TEST_DB_NAME: ${{ secrets.TEST_DB_NAME }}
         run: |
-          mysql -h127.0.0.1 -uroot -proot ${{ secrets.TEST_DB_NAME }} < ./database/create_test_tables.sql
-          mysql -h127.0.0.1 -uroot -proot ${{ secrets.TEST_DB_NAME }} < ./database/seed_test_data.sql
-          mysql -h127.0.0.1 -uroot -proot ${{ secrets.TEST_DB_NAME }} < ./database/test_queries.sql
+          mysql -h127.0.0.1 -uroot -proot "$TEST_DB_NAME" < ./database/create_test_tables.sql
+          mysql -h127.0.0.1 -uroot -proot "$TEST_DB_NAME" < ./database/seed_test_data.sql
+          mysql -h127.0.0.1 -uroot -proot "$TEST_DB_NAME" < ./database/test_queries.sql
 
       - name: Set up Node.js
         uses: actions/setup-node@v3
