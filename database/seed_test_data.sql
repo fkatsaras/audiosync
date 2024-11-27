@@ -16,4 +16,5 @@ USE `se2_audiosync_test_db`;
 
 INSERT INTO `users` (id, username, password_hash, email, first_name, last_name, active) VALUES
     (1, 'testuser', '$2b$10$8bdHr3IRuVzVlYuM3snSH.O4818FsouWxXrHOKd036L2dwxWqVcrm', 'test@test.com', 'test_last_name', 'test_first_name', 1),
-    (3, 'existinguser', '$2b$10$QLBiJ7oGDUExHPPkPL7NWuiVSXC6IOMMT2ELzXz09Zq6AQ4..iQ5i', 'existinguser@example.com', 'Existing', 'User', 1)
+    (3, 'existinguser', '$2b$10$QLBiJ7oGDUExHPPkPL7NWuiVSXC6IOMMT2ELzXz09Zq6AQ4..iQ5i', 'existinguser@example.com', 'Existing', 'User', 1),
+    (2, 'testuser2', '$2b$10$8bdHr3IRuVzVlYuM3snSH.O4818FsouWxXrHOKd036L2dwxWqVcrm', 'test2@test.com', 'test_last_name2', 'test_first_name2', 1)

@@ -7,7 +7,7 @@
     "prestart": "npm install",
     "start": "node index.js",
     "dev": "nodemon index.js --watch .",
-    "test": "c8 ava",
+    "test": "c8 ava --serial",
     "vtest": "c8 ava --verbose",
     "test-file": "c8 ava tests/controllers/$npm_config_test_file"
   },

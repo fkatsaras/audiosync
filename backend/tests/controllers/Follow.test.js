@@ -20,14 +20,14 @@ test.after.always(() => {
 
 test.serial('Follow artist succeeds with valid user and artist', async (t) => {
     //Arrange: Seed  DB with artist data
-    await clearFollowedArtists(1);
+    await clearFollowedArtists(2);
     await clearArtists();
     await seedArtists([
-        { id: 6, name: 'Artist Six', followers: 100 }
+        { id: 7, name: 'Artist Seven', followers: 100 }
     ]);
 
     // Arrange: Login as a test user
-    const validLoginData = { username: 'testuser', password: 'test_password' };
+    const validLoginData = { username: 'testuser2', password: 'test_password' };
     const loginResponse = await loginRequest(validLoginData, PORT);
     const { body: loginBody } = loginResponse;
  
@@ -38,10 +38,10 @@ test.serial('Follow artist succeeds with valid user and artist', async (t) => {
     const token = loginBody.body.token;
     t.truthy(token, 'Response should contain a token');
 
-    const userId = 1;   //**NOTE** This should normally be retrieved with a request
+    const userId = 2;   //**NOTE** This should normally be retrieved with a request
 
     // Act: Make the artist like request
-    const artistId = 6;   // **NOTE** This should normally be retrieved with a request
+    const artistId = 7;   // **NOTE** This should normally be retrieved with a request
     const response = await followArtistRequest(PORT, token, userId, artistId);
 
     // Arrange: Verify the response
@@ -51,25 +51,25 @@ test.serial('Follow artist succeeds with valid user and artist', async (t) => {
     t.truthy(body.body.is_followed, 'Artist should be now marked as followed');
 
     // Cleanup:
-    await clearFollowedArtists(1);
+    await clearFollowedArtists(2);
     await clearArtists();
 });
 
 test.serial('Unfollow artist succeeds with valid user and artist', async (t) => {
     // Arrange seed DB with appropriate data
-    await clearFollowedArtists(1);
+    await clearFollowedArtists(2);
     await clearArtists();
     await seedArtists([
-        { id: 6, name: 'Artist Six', followers: 100 }
+        { id: 8, name: 'Artist Eight', followers: 100 }
     ]);
 
     // Precondition: Ensure song is liked :
     await seedFollowedArtists([
-        { artist_id: 6, user_id: 1 }
+        { artist_id: 8, user_id: 2 }
     ]);
 
     // Arrange: Login as a test user:
-    const validLoginData = { username: 'testuser', password: 'test_password' };
+    const validLoginData = { username: 'testuser2', password: 'test_password' };
     const loginResponse = await loginRequest(validLoginData, PORT);
     const { body: loginBody } = loginResponse;
 
@@ -80,10 +80,10 @@ test.serial('Unfollow artist succeeds with valid user and artist', async (t) => 
     const token = loginBody.body.token;
     t.truthy(token, 'Response should have a token');
 
-    const userId = 1    // **TODO** This would normally be retrieved using the session middleware
+    const userId = 2;    // **TODO** This would normally be retrieved using the session middleware
 
     // Act: Make the unlike request
-    const artistId = 6;   // **TODO** This would normally be retrieved using the session middleware
+    const artistId = 8;   // **TODO** This would normally be retrieved using the session middleware
     const response = await unfollowArtistRequest(PORT, token, userId, artistId);
 
     // Assert: verify the response
@@ -92,6 +92,6 @@ test.serial('Unfollow artist succeeds with valid user and artist', async (t) => 
     t.falsy(body.body.is_followed, 'Artist should now be marked as unfollowed');
 
     // Cleanup: 
-    await clearFollowedArtists(1);
+    await clearFollowedArtists(2);
     await clearArtists();
 });
