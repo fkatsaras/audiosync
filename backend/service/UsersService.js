@@ -355,32 +355,6 @@ exports.get_liked_songs = function(userId) {
 
 
 /**
- * Get details of a specific playlist
- * Retrieve details of a specific playlist created by a user
- *
- * userId Integer ID of the user who owns the playlist
- * playlistId Integer ID of the playlist to fetch details for
- * returns Playlist
- **/
-exports.get_playlist_by_id = function(userId,playlistId) {
-  return new Promise(function(resolve, reject) {
-    var examples = {};
-    examples['application/json'] = {
-  "songs" : [ null, null ],
-  "editMode" : true,
-  "id" : 123,
-  "title" : "My Favorite Songs"
-};
-    if (Object.keys(examples).length > 0) {
-      resolve(examples[Object.keys(examples)[0]]);
-    } else {
-      resolve();
-    }
-  });
-}
-
-
-/**
  * Get recommended songs for a user
  * Retrieve recommended songs for a specific user based on their preferences
  *
@@ -480,23 +454,51 @@ exports.get_user_followed_artists = function(userId) {
  * returns List
  **/
 exports.get_user_playlists = function(userId) {
-  return new Promise(function(resolve, reject) {
-    var examples = {};
-    examples['application/json'] = [ {
-  "songs" : [ null, null ],
-  "editMode" : true,
-  "id" : 123,
-  "title" : "My Favorite Songs"
-}, {
-  "songs" : [ null, null ],
-  "editMode" : true,
-  "id" : 123,
-  "title" : "My Favorite Songs"
-} ];
-    if (Object.keys(examples).length > 0) {
-      resolve(examples[Object.keys(examples)[0]]);
-    } else {
-      resolve();
+  return new Promise(async (resolve, reject) => {
+    const connection = db.createConnection();
+    try {
+      const selectQuery = `
+        SELECT
+          playlists.id,
+          playlists.title,
+          playlists.created_at,
+          playlists.updated_at,
+          GROUP_CONCAT(COALESCE(playlist_songs.song_id, '')) AS song_ids
+        FROM playlists
+        LEFT JOIN playlist_songs ON playlist_songs.playlist_id = playlists.id
+        WHERE owner = ?
+        GROUP BY playlists.id
+      `
+      const selectResult = await db.executeQuery(connection, selectQuery, [userId]);
+
+      if (selectResult.length > 0 ) {
+
+        const playlists = selectResult.map(row => ({
+          id: row.id,
+          title: row.title,
+          created_at: row.created_at,
+          updated_at: row.updated_at,
+          song_ids: row.song_ids ? row.song_ids.split(',').map(Number) : [] // Convert into an array of numbers
+        }))
+
+        resolve({
+          message: "Playlists retrieved successfully.",
+          body: playlists
+        })
+      } else {
+
+        resolve({
+          message: "No playlists found",
+          code: 404
+        })
+      }
+    } catch (error) {
+      console.error(`Unexpected: ${error}`);
+      reject({
+        message: "Unexpected error"
+      })
+    } finally {
+      db.closeConnection(connection);
     }
   });
 }

@@ -55,3 +55,32 @@ INSERT INTO `artists` (id, name, followers, profile_picture) VALUES
     (4, 'Megadeth', 120, NULL),
     (5, 'System of a Down', 180, NULL);
 /*!40000 ALTER TABLE `artists` ENABLE KEYS */;
+
+-- Dumping data for table audiosync_db.playlists
+/*!40000 ALTER TABLE `playlists` DISABLE KEYS */;
+INSERT INTO `playlists` (`id`, `title`, `owner`, `cover`, `edit_mode`, `is_public`, `created_at`, `updated_at`) VALUES
+(1, 'Chill Vibes', 2, NULL, false, true, NOW(), NOW()),
+(2, 'Workout Mix', 2, NULL, true, false, NOW(), NOW()),
+(3, 'Throwback Hits', 2, NULL, false, true, NOW(), NOW());
+/*!40000 ALTER TABLE `playlists` ENABLE KEYS */;
+
+-- Dumping data for table audiosync_db.playlist_songs
+/*!40000 ALTER TABLE `playlist_songs` DISABLE KEYS */;
+INSERT INTO `playlist_songs` (`playlist_id`, `song_id`) VALUES
+-- Songs for 'Chill Vibes' playlist
+(1, 1),
+(1, 2),
+(1, 3),
+-- Songs for 'Workout Mix' playlist
+(2, 4),
+(2, 5),
+(2, 6),
+-- Songs for 'Throwback Hits' playlist
+(3, 2),
+(3, 3),
+(3, 4);
+/*!40000 ALTER TABLE `playlist_songs` ENABLE KEYS */;
+
+
+
+

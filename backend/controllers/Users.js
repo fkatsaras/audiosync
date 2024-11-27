@@ -94,16 +94,6 @@ module.exports.get_liked_songs = function get_liked_songs (req, res, next, userI
     });
 };
 
-module.exports.get_playlist_by_id = function get_playlist_by_id (req, res, next, userId, playlistId) {
-  Users.get_playlist_by_id(userId, playlistId)
-    .then(function (response) {
-      utils.writeJson(res, response);
-    })
-    .catch(function (response) {
-      utils.writeJson(res, response);
-    });
-};
-
 module.exports.get_recommended_songs = function get_recommended_songs (req, res, next, userId) {
   Users.get_recommended_songs(userId)
     .then(function (response) {
@@ -124,13 +114,15 @@ module.exports.get_user_followed_artists = function get_user_followed_artists (r
     });
 };
 
-module.exports.get_user_playlists = function get_user_playlists (req, res, next, userId) {
+module.exports.get_user_playlists = function get_user_playlists (req, res, next) {
+  const userId = req.session.user.id;
   Users.get_user_playlists(userId)
     .then(function (response) {
-      utils.writeJson(res, response);
+      console.log(response.body);
+      successResponse(res, response.message, response.body);
     })
-    .catch(function (response) {
-      utils.writeJson(res, response);
+    .catch(function (error) {
+      errorResponse(res, error.message, error.code);
     });
 };
 
