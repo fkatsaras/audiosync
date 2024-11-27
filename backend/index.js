@@ -47,7 +47,7 @@ app.use((req, res, next) => {
 
 // CORS configuration
 const corsOptions = {
-    origin: ['http://localhost:3000', 'https://localhost:4000'],
+    origin: ['http://localhost:3000', 'https://localhost:4000', 'http://audiosync_frontend:3000'],
     credentials: true
 };
 

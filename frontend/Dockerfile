@@ -16,14 +16,17 @@ COPY . .
 # Build the react app
 RUN npm run build
 
-# Use a lightweight web server to serve the React app
-FROM nginx:alpine
+# Use a lightweight Node.js-based server for serving the React app
+FROM node:18
+
+# Install `serve` globally
+RUN npm install -g serve
 
 # Copy the build files from the previous stage
-COPY --from=build /app/build /usr/share/nginx/html
+COPY --from=build /app/build /app/build
 
 # Expose port 3000
 EXPOSE 3000
 
-# Run Ngin
-CMD ["nginx", "-g", "daemon off;"]
+# Run the `serve` command to serve the React app
+CMD ["serve", "-s", "build", "-l", "3000"]
