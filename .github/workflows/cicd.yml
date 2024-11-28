@@ -3,8 +3,7 @@ name: CI/CD Workflow
 on:
   push:
     branches:
-      - master  # Trigger only on pushes to the mian branch
-
+      - master
 
 jobs:
   backend-tests:
@@ -37,7 +36,6 @@ jobs:
         run: |
           mysql -h127.0.0.1 -uroot -proot se2_audiosync_test_db < ./database/create_test_tables.sql
           mysql -h127.0.0.1 -uroot -proot se2_audiosync_test_db < ./database/seed_test_data.sql
-          mysql -h127.0.0.1 -uroot -proot se2_audiosync_test_db < ./database/test_queries.sql
 
       - name: Set up Node.js
         uses: actions/setup-node@v3
@@ -48,13 +46,28 @@ jobs:
         working-directory: backend
         run: npm install
 
+      - name: Set environment variables for tests
+        env:
+          DB_HOST: ${{ secrets.DB_HOST }}
+          DB_USER: ${{ secrets.DB_USER }}
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          DB_NAME: ${{ secrets.TEST_DB_NAME }}
+          DB_PORT: 3306
+          NODE_ENV: test
+          JWT_SECRET_KEY: fotis
+          SESSION_SECRET: fotis
+          SPOTIFY_CLIENT_ID: f63b8e82324843eeba6dc4af7f080138
+          SPOTIFY_CLIENT_SECRET: 4e89beb1a54945449aaac0664499520e
+
+        run: echo "Environment variables set for testing"
+
       - name: Run backend tests
         working-directory: backend
         env:
-          DB_HOST: 127.0.0.1
-          DB_USER: root
-          DB_PASSWORD: root
-          DB_NAME: se2_audiosync_test_db
+          DB_HOST: ${{ secrets.DB_HOST }}
+          DB_USER: ${{ secrets.DB_USER }}
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          DB_NAME: ${{ secrets.TEST_DB_NAME }}
           DB_PORT: 3306
           NODE_ENV: test
         run: npm test
