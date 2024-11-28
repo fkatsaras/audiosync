@@ -89,8 +89,9 @@ exports.update_playlist_by_id = function(body,userId,playlistId) {
             SET title = ?, cover = ?, updated_at = NOW()
             WHERE id = ? AND owner = ?
         `;
+        // Escaping the reserved sql keyword here
         const updateSongsQuery = `
-            INSERT INTO playlist_songs (playlist_id, song_id, \`order\`)
+            INSERT INTO playlist_songs (playlist_id, song_id, \`order\`) 
             VALUES (?, ?, ?)
             ON DUPLICATE KEY UPDATE \`order\` = VALUES(\`order\`)
         `;
