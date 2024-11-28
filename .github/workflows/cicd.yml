@@ -68,6 +68,9 @@ jobs:
           echo "DB_PASSWORD=root" >> .env
           echo "DB_NAME=se2_audiosync_test_db" >> .env
           echo "DB_PORT=3306" >> .env   
+      
+      - name: Debug environment variables
+        run: env | grep DB_
 
       - name: Run backend tests
         working-directory: backend
