@@ -58,17 +58,7 @@ jobs:
           SESSION_SECRET: fotis
           SPOTIFY_CLIENT_ID: f63b8e82324843eeba6dc4af7f080138
           SPOTIFY_CLIENT_SECRET: 4e89beb1a54945449aaac0664499520e
-        run: echo "Environment variables set for testing"
-
-      - name: Export environment variables
-        run: |
-          export NODE_ENV=test
-          export DB_HOST=127.0.0.1
-          export DB_USER=root
-          export DB_PASSWORD=root
-          export DB_NAME=se2_audiosync_test_db
-          export DB_PORT=3306
-       
+        run: echo "Environment variables set for testing"       
       
       - name: Validate MySQL connection
         run: |
@@ -84,7 +74,14 @@ jobs:
           DB_NAME: ${{ secrets.TEST_DB_NAME }}
           DB_PORT: 3306
           NODE_ENV: test
-        run: npm test
+        run: |
+          export NODE_ENV=test
+          export DB_HOST=127.0.0.1
+          export DB_USER=root
+          export DB_PASSWORD=root
+          export DB_NAME=se2_audiosync_test_db
+          export DB_PORT=3306
+          npm test
 
   deployment:
     runs-on: ubuntu-latest
