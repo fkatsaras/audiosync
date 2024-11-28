@@ -633,19 +633,3 @@ exports.register_user = function(body) {
     }
   });
 };
-
-/**
- * Update details of a specific playlist
- * Update details of a specific playlist owned by a user
- *
- * body Playlist Updated playlist object
- * userId Integer ID of the user who owns the playlist
- * playlistId Integer ID of the playlist to update
- * no response value expected for this operation
- **/
-exports.update_playlist_by_id = function(body,userId,playlistId) {
-  return new Promise(function(resolve, reject) {
-    resolve();
-  });
-}
-

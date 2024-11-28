@@ -55,11 +55,18 @@ const PlaylistPage: React.FC<UserSessionProps> = ({ userId, username }) => {
         const [movedItem] = updatedSongs.splice(result.source.index, 1);
         updatedSongs.splice(result.destination.index, 0, movedItem);
 
-        setPlaylist({ ...playlist!, songs: updatedSongs });
+        // Add 'order' field based on the new position
+        const orderedSongs = updatedSongs.map((song, index) => ({
+            ...song,
+            order: index + 1, // Assuming order starts from 1
+        }));
+
+        setPlaylist({ ...playlist!, songs: orderedSongs });
 
         // Send updated order to the backend
         const updatePlaylist = async () => {
-            await fetch(`/api/v1/users/${userId}/playlists/${playlistId}`, {
+            console.log(JSON.stringify({ ...playlist, songs: updatedSongs }));
+            await fetch(`/api/v1/users/${userId}/playlists?playlistId=${playlistId}`, {
                 method: 'PUT',
                 headers: {
                     'Authorization': `Bearer ${localStorage.getItem('token')}`,

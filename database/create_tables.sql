@@ -99,6 +99,7 @@ CREATE TABLE IF NOT EXISTS `playlists` (
 CREATE TABLE IF NOT EXISTS `playlist_songs` (
   `playlist_id` int unsigned NOT NULL,
   `song_id` int unsigned NOT NULL,
+  `order` INT UNSIGNED NOT NULL DEFAULT 0;
   FOREIGN KEY (`playlist_id`) REFERENCES `playlists`(`id`) ON DELETE CASCADE,
   FOREIGN KEY (`song_id`) REFERENCES `songs`(`id`) ON DELETE CASCADE,
   PRIMARY KEY (`playlist_id`, `song_id`)

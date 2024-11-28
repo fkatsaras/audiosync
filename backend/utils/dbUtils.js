@@ -115,10 +115,56 @@ function callProcedure(connection, procedureName, inParams = [], outParams = [])
     });
 }
 
+function beginTransaction(connection) {
+    return new Promise((resolve, reject) => {
+        connection.beginTransaction((err) => {
+            if (err) {
+                console.error(`An error occurred while starting the transaction: ${err.message}`);
+                reject(err);
+            } else {
+                // console.log("Transaction started successfully.");
+                resolve();
+            }
+        });
+    });
+}
+
+
+function rollbackTransaction(connection) {
+    return new Promise((resolve, reject) => {
+        connection.rollback((err) => {
+            if (err) {
+                console.error(`An error occurred during transaction rollback: ${err}`);
+                reject(err);
+            } else {
+                // console.log("Transaction rolled back successfully.");
+                resolve();
+            }
+        });
+    });
+}
+
+function commitTransaction(connection) {
+    return new Promise((resolve, reject) => {
+        connection.commit((err) => {
+            if (err) {
+                console.error(`An error occurred during transaction commit: ${err}`);
+                reject(err);
+            } else {
+                // console.log("Transaction committed successfully.");
+                resolve();
+            }
+        });
+    });
+}
+
 // Exporting functions
 module.exports = {
     createConnection,
     closeConnection,
     executeQuery,
-    callProcedure
+    callProcedure,
+    rollbackTransaction,
+    commitTransaction,
+    beginTransaction
 };

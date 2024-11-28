@@ -593,11 +593,9 @@ paths:
         schema:
           type: integer
       - name: playlistId
-        in: path
+        in: query
         description: ID of the playlist to update
         required: true
-        style: simple
-        explode: false
         schema:
           type: integer
       requestBody:

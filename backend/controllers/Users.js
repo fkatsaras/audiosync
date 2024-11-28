@@ -221,13 +221,3 @@ module.exports.register_user = async function register_user(req, res) {
     return api.errorResponse(res, error.message, statusCode);
   }
 };
-
-module.exports.update_playlist_by_id = function update_playlist_by_id (req, res, next, body, userId, playlistId) {
-  Users.update_playlist_by_id(body, userId, playlistId)
-    .then(function (response) {
-      utils.writeJson(res, response);
-    })
-    .catch(function (response) {
-      utils.writeJson(res, response);
-    });
-};
