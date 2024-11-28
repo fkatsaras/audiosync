@@ -60,17 +60,20 @@ jobs:
           SPOTIFY_CLIENT_SECRET: 4e89beb1a54945449aaac0664499520e
         run: echo "Environment variables set for testing"
 
-      - name: Create .env.test
+      - name: Export environment variables
         run: |
-          echo "NODE_ENV=test" >> .env
-          echo "DB_HOST=127.0.0.1" >> .env
-          echo "DB_USER=root" >> .env
-          echo "DB_PASSWORD=root" >> .env
-          echo "DB_NAME=se2_audiosync_test_db" >> .env
-          echo "DB_PORT=3306" >> .env   
+          export NODE_ENV=test
+          export DB_HOST=127.0.0.1
+          export DB_USER=root
+          export DB_PASSWORD=root
+          export DB_NAME=se2_audiosync_test_db
+          export DB_PORT=3306
+       
       
-      - name: Debug environment variables
-        run: env | grep DB_
+      - name: Validate MySQL connection
+        run: |
+          mysql -h $DB_HOST -u $DB_USER -p$DB_PASSWORD -e "USE $DB_NAME;"
+        
 
       - name: Run backend tests
         working-directory: backend
