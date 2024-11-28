@@ -21,7 +21,7 @@ dist/
 *.egg
 
 # Environment files
-.env
+# .env
 .env.*
 
 # Logs
@@ -45,11 +45,6 @@ htmlcov/
 nosetests.xml
 coverage.xml
 *,cover
-
-# Python environments
-venv/
-env/
-.Python
 
 # Documentation
 docs/_build/
@@ -93,10 +88,10 @@ build/
 
 # Configuration files
 # .env
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
+# .env.local
+# .env.development.local
+# .env.test.local
+# .env.production.local
 
 # Cache files
 .cache/
