@@ -58,8 +58,16 @@ jobs:
           SESSION_SECRET: fotis
           SPOTIFY_CLIENT_ID: f63b8e82324843eeba6dc4af7f080138
           SPOTIFY_CLIENT_SECRET: 4e89beb1a54945449aaac0664499520e
-
         run: echo "Environment variables set for testing"
+
+      - name: Create .env.test
+        run: |
+          echo "NODE_ENV=test" >> .env
+          echo "DB_HOST=127.0.0.1" >> .env
+          echo "DB_USER=root" >> .env
+          echo "DB_PASSWORD=root" >> .env
+          echo "DB_NAME=se2_audiosync_test_db" >> .env
+          echo "DB_PORT=3306" >> .env   
 
       - name: Run backend tests
         working-directory: backend
