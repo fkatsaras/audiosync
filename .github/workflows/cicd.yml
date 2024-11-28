@@ -76,6 +76,7 @@ jobs:
           export DB_PASSWORD=root
           export DB_NAME=se2_audiosync_test_db
           export DB_PORT=3306
+          mysql -h127.0.0.1 -uroot -proot -e "USE se2_audiosync_test_db; SHOW TABLES;"
           npm test
 
   deployment:
