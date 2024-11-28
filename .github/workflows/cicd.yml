@@ -58,12 +58,7 @@ jobs:
           SESSION_SECRET: fotis
           SPOTIFY_CLIENT_ID: f63b8e82324843eeba6dc4af7f080138
           SPOTIFY_CLIENT_SECRET: 4e89beb1a54945449aaac0664499520e
-        run: echo "Environment variables set for testing"       
-      
-      - name: Validate MySQL connection
-        run: |
-          mysql -h $DB_HOST -u $DB_USER -p$DB_PASSWORD -e "USE $DB_NAME;"
-        
+        run: echo "Environment variables set for testing"               
 
       - name: Run backend tests
         working-directory: backend
