@@ -9,25 +9,25 @@ import Button from "../components/Buttons/Button";
 import defaultPlaylistCover from '../assets/images/playlist_default_cover.svg';
 import defaultSongCover from '../assets/images/song_default_cover.svg';
 import Navbar from "../components/Navbar/Navbar";
+import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 
 interface UserSessionProps {
     userId?: string;
     username?: string;
-  }
+}
 
-const PlaylistPage: React.FC<UserSessionProps> = ({ userId, username })  => {
+const PlaylistPage: React.FC<UserSessionProps> = ({ userId, username }) => {
     const { playlistId } = useParams<{ playlistId: string }>();
     const [playlist, setPlaylist] = useState<Playlist | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
-    // const [message, setMessage] = useState<string | null>(null);
 
     useEffect(() => {
         const fetchPlaylist = async () => {
             try {
                 const response = await fetch(`/api/v1/users/${userId}/playlists?playlistId=${playlistId}`, {
                     headers: {
-                        'Authorization' : `Bearer ${localStorage.getItem('token')}`
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
                     },
                 });
 
@@ -45,16 +45,39 @@ const PlaylistPage: React.FC<UserSessionProps> = ({ userId, username })  => {
         };
 
         fetchPlaylist();
-    }, [playlistId]);
+    }, [playlistId, userId]);
 
-    // const handleLikeToggle !TODO! Implement this
+    // Function to handle reordering
+    const handleDragEnd = (result: any) => {
+        if (!result.destination) return;
 
-    if (loading) return <LoadingDots/>;
+        const updatedSongs = Array.from(playlist?.songs || []);
+        const [movedItem] = updatedSongs.splice(result.source.index, 1);
+        updatedSongs.splice(result.destination.index, 0, movedItem);
+
+        setPlaylist({ ...playlist!, songs: updatedSongs });
+
+        // Send updated order to the backend
+        const updatePlaylist = async () => {
+            await fetch(`/api/v1/users/${userId}/playlists/${playlistId}`, {
+                method: 'PUT',
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ ...playlist, songs: updatedSongs }),
+            });
+        };
+
+        updatePlaylist();
+    };
+
+    if (loading) return <LoadingDots />;
     if (error) return <div>{error}</div>;
 
     return (
         <AppBody>
-            <Navbar userId={userId || ''} username={username || ''}/>
+            <Navbar userId={userId || ''} username={username || ''} />
             <div className="playlist-container">
                 <Button><Link to='/'>Home</Link></Button>
                 {playlist && (
@@ -62,35 +85,57 @@ const PlaylistPage: React.FC<UserSessionProps> = ({ userId, username })  => {
                         <div className="playlist-info">
                             <h1>{playlist.title}</h1>
                             <img
-                                src={playlist.cover? playlist.cover : defaultPlaylistCover}
+                                src={playlist.cover ? playlist.cover : defaultPlaylistCover}
                                 alt={`${playlist.title} cover`}
-                                className="playlist-cover"    
+                                className="playlist-cover"
                             />
-                            {/*!TODO! Implement like functionality here*/}
-
                         </div>
                         <div className="playlist-songs">
                             <h2>Songs</h2>
-                            <ul>
-                                {playlist.songs?.map((song) => (
-                                    <ResultItem 
-                                        key={song.id}
-                                        id={song.id}
-                                        imageSrc={song.cover ? song.cover : defaultSongCover}
-                                        title={song.title}
-                                        subtitle={`${song.artist}`}
-                                        linkPath={`/songs`}
-                                        altText={`${song.title} cover`}
-                                        className="song-result-image"     
-                                    />
-                                ))}
-                            </ul>
+                            <DragDropContext onDragEnd={handleDragEnd}>
+                                <Droppable 
+                                    droppableId="songs"
+                                >
+                                    {(provided) => (
+                                        <ul {...provided.droppableProps} ref={provided.innerRef}>
+                                            {playlist.songs?.map((song, index) => (
+                                                <Draggable 
+                                                    key={song.id.toString()}
+                                                    draggableId={song.id.toString()}
+                                                    index={index}
+                                                >
+                                                    {(provided) => (
+                                                        <li
+                                                            ref={provided.innerRef}
+                                                            {...provided.draggableProps}
+                                                            {...provided.dragHandleProps}
+                                                            className="draggable-container"
+                                                        >
+                                                            <ResultItem 
+                                                                key={song.id}
+                                                                id={song.id}
+                                                                imageSrc={song.cover ? song.cover : defaultSongCover}
+                                                                title={song.title}
+                                                                subtitle={`${song.artist}`}
+                                                                linkPath={`/songs`}
+                                                                altText={`${song.title} cover`}
+                                                                className="song-result-image"     
+                                                            />
+                                                        </li>
+                                                    )}
+                                                </Draggable>
+                                            ))}
+                                            {provided.placeholder}
+                                        </ul>
+                                    )}
+                                </Droppable>
+                            </DragDropContext>
                         </div>
                     </div>
                 )}
             </div>
         </AppBody>
-    )
-}
+    );
+};
 
 export default PlaylistPage;

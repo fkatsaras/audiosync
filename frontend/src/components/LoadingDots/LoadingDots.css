@@ -11,7 +11,8 @@
     display: flex;
     justify-content: center;    /* Center the dots horizontally and vertically */
     align-items: center;
-    height: 50px;
+    height: 100%; /* Use 100% of the parent's height */
+    width: 100%; /* Use 100% of the parent's width */
 }
 
 .loading-dot {
