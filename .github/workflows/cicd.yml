@@ -5,6 +5,18 @@ on:
     branches:
       - master
 
+env:
+  DB_HOST: ${{ secrets.DB_HOST }}
+  DB_USER: ${{ secrets.DB_USER }}
+  DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+  DB_NAME: ${{ secrets.TEST_DB_NAME }}
+  DB_PORT: 3306
+  NODE_ENV: test
+  JWT_SECRET_KEY: fotis
+  SESSION_SECRET: fotis
+  SPOTIFY_CLIENT_ID: f63b8e82324843eeba6dc4af7f080138
+  SPOTIFY_CLIENT_SECRET: 4e89beb1a54945449aaac0664499520e
+
 jobs:
   backend-tests:
     runs-on: ubuntu-latest
@@ -44,9 +56,10 @@ jobs:
 
       - name: Install dependencies
         working-directory: backend
-        run: npm install
+        run: npm install            
 
-      - name: Set environment variables for tests
+      - name: Run backend tests
+        working-directory: backend
         env:
           DB_HOST: ${{ secrets.DB_HOST }}
           DB_USER: ${{ secrets.DB_USER }}
@@ -58,24 +71,7 @@ jobs:
           SESSION_SECRET: fotis
           SPOTIFY_CLIENT_ID: f63b8e82324843eeba6dc4af7f080138
           SPOTIFY_CLIENT_SECRET: 4e89beb1a54945449aaac0664499520e
-        run: echo "Environment variables set for testing"               
-
-      - name: Run backend tests
-        working-directory: backend
-        env:
-          DB_HOST: ${{ secrets.DB_HOST }}
-          DB_USER: ${{ secrets.DB_USER }}
-          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
-          DB_NAME: ${{ secrets.TEST_DB_NAME }}
-          DB_PORT: 3306
-          NODE_ENV: test
         run: |
-          export NODE_ENV=test
-          export DB_HOST=127.0.0.1
-          export DB_USER=root
-          export DB_PASSWORD=root
-          export DB_NAME=se2_audiosync_test_db
-          export DB_PORT=3306
           mysql -h127.0.0.1 -uroot -proot -e "USE se2_audiosync_test_db; SHOW TABLES;"
           npm test
 
