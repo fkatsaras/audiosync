@@ -1,69 +1,37 @@
 version: '3.9'
+
 services:
   backend:
-    depends_on:
-      - db
-    container_name: audiosync_backend
     build:
       context: ./backend
-    env_file: .env
-    environment:
-      - DB_HOST=audiosync_db
-      - DB_USER=root
-      - DB_PASSWORD=root
-      - DB_NAME=se2_audiosync_db
-      - DB_PORT=3306
     ports:
       - "5000:5000"
-    
-    volumes:
-      - ./backend:/usr/src/app
-    networks:
-      - audiosync-net
+    env_file:
+      - .env
+    environment:
+      DB_HOST: database # Override the DB_HOST variable
+      CORS_ORIGIN: http://frontend:3000
+    depends_on:
+      - database
 
   frontend:
-    depends_on:
-      - backend
-    container_name: audiosync_frontend
     build:
       context: ./frontend
     ports:
-      - "3000:3000" # Map port 3000 on the container to port 3000 on the host
-    networks:
-      - audiosync-net
+      - "3000:3000"
+    env_file:
+      - .env
 
-  db:
+  database:
     image: mysql:8.0
-    container_name: audiosync_db
     ports:
       - "3306:3306"
     environment:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: se2_audiosync_db
-      MYSQL_USER: root
-      MYSQL_PASSWORD: root
     volumes:
-      - ./database/init_db.sh:/docker-entrypoint-initdb.d/init_db.sh
-      - ./database/seed_data.sql:/docker-entrypoint-initdb.d/seed_data.sql
-      - ./database/create_tables.sql:/docker-entrypoint-initdb.d/create_tables.sql
-      - ./database/create_test_tables.sql:/docker-entrypoint-initdb.d/create_test_tables.sql
-      - ./database/seed_test_data.sql:/docker-entrypoint-initdb.d/seed_test_data.sql   # Mount SQL scripts for initialization
-      - db_data:/var/lib/mysql                   # Persist MySQL data
-    networks:
-      - audiosync-net
-
-  adminer:
-    image: adminer
-    restart: always
-    ports:
-      - 8080:8080
-    networks:
-      - audiosync-net
+      - db_data:/var/lib/mysql
+      - ./database/prod:/docker-entrypoint-initdb.d
 
 volumes:
   db_data:
-
-
-networks:
-  audiosync-net:
-    driver: bridge
