@@ -23,7 +23,8 @@ exports.get_playlist_by_id = function(userId,playlistId) {
                   playlists.updated_at,
                   songs.id AS song_id,
                   songs.title AS song_title,
-                  artists.name AS artist_name
+                  artists.name AS artist_name,
+                  playlist_songs.order AS song_order
               FROM playlists
               JOIN playlist_songs ON playlists.id = playlist_songs.playlist_id
               JOIN songs ON playlist_songs.song_id = songs.id
@@ -46,7 +47,8 @@ exports.get_playlist_by_id = function(userId,playlistId) {
                   playlistData.songs.push({
                       id: row.song_id,
                       title: row.song_title,
-                      artist: row.artist_name
+                      artist: row.artist_name,
+                      order: row.song_order
                   });
               });
               resolve({

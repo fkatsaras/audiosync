@@ -60,4 +60,5 @@ export interface Playlist {
     is_public: boolean;     // Indicates if the playlist is public
     created_at: string;     // Timestamp of when the playlist was created
     updated_at?: string;    // Timestamp of when the playlist was last updated
+    order: number;          // Order number of the song in the playlist
 }

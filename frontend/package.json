@@ -38,7 +38,7 @@
       "last 1 safari version"
     ]
   },
-  "proxy": "http://backend:5000",
+  "proxy": "http://localhost:5000",
   "devDependencies": {
     "@types/react": "^18.3.12",
     "@types/react-beautiful-dnd": "^13.1.8",

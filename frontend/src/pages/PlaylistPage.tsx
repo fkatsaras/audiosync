@@ -65,14 +65,13 @@ const PlaylistPage: React.FC<UserSessionProps> = ({ userId, username }) => {
 
         // Send updated order to the backend
         const updatePlaylist = async () => {
-            console.log(JSON.stringify({ ...playlist, songs: updatedSongs }));
             await fetch(`/api/v1/users/${userId}/playlists?playlistId=${playlistId}`, {
                 method: 'PUT',
                 headers: {
                     'Authorization': `Bearer ${localStorage.getItem('token')}`,
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ ...playlist, songs: updatedSongs }),
+                body: JSON.stringify({ ...playlist, songs: orderedSongs }),
             });
         };
 

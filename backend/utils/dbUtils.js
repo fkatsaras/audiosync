@@ -52,7 +52,7 @@ function executeQuery(connection, query, values = []) {
             });
         }
 
-        // console.log("Executing query: ", fQuery);  // Log the final query with values
+        console.log("Executing query: ", fQuery);  // Log the final query with values
 
         // Execute the query
         connection.execute(fQuery, (err, results, fields) => {
