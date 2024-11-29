@@ -54,13 +54,19 @@ module.exports.unfollow_artist = function unfollow_artist (req, res, next) {
 };
 
 
-module.exports.create_user_playlist = function create_user_playlist (req, res, next, body, userId) {
+module.exports.create_user_playlist = function create_user_playlist (req, res, next, body) {
+  const userId = req.session.user.id;
+
+  // Check if title is provided
+  if (!body.title || !body.title.trim()) {
+    return errorResponse(res, 'Please provide a name for your Playlist', 400);
+  }
   Users.create_user_playlist(body, userId)
     .then(function (response) {
-      utils.writeJson(res, response);
+      successResponse(res, response.message, response.body);
     })
-    .catch(function (response) {
-      utils.writeJson(res, response);
+    .catch(function (error) {
+      errorResponse(res, error.message, error.code);
     });
 };
 
@@ -131,7 +137,7 @@ module.exports.login_user = async function login_user(req, res) {
 
   // Validate request body
   if (!username || !password) {
-    return api.errorResponse(res, 'Username and password are required', 400);
+    return errorResponse(res, 'Username and password are required', 400);
   }
 
   try {
@@ -146,11 +152,11 @@ module.exports.login_user = async function login_user(req, res) {
     // Debug
     console.log(`User logged in: ${response.username}`);
     // console.log(req.session);
-    return api.successResponse(res, 'Login successful', { token: response.token });
+    return successResponse(res, 'Login successful', { token: response.token });
   } catch (error) {
     console.error(`Login failed for ${username}: ${error.details || error.message}`);
     const statusCode = error.code || 500;
-    return api.errorResponse(res, error.message, statusCode);
+    return errorResponse(res, error.message, statusCode);
   }
 };
 
@@ -166,7 +172,7 @@ module.exports.logout_user = async function logout_user(req, res) {
     // Destroy the session to log the user out
     req.session.destroy((err) => {
       if (err) {
-        return api.errorResponse(
+        return errorResponse(
           res,
           'Failed to log out',
           500
@@ -176,7 +182,7 @@ module.exports.logout_user = async function logout_user(req, res) {
       // Clear the session cookie
       res.clearCookie('connect.sid');
       
-      return api.successResponse(
+      return successResponse(
         res,
         'Logout successful',
         { username: response.username }
@@ -184,7 +190,7 @@ module.exports.logout_user = async function logout_user(req, res) {
     });
   } catch (error) {
     console.error(`Logout failed: ${error.message}`);
-    return api.errorResponse(
+    return errorResponse(
       res,
       'Internal server error',
       500
@@ -207,17 +213,17 @@ module.exports.register_user = async function register_user(req, res) {
 
   // Validate request body
   if (!username || !password || !email) {
-    return api.errorResponse(res, 'Missing required fields: username, password, or email', 400);
+    return errorResponse(res, 'Missing required fields: username, password, or email', 400);
   }
 
   try {
     const response = await Users.register_user(req.body);
 
     console.log(`User registered: ${response.body.username}`);
-    return api.successResponse(res, response.message, response.body, 201);
+    return successResponse(res, response.message, response.body, 201);
   } catch (error) {
     console.error(`Registration failed for user ${username}: ${error.details || error.message}`);
     const statusCode = error.code || 500;
-    return api.errorResponse(res, error.message, statusCode);
+    return errorResponse(res, error.message, statusCode);
   }
 };

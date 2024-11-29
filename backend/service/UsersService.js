@@ -106,19 +106,49 @@ exports.unlike_song = function(userId, songId) {
  * returns Playlist
  **/
 exports.create_user_playlist = function(body,userId) {
-  return new Promise(function(resolve, reject) {
-    var examples = {};
-    examples['application/json'] = {
-  "songs" : [ null, null ],
-  "editMode" : true,
-  "id" : 123,
-  "title" : "My Favorite Songs"
-};
-    if (Object.keys(examples).length > 0) {
-      resolve(examples[Object.keys(examples)[0]]);
-    } else {
-      resolve();
-    }
+  return new Promise(async (resolve, reject) => {
+    const connection = db.createConnection();
+    try {
+
+      const insertQuery = `
+        INSERT INTO playlists (title, owner)
+        VALUES (?, ?);
+      `;
+      const insertResult = await db.executeQuery(connection, insertQuery, [body.title, userId]);
+
+      if (insertResult.affectedRows > 0) {
+        // Successfully inserted the new playlist
+        // Resolve with the data
+        const newPlaylist = {
+          // id: result.insertId,
+          title: body.title,
+          owner: userId,
+          cover: null,  // Default null, could be added later
+          edit_mode: false,  // Default value
+          is_public: false,  // Default value
+          created_at: new Date(),
+          updated_at: new Date(),
+        };
+
+        resolve({
+          message: 'Successfully created new playlist',
+          body: newPlaylist,
+          code: 201
+        });
+      } else {
+        reject({
+          message: 'Failed to create new playlist',
+        })
+      }
+    } catch (error) {
+      console.error('Unexpected error:', error);
+      reject({
+        message: 'Unexpected',
+        code: 500
+      })
+    } finally {
+      db.closeConnection(connection);
+    }  
   });
 }
 

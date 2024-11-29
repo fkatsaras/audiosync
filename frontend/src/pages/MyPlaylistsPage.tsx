@@ -138,7 +138,7 @@ const MyPlaylistsPage: React.FC<UserSessionProps> = ({ userId, username }) => {
                 <PopUp
                     title='Create New Playlist'
                     onConfirm={handleCreatePlaylist}
-                    onCancel={() => {setIsPopUpOpen(false)}}
+                    onCancel={() => {setIsPopUpOpen(false); setError('') }} // Clear error when canceling
                 >
                     <Input 
                         id="playlist-name" 
@@ -148,6 +148,7 @@ const MyPlaylistsPage: React.FC<UserSessionProps> = ({ userId, username }) => {
                         onChange={(e) => setNewPlaylistName(e.target.value)} 
                         className="rectangular"
                     />
+                    {error && <Message className='error-message'>{error}</Message>} { /* Display error message inside the popup */}
                 </PopUp>
             )}
         </div>
