@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
 import { Playlist } from '../types/data';
 import Navbar from '../components/Navbar/Navbar';
 import AppBody from '../components/AppBody/AppBody';
@@ -8,7 +7,9 @@ import Message from '../components/Message/Message';
 import ResultItem from '../components/ResultItem/ResultItem';
 import Button from '../components/Buttons/Button';
 import defaultCover from '../assets/images/playlist_default_cover.svg';
-// import '../styles/MyPlaylists.css'
+import PopUp from '../components/PopUp/PopUp';
+import Input from '../components/Input/Input';
+import '../styles/MyPlaylistsPage.css';
 
 interface UserSessionProps {
     userId?: string;
@@ -27,6 +28,8 @@ const MyPlaylistsPage: React.FC<UserSessionProps> = ({ userId, username }) => {
     const [playlists, setPlaylists] = useState<Playlist[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string>('');
+    const [isPopUpOpen, setIsPopUpOpen] = useState<boolean>(false); // State for popup
+    const [newPlaylistName, setNewPlaylistName] = useState<string>('');
     // const [hasMorePlaylists, setHasMorePlaylists] = useState<boolean>(true);      // Tracks if there are more playlists !TODO! Implement a show more button here as well
 
 
@@ -54,8 +57,8 @@ const MyPlaylistsPage: React.FC<UserSessionProps> = ({ userId, username }) => {
         
                 setPlaylists(data.body);
                 setLoading(false);
-            } catch (err: any) {
-                setError(err.message);
+            } catch (error: any) {
+                setError(error.message);
                 setLoading(false);
             }
         };
@@ -63,12 +66,47 @@ const MyPlaylistsPage: React.FC<UserSessionProps> = ({ userId, username }) => {
         fetchPlaylists();
     }, [userId]);
 
+    const handleCreatePlaylist = async () => {
+        if (!newPlaylistName.trim()) {
+            alert('Playlist name cannot be empty.');    // TODO : Transport this to the backend
+            return;
+        }
+
+        try {
+            const response = await fetch(`/api/v1/users/${userId}/my-playlists`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                },
+                body: JSON.stringify({ title: newPlaylistName }),
+            });
+
+            if (!response.ok) {
+                throw new Error(`Error ${response.status}: ${response.statusText}`);
+            }
+
+            const newPlaylist = await response.json();
+            setPlaylists((prev) => [...prev, newPlaylist]);
+            setIsPopUpOpen(false);
+            setNewPlaylistName('');
+        } catch (error: any) {
+            setError(error.message);
+        }
+    };
+
     return (
         <div className='playlists-container'>
             <Navbar userId={userId || ''} username={username || ''}/>
             <AppBody>
-                <Button><Link to='/'>Home</Link></Button>   {/* TODO: Integrate the link component inside the button component*/}
                 <h1>Your Playlists</h1>
+                <Button 
+                    className='create-playlist-btn'
+                    isSpecial={false}
+                    onClick={() => setIsPopUpOpen(true)}
+                >
+                    <span className="plus-sign">+</span>   
+                </Button>
                 {loading && <LoadingDots />}
                 {error && <Message className='error-message'>{error}</Message>}
                 <ul>
@@ -95,6 +133,23 @@ const MyPlaylistsPage: React.FC<UserSessionProps> = ({ userId, username }) => {
                     )}
                 </ul>
             </AppBody>
+
+            {isPopUpOpen && (
+                <PopUp
+                    title='Create New Playlist'
+                    onConfirm={handleCreatePlaylist}
+                    onCancel={() => {setIsPopUpOpen(false)}}
+                >
+                    <Input 
+                        id="playlist-name" 
+                        type="text" 
+                        placeholder="Give a name to your Playlist." 
+                        value={newPlaylistName} 
+                        onChange={(e) => setNewPlaylistName(e.target.value)} 
+                        className="rectangular"
+                    />
+                </PopUp>
+            )}
         </div>
     );
 };
