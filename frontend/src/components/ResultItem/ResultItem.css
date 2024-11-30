@@ -5,11 +5,15 @@
     border-radius: 8px;
     padding: 10px;
     min-height: 5vh;
+    max-width: 700px; /* Set the maximum width for the result item */
     margin: 10px 0;
     transition: border 0.1s ease; /* Smooth transition for border */
     justify-content: flex-start;
     align-items: center; /* vertically center its contents */
-    border: 2px solid transparent /* Add transparent border to prevent other content from shifting around */
+    border: 2px solid transparent; /* Add transparent border to prevent other content from shifting around */
+    position: relative; /* Needed for absolute positioning of child elements */
+    z-index: 1; /* Default stacking order for the container !!! */
+    
 }
 
 .result-title {
@@ -72,4 +76,9 @@ li {
 .song-result-duration {
     margin-left: auto; /* Align duration to the far right */
     color: #6a1b9a; /* Spotify green */
+}
+
+/* Show the options container on hover */
+.result-container:hover .three-dots-button {
+    opacity: 1;
 }

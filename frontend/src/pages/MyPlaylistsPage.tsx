@@ -9,6 +9,7 @@ import Button from '../components/Buttons/Button';
 import defaultCover from '../assets/images/playlist_default_cover.svg';
 import PopUp from '../components/PopUp/PopUp';
 import Input from '../components/Input/Input';
+import Options from '../components/Buttons/Options';
 import '../styles/MyPlaylistsPage.css';
 
 interface UserSessionProps {
@@ -125,6 +126,7 @@ const MyPlaylistsPage: React.FC<UserSessionProps> = ({ userId, username }) => {
                                     linkPath={`/${userId}/playlists`}
                                     altText='Playlist cover'
                                     className='playlist-result-image'
+                                    optionsComponent={<Options onOptionSelect={(value) => console.log(`${value} option pressed`)}/>}
                                 />
                             </li>
                         ))

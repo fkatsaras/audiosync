@@ -1,0 +1,21 @@
+.three-dots-button {
+    position: absolute;
+    right: 10px; /* Align the dots to the far right */
+    top: 50%;
+    transform: translateY(-50%); /* Vertically center it */
+    transition: color 0.3s ease;
+    cursor: pointer;
+    opacity: 0; /* Prevents it from being focusable or clickable */
+    z-index: 10; /* Ensure it appears above the result-container */
+}
+
+.three-dots-button:hover svg {
+    color: #6a1b9a;
+    transition: color 0.3s ease;
+}
+
+.three-dots-button svg {
+    width: 24px;
+    height: 24px;
+    color: #333;
+}
