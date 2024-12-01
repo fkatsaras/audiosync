@@ -7,4 +7,28 @@
     flex-direction: column; /* Stack children vertically */
     align-items: center; /* Center content horizontally */
     justify-content: center; /* Center content vertically */
+    width: 100%;
+    margin: 0 auto;
+    max-width: 500px;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    width: 100%; /* Ensure form takes the container's width */
+}
+
+h1 {
+    color: #ffffff;
+    font-size: 2rem;
+    margin-bottom: 20px;
+}
+
+label {
+    color: #ffffff; /* Style label text */
+    margin-bottom: 5px;
+}
+
+p {
+    color: #f1f1f1;
 }

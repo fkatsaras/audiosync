@@ -1,4 +1,4 @@
-version: '3'
+version: '3.9'
 
 services:
   backend:
@@ -6,23 +6,32 @@ services:
       context: ./backend
     ports:
       - "5000:5000"
+    env_file:
+      - .env
     environment:
-      - FLASK_ENV=production
-    # Uncomment if using custom Docker network:
-    # networks:
-    #   - app-network
+      DB_HOST: database # Override the DB_HOST variable
+      CORS_ORIGIN: http://frontend:3000
+    depends_on:
+      - database
 
   frontend:
     build:
       context: ./frontend
     ports:
-      - "3000:80"  # Adjusted port mapping to match typical Nginx default port
-    # Uncomment if using custom Docker network:
-    # networks:
-    #   - app-network
+      - "3000:3000"
+    env_file:
+      - .env
 
-# Uncomment if using custom Docker network:
-# networks:
-#   app-network:
-#     driver: bridge
+  database:
+    image: mysql:8.0
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: se2_audiosync_db
+    volumes:
+      - db_data:/var/lib/mysql
+      - ./database/prod:/docker-entrypoint-initdb.d
 
+volumes:
+  db_data:

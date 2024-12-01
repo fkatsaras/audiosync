@@ -1,10 +1,16 @@
 import React , { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import { Song } from "../types/dataTypes";
-import HomeButton from "../components/Home/HomeButton";
+import { Song } from "../types/data";
+import AppBody from "../components/AppBody/AppBody";
+import Button from "../components/Buttons/Button";
+import Message from "../components/Message/Message";
+import LoadingDots from "../components/LoadingDots/LoadingDots";
 
+interface SongPageProps {
+    userId?: string;
+}
 
-const SongPage: React.FC = () => {
+const SongPage: React.FC<SongPageProps> = ({ userId }) => {
     const { songId } = useParams<{ songId: string }>(); // Get song ID from URL parameters
     const [song, setSong] = useState<Song | null>(null);
     const [loading, setLoading] = useState(true);
@@ -38,59 +44,62 @@ const SongPage: React.FC = () => {
     }, [songId]);
 
     const handleLikeToggle = async () => {
-        if (song) {
+        if (!song) return;
 
-            const response = await fetch(`/api/v1/songs/${songId}/like`, {
-                method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`,
-                    'Content-type': 'application/json', 
-                },
-            });
+        const action = song.liked ? 'DELETE' : 'POST';
+        const endpoint = `/api/v1/users/${userId}/liked-songs?songId=${songId}`;
 
-            if (response.ok) {
-                const data = await response.json();
-                setSong(prevSong => ({
-                    ...prevSong!,
-                    liked: data.body.liked,
-                    // followers: data.body.is_followed? prevArtist!.followers + 1 : prevArtist!.followers - 1, TODO Add a total likes or sth here (mabye total plays like spotify)
-                }))
-                setMessage(data.message);
-            } else {
-                const errorData = await response.json();
-                setMessage(errorData.message);
-            }
+        const response = await fetch(endpoint, {
+            method: action,
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                'Content-type': 'application/json',
+            },
+        });
+
+        if (response.ok) {
+            const data = await response.json();
+            setSong(prevSong => ({
+                ...prevSong!,
+                liked: data.body.liked  // Update the songs liked status
+            }));
+            setMessage(data.message);
+        } else {
+            const errorData = await response.json();
+            setMessage(errorData.message);
         }
     };
 
-    if (loading) return <div>Loading...</div>;
+    if (loading) return <LoadingDots />;
     if (error) return <div>{error}</div>;
 
     return (
-        <div>
-            <HomeButton />
-            { song ? (
-                <div>
-                    <h1>{song.title}</h1>
-                    <p>Artist: <Link to={`/artists/${song.artist_id}`}>{song.artist}</Link></p>
-                    <p>Album: {song.album}</p>
-                    <p>Duration: {song.duration} seconds</p>
-                    <img src={song.cover} alt={`${song.title} cover`} />
-                    {/* Additional song info here*/}
-                    {/*
-                     Display unfollow/follow/error message here
-                     !TODO! Add timeout logic so that the follow message isnt permanent
-                     */}
-                    {message && <p>{message}</p>}
-                    <br />
-                    <button onClick={handleLikeToggle}>
-                        {song.liked? 'Unlike' : 'Like'}
-                    </button>
-                </div>
-            ) : (
-                <p>Song not found.</p>
-            )}
-        </div>
+        <AppBody>
+            <Button><Link to='/'>Home</Link></Button>   {/* TODO: Integrate the link component inside the button component*/}
+            <div className="song-container">
+                { song ? (
+                    <div className="song-info">
+                        <h1>{song.title}</h1>
+                        <p>Artist: <Link to={`/artists/${song.artist_id}`}>{song.artist}</Link></p>
+                        <p>Album: {song.album}</p>
+                        <p>Duration: {song.duration} seconds</p>
+                        <img src={song.cover} alt={`${song.title} cover`} />
+                        {/* Additional song info here*/}
+                        {/*
+                         Display unfollow/follow/error message here
+                         !TODO! Add timeout logic so that the follow message isnt permanent
+                         */}
+                        <br />
+                        <Button isSpecial={true} isActive={song.liked} onClick={handleLikeToggle}>
+                            {song.liked? 'Unlike' : 'Like'}
+                        </Button>
+                        {message && <Message className="info-message">{message}</Message>}
+                    </div>
+                ) : (
+                    <Message className="info-message">Song not found.</Message>
+                )}
+            </div>
+        </AppBody>
     )
 }
 

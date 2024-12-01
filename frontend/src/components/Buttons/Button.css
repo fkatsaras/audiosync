@@ -1,0 +1,65 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700&display=swap');
+
+button, 
+button a {
+    color: inherit;
+    text-decoration: none; /* Removes underline from links inside buttons */
+}
+
+button a:visited,
+button:visited {
+    color: inherit;
+    text-decoration: none; /* Removes underline for visited state */
+}
+
+.default-button {
+    background-color: #2a2a2a; /* Base background */
+    color: #f1f1f1; /* Base text color */
+    border: 2px solid #d9d9d9; /* Base border color */
+    padding: 10px 20px; /* Padding */
+    border-radius: 50px; /* Rounded edges */
+    cursor: pointer; /* Pointer on hover */
+    transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease; /* Transition for smooth effect */
+    font-family: 'Montserrat', sans-serif; /* Font */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* Subtle shadow for depth */
+    display: inline-flex; /* Align items */
+    align-items: center; /* Center content vertically */
+    justify-content: center; /* Center content horizontally */
+}
+
+.default-button:hover {
+    background-color: #f1f1f1; /* Inverse colors on hover */
+    color: #2a2a2a;
+}
+
+/* Custom styles for action buttons */
+.default-button.inactive {
+    background-color: transparent;
+    color: #6a1b9a; /* Dark purple text when inactive */
+    border: 2px solid #6a1b9a; /* Dark purple border */
+}
+
+/* Hover effect for inactive buttons */
+.default-button.inactive:hover {
+    background: linear-gradient(135deg, #6a1b9a, #8e24aa); /* Dark to lighter purple gradient */
+    color: white; /* White text on hover */
+    border-color: #8e24aa; /* Lighter purple border on hover */
+}
+
+.default-button.active {
+    background: linear-gradient(135deg, #8e24aa, #4a148c); /* Gradient from lighter to dark purple */
+    color: white; /* background text when active */
+    font-weight: bold;
+    border-color: transparent; /* No visible border when active */
+}
+
+/* Hover effect for active buttons */
+.default-button.active:hover {
+    border-color: #4a148c; /* Darker purple border on hover */
+}
+
+/* Special styles for Spotify Buttons*/
+.default-button.spotify-button:hover {
+    background-color: #1db954;
+    color: #f1f1f1;
+}
