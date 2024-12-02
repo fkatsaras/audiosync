@@ -1,18 +1,19 @@
 import React, { useEffect, useState} from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { Artist } from "../types/data";
 import '../styles/ArtistPage.css'
 import Button from "../components/Buttons/Button";
 import AppBody from "../components/AppBody/AppBody";
 import ResultItem from "../components/ResultItem/ResultItem";
 import LoadingDots from "../components/LoadingDots/LoadingDots";
+import Navbar from "../components/Navbar/Navbar";
 
-interface ArtistPageProps {
-    userId?: string
+interface UserSessionProps {
+    userId?: string;
+    username?: string;
 }
 
-
-const ArtistPage: React.FC<ArtistPageProps> = ({ userId }) => {
+const ArtistPage: React.FC<UserSessionProps> = ({ userId, username }) => {
     const { artistId } = useParams<{ artistId: string }>(); // Get artist ID from URL params
     const [artist, setArtist] = useState<Artist | null>(null);
     const [loading, setLoading] = useState(true);
@@ -78,8 +79,8 @@ const ArtistPage: React.FC<ArtistPageProps> = ({ userId }) => {
 
     return (
         <AppBody>
+            <Navbar userId={userId || ''} username={username || ''} />
             <div className="artist-container">
-                <Button><Link to='/'>Home</Link></Button>   {/* TODO: Integrate the link component inside the button component*/}
                 {artist && (
                     <div className="artist-content-container">
                         <div className="artist-info">

@@ -5,12 +5,14 @@ import AppBody from "../components/AppBody/AppBody";
 import Button from "../components/Buttons/Button";
 import Message from "../components/Message/Message";
 import LoadingDots from "../components/LoadingDots/LoadingDots";
+import Navbar from "../components/Navbar/Navbar";
 
-interface SongPageProps {
+interface UserSessionProps {
     userId?: string;
+    username?: string;
 }
 
-const SongPage: React.FC<SongPageProps> = ({ userId }) => {
+const SongPage: React.FC<UserSessionProps> = ({ userId, username }) => {
     const { songId } = useParams<{ songId: string }>(); // Get song ID from URL parameters
     const [song, setSong] = useState<Song | null>(null);
     const [loading, setLoading] = useState(true);
@@ -75,7 +77,7 @@ const SongPage: React.FC<SongPageProps> = ({ userId }) => {
 
     return (
         <AppBody>
-            <Button><Link to='/'>Home</Link></Button>   {/* TODO: Integrate the link component inside the button component*/}
+            <Navbar userId={userId || ''} username={username || ''} />
             <div className="song-container">
                 { song ? (
                     <div className="song-info">

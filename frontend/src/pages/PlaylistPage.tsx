@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { Playlist } from "../types/data";
 import '../styles/PlaylistPage.css';
 import AppBody from "../components/AppBody/AppBody";
 import ResultItem from "../components/ResultItem/ResultItem";
 import LoadingDots from "../components/LoadingDots/LoadingDots";
-import Button from "../components/Buttons/Button";
 import defaultPlaylistCover from '../assets/images/playlist_default_cover.svg';
 import defaultSongCover from '../assets/images/song_default_cover.svg';
 import Navbar from "../components/Navbar/Navbar";
@@ -85,7 +84,6 @@ const PlaylistPage: React.FC<UserSessionProps> = ({ userId, username }) => {
         <AppBody>
             <Navbar userId={userId || ''} username={username || ''} />
             <div className="playlist-container">
-                <Button><Link to='/'>Home</Link></Button>
                 {playlist && (
                     <div className="playlist-content-container">
                         <div className="playlist-info">

@@ -11,7 +11,7 @@ const cors = require('cors');
 const auth = require('./utils/auth');
 
 // Load environment variables
-dotenv.config({ path: path.resolve(__dirname, '../.env')});
+dotenv.config({ path: path.resolve(__dirname, './.env')});
 
 // Server configuration
 const serverPort = process.env.PORT || 5000;
@@ -21,7 +21,7 @@ const app = express();
 
 // Session configuration
 const sessionMiddleware = session({
-    secret: process.env.SESSION_SECRET || 'dhmhtrhs legomai kai eimai veroiara',
+    secret: process.env.SESSION_SECRET || 'fotis',
     resave: false, // Do not save session if unmodified
     saveUninitialized: true, // Save new sessions even if they are empty
     cookie: {
@@ -79,7 +79,7 @@ function createServer(port=serverPort) {
     return new Promise((resolve, reject) => {
         const server = http.createServer(app);
 
-        server.listen(port, () => {
+        server.listen(port,() => {
             console.log('Your server is listening on port %d (http://localhost:%d)', port, port);
             console.log('Swagger-ui is available on http://localhost:%d/docs', port);
             resolve(server);
