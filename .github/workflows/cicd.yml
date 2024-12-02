@@ -85,14 +85,14 @@ jobs:
 
       # Deploy Backend
       - name: Deploy Backend to Render
-        uses: render-examples/action-deploy@v1
+        uses: johnbeynon/render-deploy-action@v0.0.8
         with:
-          service-name: audiosync-backend
+          service-id: ${{ secrets.RENDER_BACKEND_SERVICE_ID }}
           api-key: ${{ secrets.RENDER_API_KEY }}
 
       # Deploy Frontend
       - name: Deploy Frontend to Render
-        uses: render-examples/action-deploy@v1
+        uses: johnbeynon/render-deploy-action@v0.0.8
         with:
-          service-name: audiosync
+          service-id: ${{ secrets.RENDER_FRONTEND_SERVICE_ID }}
           api-key: ${{ secrets.RENDER_API_KEY }}
