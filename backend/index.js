@@ -93,7 +93,7 @@ function createServer(port=serverPort) {
 }
 
 if (require.main == module) {
-    createServer();
+    createServer(5000);
 }
 
 module.exports = { createServer };
