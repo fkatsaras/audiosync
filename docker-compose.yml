@@ -1,7 +1,7 @@
 version: '3.9'
 
 services:
-  backend:
+  audiosync-backend:
     build:
       context: ./backend
     ports:
@@ -13,7 +13,7 @@ services:
     networks:
       - audiosync_network
 
-  frontend:
+  audiosync:
     build:
       context: ./frontend
     ports:
