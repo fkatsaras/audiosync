@@ -11,7 +11,7 @@ RUN npm install
 COPY . .
 
 # Update the proxy field in package.json
-RUN sed -i 's|"http://localhost:5000"|"http://backend:5000"|' package.json
+RUN sed -i 's|"http://localhost:5000"|"http://audiosync-backend:5000"|' package.json
 
 # Expose the required port
 EXPOSE 3000
