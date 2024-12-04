@@ -1,0 +1,38 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700&display=swap');
+
+.landing-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    min-height: 100vh;
+    padding: 20px;
+    background-color: #181818;
+    font-family: 'Montserrat', sans-serif;
+}
+
+.landing-logo {
+    width: 150px;
+    height: auto;
+    margin-bottom: 30px;
+    background: transparent; /* Dont mess with the svg's background */
+}
+
+.landing-container h1 {
+    color: #ffffff;
+    font-size: 2.5rem;
+    margin-bottom: 10px;
+}
+
+.landing-container p {
+    color: #cccccc; /* Softer white for text */
+    font-size: 1.25rem;
+    margin-bottom: 20px;
+}
+
+.default-button.login-link:hover {
+    background-color: #6a1b9a;
+    color: #f1f1f1
+}
+

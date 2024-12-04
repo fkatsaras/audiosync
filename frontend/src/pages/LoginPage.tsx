@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from 'react-router-dom';
-import AppBody from "../components/AppBody/AppBody";
+import Default from "../components/AppBody/Default";
 import '../styles/LoginPage.css'
 import Input from "../components/Input/Input";
 import Button from "../components/Buttons/Button";
@@ -50,7 +50,7 @@ function Login() {
     };
 
     return (
-        <AppBody>
+        <Default>
             <div className="login-container">
                 <h1>Welcome to AudioSync</h1>
                 <form id="loginForm" onSubmit={handleLogin}>
@@ -77,7 +77,7 @@ function Login() {
                 <p>Don't have an account? <Link to="/register">Register here</Link></p>
                 {errorMessage && <Message className="error-message">{errorMessage}</Message>}
             </div>
-        </AppBody>
+        </Default>
     );
 }
 
