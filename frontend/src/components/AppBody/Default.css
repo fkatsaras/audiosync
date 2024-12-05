@@ -2,6 +2,7 @@
 
 .default-body {
     padding: 20px;
+    color: #ffffff;
     min-height: 100vh;
     background-color: #181818;
     font-family: 'Montserrat', sans-serif;

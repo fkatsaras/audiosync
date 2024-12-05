@@ -3,6 +3,7 @@
     min-height: 100vh;
     background-color: #181818;
     font-family: 'Montserrat', sans-serif;
+    text-align: center;
     display: flex;
     flex-direction: column; /* Stack children vertically */
     align-items: center; /* Center content horizontally */
