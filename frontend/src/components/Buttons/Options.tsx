@@ -5,7 +5,7 @@ import './Options.css';
 
 interface OptionsProps {
     onOptionSelect: (value: string) => void;
-    onClose: () => void;
+    onClose?: () => void;
 }
 
 const Options: React.FC<OptionsProps> = ({ onOptionSelect, onClose }) => {
@@ -17,7 +17,9 @@ const Options: React.FC<OptionsProps> = ({ onOptionSelect, onClose }) => {
         const handleClickOutside = (event: MouseEvent) => {
             if (optionsRef.current && !optionsRef.current.contains(event.target as Node)) {
                 setIsDropDownOpen(false);
-                onClose();
+                if(onClose) {
+                    onClose();
+                };
             }
         }
 
