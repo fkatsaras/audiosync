@@ -31,6 +31,8 @@ const MyPlaylistsPage: React.FC<UserSessionProps> = ({ userId, username }) => {
     const [error, setError] = useState<string>('');
     const [isPopUpOpen, setIsPopUpOpen] = useState<boolean>(false); // State for popup
     const [newPlaylistName, setNewPlaylistName] = useState<string>('');
+    const [isDeletePopUpOpen, setIsDeletePopUpOpen] = useState<boolean>(false);
+    const [playlistToDelete, setPlaylistToDelete] = useState<number | null>(null);
     // const [hasMorePlaylists, setHasMorePlaylists] = useState<boolean>(true);      // Tracks if there are more playlists !TODO! Implement a show more button here as well
 
 
@@ -96,6 +98,34 @@ const MyPlaylistsPage: React.FC<UserSessionProps> = ({ userId, username }) => {
         }
     };
 
+    const confirmDeletePlalist = (playlistId: number) => {
+        setPlaylistToDelete(playlistId);
+        setIsDeletePopUpOpen(true);
+    };
+
+    const handleDeletePlaylist = async () => {
+        if (!playlistToDelete) return;
+
+        try {
+            const response = await fetch(`/api/v1/users/${userId}/my-playlists?playlistId=${playlistToDelete}`, {
+                method: 'DELETE',
+                headers: {
+                    'Authorization' : `Bearer ${localStorage.getItem('token')}`,
+                },
+            });
+
+            if (!response.ok) {
+                throw new Error(`Error ${response.status} : ${response.statusText}`);
+            }
+
+            setPlaylists((prev) => prev.filter((playlist) => playlist.id !== playlistToDelete)) // After deletion playlists are filtered to exclude deleted playlist
+            setPlaylistToDelete(null);  // Cleanup
+            setIsDeletePopUpOpen(false);
+        } catch (error: any) {
+            setError(error.message);
+        }
+    }
+
     return (
         <div className='playlists-container'>
             <Navbar userId={userId || ''} username={username || ''}/>
@@ -126,7 +156,16 @@ const MyPlaylistsPage: React.FC<UserSessionProps> = ({ userId, username }) => {
                                     linkPath={`/${userId}/playlists`}
                                     altText='Playlist cover'
                                     className='playlist-result-image'
-                                    optionsComponent={<Options onOptionSelect={(value) => console.log(`${value} option pressed`)}/>}
+                                    optionsComponent={
+                                        <Options 
+                                            onOptionSelect={(value) => 
+                                                value === 'delete'
+                                                    ? confirmDeletePlalist(playlist.id)
+                                                    : console.log(`${value} option pressed`)                                                
+                                            }
+                                            onClose={() => console.log('Options popup closed')}
+                                        />
+                                    }
                                 />
                             </li>
                         ))
@@ -151,6 +190,19 @@ const MyPlaylistsPage: React.FC<UserSessionProps> = ({ userId, username }) => {
                         className="rectangular"
                     />
                     {error && <Message className='error-message'>{error}</Message>} { /* Display error message inside the popup */}
+                </PopUp>
+            )}
+
+            {isDeletePopUpOpen && (
+                <PopUp
+                    title='Confirm Deletion'
+                    onConfirm={handleDeletePlaylist}
+                    onCancel={() => {
+                        setIsDeletePopUpOpen(false);
+                        setPlaylistToDelete(null);
+                    }}
+                >
+                    <p>Are you sure you want to delete this Playlist?</p>
                 </PopUp>
             )}
         </div>

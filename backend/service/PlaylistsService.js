@@ -165,7 +165,7 @@ exports.delete_playlist_by_id = function(userId,playlistId) {
                 DELETE FROM playlists
                 WHERE id = ? AND owner = ?;
             `;
-            const deletePlaylistResult = await dbb.executeQuery(connection, deletePlaylistQuery, [playlistId, userId]);
+            const deletePlaylistResult = await db.executeQuery(connection, deletePlaylistQuery, [playlistId, userId]);
 
             if (deletePlaylistResult.affectedRows > 0) {
                 // Commit transaction

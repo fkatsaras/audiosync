@@ -26,3 +26,15 @@ module.exports.update_playlist_by_id = function update_playlist_by_id (req, res,
       errorResponse(res, error.message, error.code);
     });
 };
+
+module.exports.delete_playlist_by_id = function delete_playlist_by_id (req, res, next) {
+  const userId = req.session.user.id;
+  const playlistId = req.query.playlistId;
+  Playlists.delete_playlist_by_id(userId, playlistId)
+    .then(function (response) {
+      successResponse(res, response.message, response.body);
+    })
+    .catch(function (error) {
+      errorResponse(res, error.message, error.code);
+    });
+};
