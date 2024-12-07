@@ -152,37 +152,6 @@ exports.create_user_playlist = function(body,userId) {
   });
 }
 
-
-/**
- * Delete a specific playlist
- * Delete a specific playlist created by a user
- *
- * userId Integer ID of the user who owns the playlist
- * playlistId Integer ID of the playlist to delete
- * no response value expected for this operation
- **/
-exports.delete_playlist_by_id = function(userId,playlistId) {
-  return new Promise(function(resolve, reject) {
-    resolve();
-  });
-}
-
-
-/**
- * Delete a user's playlist
- * Delete a specific playlist created by a user
- *
- * userId Integer ID of the user who owns the playlist to delete
- * playlistId Integer ID of the playlist to delete
- * no response value expected for this operation
- **/
-exports.delete_user_playlist = function(userId,playlistId) {
-  return new Promise(function(resolve, reject) {
-    resolve();
-  });
-}
-
-
 /**
  * Follow an artist
  * Add an artist to the user's followed artists

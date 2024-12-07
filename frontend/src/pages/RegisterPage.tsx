@@ -77,7 +77,7 @@ function Register() {
         <Default>
             <div className="register-container">
                 <h1>Create Your Account</h1>
-                <form id="registerForm" onSubmit={handleRegister}>
+                <form id="registerForm" onSubmit={handleRegister} className="register-form">
                     <label htmlFor="username">Username:</label>
                     <Input 
                         type="text"

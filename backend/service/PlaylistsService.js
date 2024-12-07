@@ -64,7 +64,7 @@ exports.get_playlist_by_id = function(userId,playlistId) {
       } catch(error) {
           console.error(`Error fetching playlist: ${error}`);
           reject({
-              message: "Unexpected.",
+              message: "Unexpected error fetching playlist",
               code: 500
           })
       } finally {
@@ -129,7 +129,7 @@ exports.update_playlist_by_id = function(body,userId,playlistId) {
         console.error(`Error updating playlist: ${error}`);
         await db.rollbackTransaction(connection);
         reject({
-            message: "Unexpected",
+            message: "Unexpected error updating playlist",
             code: 500,
         });
     } finally {
@@ -137,6 +137,65 @@ exports.update_playlist_by_id = function(body,userId,playlistId) {
     }
   });
 };
+
+
+/**
+ * Delete a specific playlist
+ * Delete a specific playlist created by a user
+ *
+ * userId Integer ID of the user who owns the playlist
+ * playlistId Integer ID of the playlist to delete
+ * no response value expected for this operation
+ **/
+exports.delete_playlist_by_id = function(userId,playlistId) {
+    return new Promise(async (resolve, reject) => {
+        const connection = db.createConnection();
+        try {
+            await db.beginTransaction(connection);
+
+            // Step 1: Delete asociated songs off playlist
+            const deletePlaylistSongsQuery = `
+                DELETE FROM playlist_songs
+                WHERE playlist_id = ?;
+            `;
+            await db.executeQuery(connection, deletePlaylistSongsQuery, [playlistId]);
+
+            // Step 2: Delete playlist
+            const deletePlaylistQuery = `
+                DELETE FROM playlists
+                WHERE id = ? AND owner = ?;
+            `;
+            const deletePlaylistResult = await dbb.executeQuery(connection, deletePlaylistQuery, [playlistId, userId]);
+
+            if (deletePlaylistResult.affectedRows > 0) {
+                // Commit transaction
+                await db.commitTransaction(connection);
+
+                resolve({
+                    message: 'Playlist deleted successfully',
+                    code: 204
+                });
+            } else {
+                // If no rows affected rollback
+                await db.rollbackTransaction(connection);
+                
+                reject({
+                    message: 'Playist not found or unauthorized',
+                    code: 404
+                });
+            }
+        } catch (error) {
+            console.error(`Error deleting playist: ${error}`);
+            db.rollbackTransaction(connection);
+            reject({
+                message: `Unexpected error deleting playlist`,
+                code: 500
+            });
+        } finally {
+            db.closeConnection(connection);
+        }
+    });
+  }
   
   
 

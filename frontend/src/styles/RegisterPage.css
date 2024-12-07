@@ -13,10 +13,11 @@
     max-width: 500px;
 }
 
-form {
+.register-form {
     display: flex;
     flex-direction: column;
     width: 100%; /* Ensure form takes the container's width */
+    align-items: center;
 }
 
 h1 {
