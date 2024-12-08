@@ -13,9 +13,9 @@ const Navbar: React.FC<UserSessionProps> = ({ userId, username }) => {
     const navigate = useNavigate();
 
     const links = {
-        liked_songs: '/liked-songs',
-        recommended: '/recommended',
-        my_artists: '/my-artists',
+        liked_songs: `/${userId}/liked-songs`,
+        recommended: `/${userId}/recommended`,
+        my_artists: `/${userId}/my-artists`,
         search: '/search',
         my_playlists: `/${userId}/my-playlists` // Dynamically insert userId here
     };

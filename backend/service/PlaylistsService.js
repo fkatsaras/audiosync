@@ -26,9 +26,9 @@ exports.get_playlist_by_id = function(userId,playlistId) {
                   artists.name AS artist_name,
                   playlist_songs.order AS song_order
               FROM playlists
-              JOIN playlist_songs ON playlists.id = playlist_songs.playlist_id
-              JOIN songs ON playlist_songs.song_id = songs.id
-              JOIN artists ON songs.artist_id = artists.id
+              LEFT JOIN playlist_songs ON playlists.id = playlist_songs.playlist_id -- LEFT JOIN in case there arent any songs in the playlist
+              LEFT JOIN songs ON playlist_songs.song_id = songs.id
+              LEFT JOIN artists ON songs.artist_id = artists.id
               WHERE playlists.id = ? AND playlists.owner = ?
               ORDER BY playlist_songs.order
           `;
@@ -44,12 +44,14 @@ exports.get_playlist_by_id = function(userId,playlistId) {
               };
               // Add songs to the paylist
               selectResult.forEach(row => {
+                if (row.song_id) { // Check if there are any songs in the playlist
                   playlistData.songs.push({
                       id: row.song_id,
                       title: row.song_title,
                       artist: row.artist_name,
                       order: row.song_order
                   });
+                }
               });
               resolve({
                   message: "Playlist retrieved successfully",

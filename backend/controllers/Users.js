@@ -90,13 +90,14 @@ module.exports.delete_user_playlist = function delete_user_playlist (req, res, n
     });
 };
 
-module.exports.get_liked_songs = function get_liked_songs (req, res, next, userId) {
+module.exports.get_liked_songs = function get_liked_songs (req, res, next) {
+  const userId = req.session.user.id;
   Users.get_liked_songs(userId)
     .then(function (response) {
-      utils.writeJson(res, response);
+      successResponse(res, response.message, response.body);
     })
-    .catch(function (response) {
-      utils.writeJson(res, response);
+    .catch(function (error) {
+      errorResponse(res, error.message, error.code);
     });
 };
 

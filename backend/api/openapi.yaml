@@ -475,7 +475,6 @@ paths:
                 x-content-type: application/json
         "404":
           description: User not found or no liked songs found
-      x-openapi-router-controller: app.controllers.users_controller
       x-swagger-router-controller: Users
     post:
       tags:

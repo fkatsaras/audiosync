@@ -88,10 +88,11 @@ CREATE TABLE IF NOT EXISTS `playlists` (
   `is_public` boolean NOT NULL DEFAULT false,
   `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `isLikedSongs` boolean NOT NULL DEFAULT false,
   PRIMARY KEY (`id`),
   FOREIGN KEY (`owner`) REFERENCES `users`(`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
+  
 -- Data exported was unselected
 
 

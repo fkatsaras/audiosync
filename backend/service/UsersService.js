@@ -3,6 +3,8 @@
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const db = require('../utils/dbUtils');
+const { fromObject } = require('../models/Song');
+const { get_playlist_by_id } = require('./PlaylistsService');
 
 
 /**
@@ -301,56 +303,57 @@ exports.unfollow_artist = function(artistId,userId) {
  * returns List
  **/
 exports.get_liked_songs = function(userId) {
-  return new Promise(function(resolve, reject) {
-    var examples = {};
-    examples['application/json'] = [ {
-  "duration" : 300,
-  "cover" : "https://1.bp.blogspot.com/-e2j5SK7JAC8/XmHhBKZJyEI/AAAAAAAABto/A1cfumUwHuA_8MFlAEtdpN5rLHlpVOd6ACLcBGAsYHQ/s1600/Iron%2BMaiden%2B-%2BPowerslave%2B%25281984%2529%2Bfront%2Bback%2Balbum%2Bcovers.jpg",
-  "artist" : "Iron Maiden",
-  "album" : "Powerslave",
-  "playlists" : [ {
-    "songs" : [ null, null ],
-    "editMode" : true,
-    "id" : 123,
-    "title" : "My Favorite Songs"
-  }, {
-    "songs" : [ null, null ],
-    "editMode" : true,
-    "id" : 123,
-    "title" : "My Favorite Songs"
-  } ],
-  "is_playing" : false,
-  "id" : 456,
-  "title" : "Aces High",
-  "liked" : true
-}, {
-  "duration" : 300,
-  "cover" : "https://1.bp.blogspot.com/-e2j5SK7JAC8/XmHhBKZJyEI/AAAAAAAABto/A1cfumUwHuA_8MFlAEtdpN5rLHlpVOd6ACLcBGAsYHQ/s1600/Iron%2BMaiden%2B-%2BPowerslave%2B%25281984%2529%2Bfront%2Bback%2Balbum%2Bcovers.jpg",
-  "artist" : "Iron Maiden",
-  "album" : "Powerslave",
-  "playlists" : [ {
-    "songs" : [ null, null ],
-    "editMode" : true,
-    "id" : 123,
-    "title" : "My Favorite Songs"
-  }, {
-    "songs" : [ null, null ],
-    "editMode" : true,
-    "id" : 123,
-    "title" : "My Favorite Songs"
-  } ],
-  "is_playing" : false,
-  "id" : 456,
-  "title" : "Aces High",
-  "liked" : true
-} ];
-    if (Object.keys(examples).length > 0) {
-      resolve(examples[Object.keys(examples)[0]]);
-    } else {
-      resolve();
-    }
+  return new Promise(async (resolve, reject) => {
+      const connection = db.createConnection();
+      try {
+        // Step 1: Find the users liked songs playlists id using the isLikedSongs flag
+        const selectQuery = `
+          SELECT
+            id
+          FROM playlists
+          WHERE owner = ? AND isLikedSongs = true;
+        `;
+
+        const selectResult = await db.executeQuery(connection, selectQuery, [userId]);
+
+        if (selectResult.length > 0) {
+          // Step 2: Call the get_playlist_by_id service to retrieve the rest of the playlists data
+          const playlistId = selectResult[0].id;
+
+          get_playlist_by_id(userId, playlistId)
+            .then(playlistResponse => {
+              // Return the liked songs playlist data
+              console.log(playlistResponse.body);
+              resolve({
+                message: 'Liked songs retrieved sucessfully',
+                body: playlistResponse.body // Propagate the response from the service
+              });
+            })
+            .catch(error => {
+              // Propagate error response from the service, overwriting with the appropriate message
+              console.error(error.message);
+              reject({
+                message: `Error fetching liked songs details`,
+                code: 500
+              });
+            });
+        } else {
+          reject({
+            message: 'No liked songs playlist found for this user',
+            code: 404
+          })
+        }
+      } catch (error) {
+        console.error(`Error fetching liked songs: ${error}`);
+        reject({
+          message: 'Unexpected error fetching liked songs',
+          code: 500
+        });
+      } finally {
+        db.closeConnection(connection);
+      }
   });
-}
+};
 
 
 /**

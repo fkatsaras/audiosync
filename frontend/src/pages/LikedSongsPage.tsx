@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
 import { Playlist } from "../types/data";
 import '../styles/PlaylistPage.css';
 import AppBody from "../components/AppBody/AppBody";
 import ResultItem from "../components/ResultItem/ResultItem";
 import LoadingDots from "../components/LoadingDots/LoadingDots";
-import defaultPlaylistCover from '../assets/images/playlist_default_cover.svg';
+import likedSongsCover from '../assets/images/liked_songs_cover.svg';
 import defaultSongCover from '../assets/images/song_default_cover.svg';
 import Navbar from "../components/Navbar/Navbar";
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
@@ -15,16 +14,16 @@ interface UserSessionProps {
     username?: string;
 }
 
-const PlaylistPage: React.FC<UserSessionProps> = ({ userId, username }) => {
-    const { playlistId } = useParams<{ playlistId: string }>();
+const LikedSongsPlaylist: React.FC<UserSessionProps> = ({ userId, username }) => {
     const [playlist, setPlaylist] = useState<Playlist | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const [playlistId, setPlaylistId] = useState<number | null>(null);
 
     useEffect(() => {
         const fetchPlaylist = async () => {
             try {
-                const response = await fetch(`/api/v1/users/${userId}/playlists?playlistId=${playlistId}`, {
+                const response = await fetch(`/api/v1/users/${userId}/liked-songs`, {
                     headers: {
                         'Authorization': `Bearer ${localStorage.getItem('token')}`
                     },
@@ -33,6 +32,7 @@ const PlaylistPage: React.FC<UserSessionProps> = ({ userId, username }) => {
                 if (response.ok) {
                     const data = await response.json();
                     setPlaylist(data.body);
+                    setPlaylistId(data.body.id); // Set playlistId from response
                 } else {
                     setError('Playlist not found');
                 }
@@ -44,7 +44,7 @@ const PlaylistPage: React.FC<UserSessionProps> = ({ userId, username }) => {
         };
 
         fetchPlaylist();
-    }, [playlistId, userId]);
+    }, [userId]);
 
     // Function to handle reordering
     const handleDragEnd = (result: any) => {
@@ -64,14 +64,16 @@ const PlaylistPage: React.FC<UserSessionProps> = ({ userId, username }) => {
 
         // Send updated order to the backend
         const updatePlaylist = async () => {
-            await fetch(`/api/v1/users/${userId}/playlists?playlistId=${playlistId}`, {
-                method: 'PUT',
-                headers: {
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`,
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ ...playlist, songs: orderedSongs }),
-            });
+            if (playlistId) {
+                await fetch(`/api/v1/users/${userId}/playlists?playlistId=${playlistId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ ...playlist, songs: orderedSongs }),
+                });
+            }
         };
 
         updatePlaylist();
@@ -83,18 +85,18 @@ const PlaylistPage: React.FC<UserSessionProps> = ({ userId, username }) => {
     return (
         <AppBody>
             <Navbar userId={userId || ''} username={username || ''} />
-            <div className="playlist-container">
+            <div className="liked-songs-playlist-container">
                 {playlist && (
-                    <div className="playlist-content-container">
-                        <div className="playlist-info">
+                    <div className="liked-songs-playlist-content-container">
+                        <div className="liked-songs-playlist-info">
                             <h1>{playlist.title}</h1>
                             <img
-                                src={playlist.cover ? playlist.cover : defaultPlaylistCover}
-                                alt={`${playlist.title} cover`}
-                                className="playlist-cover"
+                                src={playlist.cover ? playlist.cover : likedSongsCover}
+                                alt={`Liked Songs cover`}
+                                className="liked-songs-playlist-cover"
                             />
                         </div>
-                        <div className="playlist-songs">
+                        <div className="liked-songs-playlist-songs">
                             <h2>Songs</h2>
                             {playlist.songs && playlist.songs.length > 0 ? (
                                 <DragDropContext onDragEnd={handleDragEnd}>
@@ -136,7 +138,7 @@ const PlaylistPage: React.FC<UserSessionProps> = ({ userId, username }) => {
                                 </Droppable>
                             </DragDropContext>
                             ) : (
-                                <p>Add songs to this playlist</p>
+                                <p>No liked songs</p>
                             )}
                         </div>
                     </div>
@@ -146,4 +148,4 @@ const PlaylistPage: React.FC<UserSessionProps> = ({ userId, username }) => {
     );
 };
 
-export default PlaylistPage;
+export default LikedSongsPlaylist;

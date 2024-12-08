@@ -11,6 +11,7 @@ import SongPage from "./pages/SongPage";
 import ArtistPage from "./pages/ArtistPage";
 import MyPlaylistsPage from "./pages/MyPlaylistsPage";
 import PlaylistPage from "./pages/PlaylistPage";
+import LikedSongsPlaylist from "./pages/LikedSongsPage";
 
 const router = createBrowserRouter([
   { path: "/", element: <Landing /> },
@@ -38,6 +39,10 @@ const router = createBrowserRouter([
   { 
     path: "/:userId/playlists/:playlistId",
     element: <UserSession><PlaylistPage /></UserSession> 
+  },
+  {
+    path: "/:userId/liked-songs",
+    element: <UserSession><LikedSongsPlaylist /></UserSession>
   },
   { path: "*", element: <NotFound />}
 ]);
