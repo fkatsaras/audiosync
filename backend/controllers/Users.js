@@ -56,7 +56,6 @@ module.exports.unfollow_artist = function unfollow_artist (req, res, next) {
 
 module.exports.create_user_playlist = function create_user_playlist (req, res, next, body) {
   const userId = req.session.user.id;
-
   // Check if title is provided
   if (!body.title || !body.title.trim()) {
     return errorResponse(res, 'Please provide a name for your Playlist', 400);

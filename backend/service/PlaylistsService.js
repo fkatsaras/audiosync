@@ -22,6 +22,7 @@ exports.get_playlist_by_id = function(userId,playlistId) {
                   playlists.created_at,
                   playlists.updated_at,
                   songs.id AS song_id,
+                  playlists.isLikedSongs,
                   songs.title AS song_title,
                   artists.name AS artist_name,
                   playlist_songs.order AS song_order
@@ -33,6 +34,7 @@ exports.get_playlist_by_id = function(userId,playlistId) {
               ORDER BY playlist_songs.order
           `;
           const selectResult = await db.executeQuery(connection, selectQuery, [playlistId, userId]);
+          console.log(selectResult);
           if (selectResult.length > 0) {
               const playlistData = {
                   id: selectResult[0].playlist_id,
@@ -40,6 +42,7 @@ exports.get_playlist_by_id = function(userId,playlistId) {
                   cover: selectResult[0].playlist_cover,
                   created_at: selectResult[0].created_at,
                   updated_at: selectResult[0].updated_at,
+                  isLikedSongs: selectResult[0].isLikedSongs,
                   songs: []
               };
               // Add songs to the paylist

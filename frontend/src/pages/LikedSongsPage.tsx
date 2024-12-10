@@ -8,6 +8,7 @@ import likedSongsCover from '../assets/images/liked_songs_cover.svg';
 import defaultSongCover from '../assets/images/song_default_cover.svg';
 import Navbar from "../components/Navbar/Navbar";
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
+import '../styles/LikedSongsPage.css';
 
 interface UserSessionProps {
     userId?: string;
@@ -79,7 +80,7 @@ const LikedSongsPlaylist: React.FC<UserSessionProps> = ({ userId, username }) =>
         updatePlaylist();
     };
 
-    if (loading) return <LoadingDots />;
+    if (loading) return <AppBody><LoadingDots /></AppBody>;
     if (error) return <div>{error}</div>;
 
     return (

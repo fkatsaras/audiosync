@@ -465,6 +465,7 @@ exports.get_user_playlists = function(userId) {
           playlists.title,
           playlists.created_at,
           playlists.updated_at,
+          playlists.isLikedSongs,
           GROUP_CONCAT(COALESCE(playlist_songs.song_id, '')) AS song_ids
         FROM playlists
         LEFT JOIN playlist_songs ON playlist_songs.playlist_id = playlists.id
@@ -480,6 +481,7 @@ exports.get_user_playlists = function(userId) {
           title: row.title,
           created_at: row.created_at,
           updated_at: row.updated_at,
+          isLikedSongs: row.isLikedSongs,
           song_ids: row.song_ids ? row.song_ids.split(',').map(Number) : [] // Convert into an array of numbers
         }))
 

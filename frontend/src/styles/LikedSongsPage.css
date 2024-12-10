@@ -1,0 +1,10 @@
+.liked-songs-playlist-info {
+    background-color: #121212;
+    border-radius: 8px;
+    padding: 10px;
+}
+
+.liked-songs-playlist-cover {
+    width: 640px;
+    height: 640px;
+}

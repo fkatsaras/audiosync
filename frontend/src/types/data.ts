@@ -58,6 +58,7 @@ export interface Playlist {
     cover?: string;         // URL to the cover image of the playlist
     owner: number;          // The ID of the owner of the playlist
     is_public: boolean;     // Indicates if the playlist is public
+    isLikedSongs: boolean;  // Indicates if its a users Liked Songs playlist
     created_at: string;     // Timestamp of when the playlist was created
     updated_at?: string;    // Timestamp of when the playlist was last updated
     order: number;          // Order number of the song in the playlist

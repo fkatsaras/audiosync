@@ -7,6 +7,7 @@ import ResultItem from "../components/ResultItem/ResultItem";
 import LoadingDots from "../components/LoadingDots/LoadingDots";
 import defaultPlaylistCover from '../assets/images/playlist_default_cover.svg';
 import defaultSongCover from '../assets/images/song_default_cover.svg';
+import likedSongsCover from '../assets/images/liked_songs_cover.svg';
 import Navbar from "../components/Navbar/Navbar";
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 
@@ -31,8 +32,13 @@ const PlaylistPage: React.FC<UserSessionProps> = ({ userId, username }) => {
                 });
 
                 if (response.ok) {
-                    const data = await response.json();
-                    setPlaylist(data.body);
+                    const playlistData = await response.json();
+                    setPlaylist(playlistData.body);
+
+                    // Check if the playlist is the "Liked Songs" playlist
+                    if (playlistData.isLikedSongs) {
+                        playlistData.cover = likedSongsCover; // Set the cover to the imported image
+                    }
                 } else {
                     setError('Playlist not found');
                 }
@@ -89,7 +95,7 @@ const PlaylistPage: React.FC<UserSessionProps> = ({ userId, username }) => {
                         <div className="playlist-info">
                             <h1>{playlist.title}</h1>
                             <img
-                                src={playlist.cover ? playlist.cover : defaultPlaylistCover}
+                                src={playlist.isLikedSongs? likedSongsCover : playlist.cover? playlist.cover : defaultPlaylistCover}
                                 alt={`${playlist.title} cover`}
                                 className="playlist-cover"
                             />

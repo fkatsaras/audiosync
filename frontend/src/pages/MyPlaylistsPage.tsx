@@ -7,6 +7,7 @@ import Message from '../components/Message/Message';
 import ResultItem from '../components/ResultItem/ResultItem';
 import Button from '../components/Buttons/Button';
 import defaultCover from '../assets/images/playlist_default_cover.svg';
+import likedSongsCover from '../assets/images/liked_songs_cover.svg';
 import PopUp from '../components/PopUp/PopUp';
 import Input from '../components/Input/Input';
 import Options from '../components/Buttons/Options';
@@ -146,7 +147,7 @@ const MyPlaylistsPage: React.FC<UserSessionProps> = ({ userId, username }) => {
                             <li key={playlist.id}>
                                 <ResultItem
                                     id={playlist.id}
-                                    imageSrc={playlist.cover? playlist.cover : defaultCover}
+                                    imageSrc={playlist.isLikedSongs? likedSongsCover : playlist.cover? playlist.cover : defaultCover}
                                     title={playlist.title}
                                     subtitle={
                                         playlist.song_ids && playlist.song_ids.length > 0
