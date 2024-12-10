@@ -54,7 +54,7 @@ const Navbar: React.FC<UserSessionProps> = ({ userId, username }) => {
                 <ul className="navbar-list">
                     <li>
                         <Button className="navbar-home-button">
-                            <Link to='/'>Home</Link>
+                            <Link to='/home'>Home</Link>
                         </Button>   {/* TODO: Integrate the link component inside the button component */}
                     </li>
                     {links?.liked_songs && (

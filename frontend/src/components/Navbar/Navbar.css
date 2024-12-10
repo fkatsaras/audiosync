@@ -2,16 +2,18 @@
 
 .navbar {
     font-family: 'Montserrat', sans-serif;
-    width: 200px; /* Slightly increase the width for better spacing */
-    height: 100vh;
-    background-color: #121212;
+    width: 200px; /* Fixed width */
+    height: calc(100vh - 40px); /* Leave space at the top and bottom */
+    background-color: #121212; /* Navbar background color */
     padding: 20px;
     position: fixed;
-    left: 0;
-    top: 0;
+    left: 0; /* Ensure it's flush against the left edge */
+    top: 10px; /* Leave space at the top */
+    border-radius: 0 16px 16px 0; /* Round only the top-right and bottom-right corners */
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+    box-shadow: none; /* No shadow */
 }
 
 .navbar-list {
@@ -42,6 +44,7 @@
     list-style-type: none;
     padding: 0;
     margin: 0;
+    margin-top: auto; /* Push the buttons to the bottom */
 }
 
 .navbar-buttons li {
