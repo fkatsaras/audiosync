@@ -18,6 +18,7 @@ export interface Song {
     title: string;
     artist: string;
     artist_id: number;
+    audio_url: string;
     album: string;
     duration: number;
     cover: string;

@@ -3,3 +3,11 @@
     border-radius: 8px;
     padding: 10px;
 }
+
+.song-cover {
+    width: 100%; /* Make it responsive to parent container */
+    max-width: 400px; 
+    height: auto; /* Maintain aspect ratio */
+    border-radius: 8px; /* Add border radius for a modern look */
+    object-fit: cover;
+}

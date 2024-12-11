@@ -142,7 +142,7 @@ const PlaylistPage: React.FC<UserSessionProps> = ({ userId, username }) => {
                                 </Droppable>
                             </DragDropContext>
                             ) : (
-                                <p>Add songs to this playlist</p>
+                                playlist.isLikedSongs ? <p>No Liked Songs</p> : <p>Add songs to this playlist</p>
                             )}
                         </div>
                     </div>

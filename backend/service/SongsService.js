@@ -3,6 +3,7 @@
 const db = require('../utils/dbUtils');
 const Song = require('../models/Song');
 const { getSongCover } = require('../utils/spotify');
+const { getYTSongInfo } = require('../utils/googleUtils');
 
 
 /**
@@ -28,7 +29,12 @@ exports.get_song_by_id = function(userId, songId) {
       if (songResult.length > 0) {
         const songData = songResult[0];
         songData.artist = songData.artist_name;
-        console.log(songData);
+
+        // Fetch the song info from youtube
+        const ytAudioUrl = await getYTSongInfo(songData.title);
+        songData.audio_url = ytAudioUrl;
+
+        console.log(songData.audio_url);
 
         // Create a Song instance with the retrieved data
         const song = Song.fromObject(songData);

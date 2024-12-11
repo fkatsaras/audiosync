@@ -6,6 +6,7 @@ import Button from "../components/Buttons/Button";
 import Message from "../components/Message/Message";
 import LoadingDots from "../components/LoadingDots/LoadingDots";
 import Navbar from "../components/Navbar/Navbar";
+import '../styles/SongPage.css'
 
 interface UserSessionProps {
     userId?: string;
@@ -18,6 +19,7 @@ const SongPage: React.FC<UserSessionProps> = ({ userId, username }) => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [message, setMessage] = useState<string | null>(null);
+    const [audioUrl, setAudioUrl] = useState<string | null>(null);
 
     useEffect(() => {
         // Fetch the song details from the backend
@@ -32,6 +34,7 @@ const SongPage: React.FC<UserSessionProps> = ({ userId, username }) => {
                 if (response.ok) {
                     const data  = await response.json();
                     setSong(data.body); // Set the song data
+                    setAudioUrl(data.body.audio_url);
                 } else {
                     setError('Song not found');
                 }
@@ -72,6 +75,18 @@ const SongPage: React.FC<UserSessionProps> = ({ userId, username }) => {
         }
     };
 
+    const handlePlay = () => {
+        if (audioUrl) {
+            const audio = new Audio(audioUrl);
+            audio.play().catch(error => {
+                console.error(`Error playing audio: ${error}`);
+                setMessage('Unable to play audio.');
+            });
+        } else {
+            setMessage('Audio URL unavailable');
+        }
+    }
+
     if (loading) return <LoadingDots />;
     if (error) return <div>{error}</div>;
 
@@ -85,7 +100,7 @@ const SongPage: React.FC<UserSessionProps> = ({ userId, username }) => {
                         <p>Artist: <Link to={`/artists/${song.artist_id}`}>{song.artist}</Link></p>
                         <p>Album: {song.album}</p>
                         <p>Duration: {song.duration} seconds</p>
-                        <img src={song.cover} alt={`${song.title} cover`} />
+                        <img src={song.cover} alt={`${song.title} cover`} className="song-cover"/>
                         {/* Additional song info here*/}
                         {/*
                          Display unfollow/follow/error message here
@@ -94,6 +109,9 @@ const SongPage: React.FC<UserSessionProps> = ({ userId, username }) => {
                         <br />
                         <Button isSpecial={true} isActive={song.liked} onClick={handleLikeToggle}>
                             {song.liked? 'Unlike' : 'Like'}
+                        </Button>
+                        <Button isSpecial={false} onClick={handlePlay}>
+                            Play Audio
                         </Button>
                         {message && <Message className="info-message">{message}</Message>}
                     </div>

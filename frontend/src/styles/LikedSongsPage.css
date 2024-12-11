@@ -5,6 +5,9 @@
 }
 
 .liked-songs-playlist-cover {
-    width: 640px;
-    height: 640px;
+    width: 100%; /* Make it responsive to parent container */
+    max-width: 400px; /* Limit the width to 400px for better aesthetics */
+    height: auto; /* Maintain aspect ratio */
+    border-radius: 8px; /* Add border radius for a modern look */
+    object-fit: cover;
 }
