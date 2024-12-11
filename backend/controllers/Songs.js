@@ -5,7 +5,7 @@ const { successResponse, errorResponse } = require('../utils/apiUtils');
 
 module.exports.get_song_by_id = function get_song_by_id (req, res, next) {
   const songId = req.openapi.pathParams.songId;
-  const userId = req.current_user; 
+  const userId = req.session.user.id;
   Songs.get_song_by_id(userId, songId)
     .then(function (response) {
       successResponse(res, response.message, response.body);

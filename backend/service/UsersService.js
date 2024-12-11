@@ -31,20 +31,19 @@ exports.like_song = function(userId, songId) {
         VALUES (?, ?);
       `;
 
-      // Get the users Liked Songs Playlist
+      // Step 2 : Get the users Liked Songs Playlist
       const getLikedPlaylistQuery = `
         SELECT id FROM playlists
         WHERE owner = ? AND isLikedSongs = true;
       `;
       const likedPlaylistResult = await db.executeQuery(connection, getLikedPlaylistQuery, [userId]);
-
       const playlistId = likedPlaylistResult[0].id;
 
       // Step 3: Insert the song into the liked playlist / update the liked status of the song
       const insertPlaylistSongResult = await db.executeQuery(connection, insertLikedPlaylistQuery, [playlistId, songId]);
       const insertSuccess = await db.executeQuery(connection, insertLikedSongsQuery, [userId, songId]);
 
-      if (insertSuccess.affectedRows > 0 && insertPlaylistSongResult.affectedRows > 0) {
+      if (insertSuccess.affectedRows > 0 && insertPlaylistSongResult.affectedRows > 0) {  // TODO: implement better error checking here
         // Successfully liked the song
         resolve({
           message: 'Song liked successfully',
@@ -87,9 +86,23 @@ exports.unlike_song = function(userId, songId) {
         WHERE user_id = ? AND song_id = ?
       `;
 
+      const deleteSongPlaylistQuery = `
+        DELETE FROM playlist_songs
+        WHERE playlist_id = ? AND song_id = ?
+      `;
+
+      // Get the users Liked Songs Playlist
+      const getLikedPlaylistQuery = `
+        SELECT id FROM playlists
+        WHERE owner = ? AND isLikedSongs = true;
+      `;
+      const likedPlaylistResult = await db.executeQuery(connection, getLikedPlaylistQuery, [userId]);
+      const playlistId = likedPlaylistResult[0].id;
+
+      const deletePlaylistSongResult = await db.executeQuery(connection, deleteSongPlaylistQuery, [playlistId, songId]);
       const deleteSuccess = await db.executeQuery(connection, deleteQuery, [userId, songId]);
 
-      if (deleteSuccess.affectedRows > 0) {
+      if (deleteSuccess.affectedRows > 0 && deletePlaylistSongResult.affectedRows > 0) {  // TODO: implement better error checking here
         // Successfully unliked the song
         resolve({
           message: 'Song unliked successfully.',
