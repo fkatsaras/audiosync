@@ -1,0 +1,41 @@
+.like-button {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    border: 2px solid #888888; /* Grey border for unliked state */
+    background-color: transparent;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+    line-height: 0; /* Ensure tick is centered */
+}
+
+.like-button.unliked:hover {
+    border-color: #b0b0b0; /* Lighter grey on hover */
+}
+
+.like-button.liked {
+    background-color: #6a1b9a; /* Purple fill for liked state */
+    border: none; /* Remove border when liked */
+}
+
+.like-button.liked:hover {
+    background-color: #8e24aa; /* Lighter purple on hover */
+}
+
+/* Tick styles */
+.tick {
+    font-size: 18px;
+    transition: color 0.3s ease;
+    color: #888888;
+}
+
+.tick:hover {
+    color: #b0b0b0; /* Lighter grey tick on hover */
+}
+
+.like-button.liked .tick {
+    color: #181818; /* Black tick for liked state */
+}

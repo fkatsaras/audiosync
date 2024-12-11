@@ -21,14 +21,30 @@ exports.like_song = function(userId, songId) {
     const connection = db.createConnection();
     try {
       // Step 1: Insert the song into the liked_songs table
-      const insertQuery = `
+      const insertLikedSongsQuery = `
         INSERT INTO liked_songs (user_id, song_id)
         VALUES (?, ?)
       `;
 
-      const insertSuccess = await db.executeQuery(connection, insertQuery, [userId, songId]);
+      const insertLikedPlaylistQuery = `
+        INSERT INTO playlist_songs (playlist_id, song_id)
+        VALUES (?, ?);
+      `;
 
-      if (insertSuccess.affectedRows > 0) {
+      // Get the users Liked Songs Playlist
+      const getLikedPlaylistQuery = `
+        SELECT id FROM playlists
+        WHERE owner = ? AND isLikedSongs = true;
+      `;
+      const likedPlaylistResult = await db.executeQuery(connection, getLikedPlaylistQuery, [userId]);
+
+      const playlistId = likedPlaylistResult[0].id;
+
+      // Step 3: Insert the song into the liked playlist / update the liked status of the song
+      const insertPlaylistSongResult = await db.executeQuery(connection, insertLikedPlaylistQuery, [playlistId, songId]);
+      const insertSuccess = await db.executeQuery(connection, insertLikedSongsQuery, [userId, songId]);
+
+      if (insertSuccess.affectedRows > 0 && insertPlaylistSongResult.affectedRows > 0) {
         // Successfully liked the song
         resolve({
           message: 'Song liked successfully',

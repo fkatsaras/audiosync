@@ -6,6 +6,7 @@ import Button from "../components/Buttons/Button";
 import Message from "../components/Message/Message";
 import LoadingDots from "../components/LoadingDots/LoadingDots";
 import Navbar from "../components/Navbar/Navbar";
+import LikeButton from "../components/Buttons/LikeButton";
 import '../styles/SongPage.css'
 
 interface UserSessionProps {
@@ -97,6 +98,7 @@ const SongPage: React.FC<UserSessionProps> = ({ userId, username }) => {
                 { song ? (
                     <div className="song-info">
                         <h1>{song.title}</h1>
+                        <LikeButton isLiked={song.liked} onToggle={handleLikeToggle}/>
                         <p>Artist: <Link to={`/artists/${song.artist_id}`}>{song.artist}</Link></p>
                         <p>Album: {song.album}</p>
                         <p>Duration: {song.duration} seconds</p>
@@ -107,9 +109,9 @@ const SongPage: React.FC<UserSessionProps> = ({ userId, username }) => {
                          !TODO! Add timeout logic so that the follow message isnt permanent
                          */}
                         <br />
-                        <Button isSpecial={true} isActive={song.liked} onClick={handleLikeToggle}>
+                        {/* <Button isSpecial={true} isActive={song.liked} onClick={handleLikeToggle}>
                             {song.liked? 'Unlike' : 'Like'}
-                        </Button>
+                        </Button> */}
                         <Button isSpecial={false} onClick={handlePlay}>
                             Play Audio
                         </Button>
