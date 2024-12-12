@@ -1,6 +1,7 @@
 'use strict';
 
 const db = require('../utils/dbUtils');
+const spotify = require('../utils/spotify');
 
 /**
  * Get details of a specific playlist
@@ -24,6 +25,7 @@ exports.get_playlist_by_id = function(userId,playlistId) {
                   songs.id AS song_id,
                   playlists.isLikedSongs,
                   songs.title AS song_title,
+                  songs.album AS song_album,
                   artists.name AS artist_name,
                   playlist_songs.order AS song_order
               FROM playlists
@@ -34,7 +36,7 @@ exports.get_playlist_by_id = function(userId,playlistId) {
               ORDER BY playlist_songs.order
           `;
           const selectResult = await db.executeQuery(connection, selectQuery, [playlistId, userId]);
-          console.log(selectResult);
+        //   console.log(selectResult);
           if (selectResult.length > 0) {
               const playlistData = {
                   id: selectResult[0].playlist_id,
@@ -45,17 +47,33 @@ exports.get_playlist_by_id = function(userId,playlistId) {
                   isLikedSongs: selectResult[0].isLikedSongs,
                   songs: []
               };
-              // Add songs to the paylist
-              selectResult.forEach(row => {
-                if (row.song_id) { // Check if there are any songs in the playlist
-                  playlistData.songs.push({
-                      id: row.song_id,
-                      title: row.song_title,
-                      artist: row.artist_name,
-                      order: row.song_order
-                  });
-                }
-              });
+              
+              // Add songs to the paylist with their covers
+              const songs = await Promise.all(
+                selectResult.map(async (row) => {
+                    if (row.song_id) {
+                        let album_cover = null;
+                        try {
+                            album_cover = await spotify.getSongCover(row.song_album);
+                        } catch (error) {
+                            console.error(`Failed to fetch album cover for song: ${error}`);
+                        }
+
+                        return {
+                            id: row.song_id,
+                            title: row.song_title,
+                            artist: row.artist_name,
+                            order: row.song_order,
+                            album: row.song_album,
+                            cover: album_cover
+                        };
+                    }
+
+                    return null;
+                })
+              );
+
+              playlistData.songs = songs;
               resolve({
                   message: "Playlist retrieved successfully",
                   body: playlistData
