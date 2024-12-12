@@ -1,0 +1,6 @@
+{
+    "compilerOptions": {
+      "types": ["cypress", "node"],
+      "baseUrl": "http://localhost:3000"
+    }
+  }
