@@ -185,6 +185,15 @@ const seedPlaylists = async (users_playlists) => {
     }
 }
 
+const seedPlaylistSongs = async (data) => {
+    try {
+        return await seedData('playlist_songs', ['playlist_id', 'song_id', 'order'], data);
+    } catch (error) {
+        console.error(`Failed to seed playlist_songs with data: ${error}`);
+        throw error;
+    }
+}
+
 // Helper function to seed playlist data
 const seedPlaylistsWithSongs = async (playlists) => {
   try {
@@ -243,6 +252,15 @@ const seedSongs = async (songs) => {
     throw Error;
     }
 };
+
+const clearPlaylistSongs = async (playlistId) => {
+    try {
+        await clearData('playlist_songs', `WHERE playlist_id = ${playlistId}`);
+    } catch (error) {
+        console.error(`Failed to clear playlist_songs: ${error}`);
+        throw error;
+    }
+}
 
 // Helper function to clear playlist and its songs
 const clearPlaylistWithSongs = async (playlistId) => {
@@ -331,5 +349,8 @@ module.exports = {
     seedLikedSongs,
     getPlaylistRequest,
     seedPlaylistsWithSongs,
-    clearPlaylistWithSongs
+    clearPlaylistWithSongs,
+    seedPlaylists,
+    clearPlaylistSongs,
+    seedPlaylistSongs
 }
