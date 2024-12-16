@@ -61,27 +61,44 @@ exports.search_artists_get = function(userId, userQuery, limit, offset) {
         });
       }
 
-      // Add profile pictures
-      const artists = await Promise.all(
-        results.map(async (artist) => {
+      // Separate artists with/without pfps
+      // Separate songs with and witout covers
+      const artistsWithPfps = results.filter(artist => artist.profile_picture);
+      const artistsWithoutPfps = results.filter(artist => !artist.profile_picture);
 
-          let profile_picture;
-          try {
-            // Query Spotify API for artist profile picture
-            profile_picture = await spotify.getArtistProfilePicture(artist.name);
-          } catch (error) {
-            console.error(`Failed to fetch profile picture for artist ${artist.name}`)
-          }
+      console.log(artistsWithoutPfps);
 
-          return {
-            id: artist.id,
-            name: artist.name,
-            profile_picture: profile_picture,
-          };
+      // If there are artists without profile picture image URLs in the DB
+      if (artistsWithoutPfps.length > 0) {
+        const artistNames = artistsWithoutPfps.map(artist => artist.name);
 
-        })
-      );
+        // Fetch missing pfps
+        const pfps = await Promise.all(
+          artistNames.map(async (artist) => {
+            try {
+              const pfpUrl = await spotify.getArtistProfilePicture(artist);
+              return { artist, pfpUrl };
+            } catch (error) {
+              console.error(`Failed to fetch pfp for artist: ${artist}`, error);
+              return { artist, profile_picture: null }
+            }
+          })
+        );
 
+        // Create a map between artist name and their pfp urls
+        const pfpMap = {};
+        pfps.forEach(({ artist, pfpUrl }) => {
+          pfpMap[artist.toLowerCase()] = pfpUrl;
+        });
+
+        artistsWithoutPfps.forEach(artist => {
+          const pfpUrl = pfpMap[artist.name.toLowerCase()] || null;
+          artist.profile_picture = pfpUrl;
+        });
+      }
+
+      // Combine artists with/without pfpfs
+      const artists = [...artistsWithPfps, ...artistsWithoutPfps];
 
       resolve({
         message: `Artists successfully found by user ${userId}`,
@@ -142,28 +159,7 @@ exports.search_songs_get = function(userId, userQuery, limit, offset) {
       const songsWithCovers = results.filter(song => song.cover);
       const songsWithoutCovers = results.filter(song => !song.cover);
 
-      // // Add album covers
-      // const songs = await Promise.all(
-      //   results.map(async (song) => {
-
-      //     let album_cover;
-      //     try {
-      //       // Query Spotify API for artist profile picture
-      //       album_cover = await spotify.getSongCover(song.album);
-      //     } catch (error) {
-      //       console.error(`Failed to fetch profile picture for artist ${artist.name}`)
-      //     }
-
-      //     return {
-      //       id: song.id,
-      //       title: song.title,
-      //       duration: song.duration,
-      //       cover: album_cover,
-      //     };
-
-      //   })
-      // );
-
+      // If there are songs in the DB without a cover image URL
       if (songsWithoutCovers.length > 0) {
         const missingAlbums = songsWithoutCovers.map(song => song.album);
 
