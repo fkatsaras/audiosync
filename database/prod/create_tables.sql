@@ -49,7 +49,7 @@ CREATE TABLE IF NOT EXISTS `songs` (
   `album` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
   `duration` int NOT NULL,
   `cover` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
-  `lyrics` TEXT DEFAULT NULL AFTER `cover`,
+  `lyrics` TEXT DEFAULT NULL,
   `genre` VARCHAR(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
   `release_date` DATE DEFAULT NULL,
   `play_count` INT UNSIGNED DEFAULT 0,
