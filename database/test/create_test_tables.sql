@@ -53,7 +53,7 @@ CREATE TABLE IF NOT EXISTS `songs` (
   `genre` VARCHAR(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
   `release_date` DATE DEFAULT NULL,
   `play_count` INT UNSIGNED DEFAULT 0,
-  `popularity` FLOAT DEFAULT 0.0;
+  `popularity` FLOAT DEFAULT 0.0,
   `is_playing` boolean NOT NULL,
   PRIMARY KEY (`id`),
   CONSTRAINT `fk_artist` FOREIGN KEY (`artist_id`) REFERENCES `artists` (`id`) ON DELETE CASCADE
