@@ -33,7 +33,7 @@
 ### Without Docker
 If you prefer to run the application without Docker, follow the steps below for each component:
 
-#### Backend 
+### Backend 
 
 1. Clone the repository:
    ```bash
@@ -84,7 +84,7 @@ If you prefer to run the application without Docker, follow the steps below for 
 
     This will run the React app on `http://localhost:3000`.
 
-#### With Docker
+### With Docker
 
 1. Clone the repository:
    ```bash
