@@ -3,7 +3,7 @@
 const db = require('../utils/dbUtils');
 const Song = require('../models/Song');
 const { getSongCover } = require('../utils/spotify');
-const { getYTSongInfo } = require('../utils/googleUtils');
+const { getYTSongInfo } = require('../utils/youtubeUtils');
 
 
 /**

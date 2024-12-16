@@ -46,10 +46,14 @@ CREATE TABLE IF NOT EXISTS `songs` (
   `id` int unsigned NOT NULL AUTO_INCREMENT,
   `title` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
   `artist_id` INT UNSIGNED NOT NULL,  -- Foreign key for artist
-  `audio_url` VARCHAR(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
   `album` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
   `duration` int NOT NULL,
   `cover` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  `lyrics` TEXT DEFAULT NULL AFTER `cover`,
+  `genre` VARCHAR(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  `release_date` DATE DEFAULT NULL,
+  `play_count` INT UNSIGNED DEFAULT 0,
+  `popularity` FLOAT DEFAULT 0.0;
   `is_playing` boolean NOT NULL,
   PRIMARY KEY (`id`),
   CONSTRAINT `fk_artist` FOREIGN KEY (`artist_id`) REFERENCES `artists` (`id`) ON DELETE CASCADE

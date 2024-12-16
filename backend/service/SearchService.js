@@ -138,36 +138,89 @@ exports.search_songs_get = function(userId, userQuery, limit, offset) {
         });
       }
 
-      // Add album covers
-      const songs = await Promise.all(
-        results.map(async (song) => {
+      // Separate songs with and witout covers
+      const songsWithCovers = results.filter(song => song.cover);
+      const songsWithoutCovers = results.filter(song => !song.cover);
 
-          let album_cover;
-          try {
-            // Query Spotify API for artist profile picture
-            album_cover = await spotify.getSongCover(song.album);
-          } catch (error) {
-            console.error(`Failed to fetch profile picture for artist ${artist.name}`)
-          }
+      // // Add album covers
+      // const songs = await Promise.all(
+      //   results.map(async (song) => {
 
-          return {
-            id: song.id,
-            title: song.title,
-            duration: song.duration,
-            cover: album_cover,
-          };
+      //     let album_cover;
+      //     try {
+      //       // Query Spotify API for artist profile picture
+      //       album_cover = await spotify.getSongCover(song.album);
+      //     } catch (error) {
+      //       console.error(`Failed to fetch profile picture for artist ${artist.name}`)
+      //     }
 
-        })
-      );
+      //     return {
+      //       id: song.id,
+      //       title: song.title,
+      //       duration: song.duration,
+      //       cover: album_cover,
+      //     };
+
+      //   })
+      // );
+
+      if (songsWithoutCovers.length > 0) {
+        const missingAlbums = songsWithoutCovers.map(song => song.album);
+
+        // Fetch missing covers
+        const albumCovers = await Promise.all(
+          missingAlbums.map(async (albumName) => {
+            try {
+              const coverUrl = await spotify.getSongCover(albumName); // Cal the spotify API to get song cover
+              return { albumName, coverUrl }; 
+            } catch (error) {
+              console.error(`Failed to fetch cover for album: ${albumName}`, error);
+              return { albumName, coverUrl: null };  
+            }
+          })
+        );
+
+        // Create a mapping of album names to their respective cover URLs
+        const albumCoverMap = {};
+        albumCovers.forEach(({ albumName, coverUrl }) => {
+          albumCoverMap[albumName.toLowerCase()] = coverUrl;
+        });
+
+
+        // Update DB with fetched covers
+        await Promise.all(
+          songsWithoutCovers.map(async song => {
+            const coverUrl = albumCoverMap[song.album.toLowerCase()] || null;
+
+            if (coverUrl) {
+              const updateQuery = `
+                UPDATE songs SET cover = ? WHERE id = ?
+              `;
+
+              await db.executeQuery(connection, updateQuery, [coverUrl, song.id]);
+            }
+
+            song.cover = coverUrl;  // Add cover to song object
+          })
+        );
+      }
+
+      // Combine results
+      const allSongs = [...songsWithCovers, ...songsWithoutCovers];
 
       resolve({
         message: `Songs successfully found by user ${userId}`,
         body:{
-            songs,
+            songs: allSongs.map(song => ({
+              id: song.id,
+              title: song.title,
+              duration: song.duration,
+              cover: song.cover,
+            })),
             pagination: {
               limit,
               offset,
-              count: songs.length,
+              count: allSongs.length,
             },
           }
       });
