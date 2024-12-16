@@ -53,35 +53,40 @@
 
 const youtubedl = require('youtube-dl-exec');
 
-async function getYTSongInfo(songTitle) {
+async function getYTSongAudioUrl(songTitle) {
     try {
-        // Fetch video details
-        const output = await youtubedl(
-            `ytsearch1:${songTitle}`, // Use "ytsearch1" for top result
-            {
-                dumpSingleJson: true,
-                noWarnings: true,
-                noCheckCertificate: true,
-                preferFreeFormats: true
-            }
-        );
+        // Use ytsearch to retrieve a single video (not playlists)
+        const result = await youtubedl(`ytsearch:${songTitle}`, {
+            dumpSingleJson: true,
+            noWarnings: true,
+            noCheckCertificate: true,
+            preferFreeFormats: true,
+            flatPlaylist: true // Ensures it does not fetch playlist details
+        });
 
-        if (!output || !output.entries || output.entries.length === 0) {
-            throw new Error(`No results found for "${songTitle}"`);
+        if (!result || !result.entries || result.entries.length === 0) {
+            throw new Error(`No video results found for "${songTitle}"`);
         }
 
-        // Get the best audio URL
-        const bestAudio = output.entries[0];
-        console.log(`Video found: ${bestAudio.title}`);
-        console.log(`Audio URL: ${bestAudio.url}`);
+        // Get the first valid video result
+        const video = result.entries[0];
+        console.log(`Found video: ${video.title} (${video.url})`);
 
-        return bestAudio.url;
+        // Extract the best audio URL for the video
+        const audioDetails = await youtubedl(video.url, {
+            getUrl: true, // Directly fetch audio URL
+            format: "bestaudio" // Ensure the best available audio format
+        });
+
+        console.log(`Audio URL: ${audioDetails}`);
+        return audioDetails;
+
     } catch (error) {
-        console.error(`Error fetching audio: ${error.message}`);
-        throw new Error('Unable to fetch audio from YouTube.');
+        console.error(`Error: ${error.message}`);
+        throw new Error("Failed to fetch song audio URL.");
     }
 }
 
 module.exports = {
-    getYTSongInfo
+    getYTSongAudioUrl
 };

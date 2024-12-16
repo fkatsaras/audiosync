@@ -3,7 +3,7 @@
 const db = require('../utils/dbUtils');
 const Song = require('../models/Song');
 const { getSongCover } = require('../utils/spotify');
-const { getYTSongInfo } = require('../utils/youtubeUtils');
+const { getYTSongAudioUrl } = require('../utils/youtubeUtils');
 
 
 /**
@@ -30,11 +30,31 @@ exports.get_song_by_id = function(userId, songId) {
         const songData = songResult[0];
         songData.artist = songData.artist_name;
 
-        // Fetch the song info from youtube
-        const ytAudioUrl = await getYTSongInfo(songData.title);
-        songData.audio_url = ytAudioUrl;
+        // // Fetch the song info from youtube
+        // const ytAudioUrl = await getYTSongAudioUrl(songData.title);
+        // songData.audio_url = ytAudioUrl;
 
-        console.log(songData.audio_url);
+        // console.log(songData.audio_url);
+        // Check if the audio_url is missing
+        if (!songData.audio_url) {
+          console.log(`Audio URL missing for song: ${songData.title}, Fetching from YouTube...`);
+          const ytAudioUrl = await getYTSongAudioUrl(songData.title);
+
+          if (ytAudioUrl) {
+            songData.audio_url = ytAudioUrl;
+
+            // Update the url in the db
+            const updateAudioQuery = `
+              UPDATE songs
+              SET audio_url = ?
+              WHERE id = ?
+            `;
+
+            await db.executeQuery(connection, updateAudioQuery, [ytAudioUrl, songId])
+          } else {
+            console.warn('Failed to fetch audio URL for song');
+          }
+        }
 
         // Check if the cover is null in the database
         if (!songData.cover) {

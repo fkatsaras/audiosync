@@ -2,11 +2,12 @@ import React , { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { Song } from "../types/data";
 import AppBody from "../components/AppBody/AppBody";
-import Button from "../components/Buttons/Button";
+// import Button from "../components/Buttons/Button";
 import Message from "../components/Message/Message";
 import LoadingDots from "../components/LoadingDots/LoadingDots";
 import Navbar from "../components/Navbar/Navbar";
 import LikeButton from "../components/Buttons/LikeButton";
+import AudioPlayer from "../components/AudioPlayer/AudioPlayer";
 import '../styles/SongPage.css'
 
 interface UserSessionProps {
@@ -20,7 +21,7 @@ const SongPage: React.FC<UserSessionProps> = ({ userId, username }) => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [message, setMessage] = useState<string | null>(null);
-    const [audioUrl, setAudioUrl] = useState<string | null>(null);
+    // const [audioUrl, setAudioUrl] = useState<string | null>(null);
 
     useEffect(() => {
         // Fetch the song details from the backend
@@ -35,7 +36,8 @@ const SongPage: React.FC<UserSessionProps> = ({ userId, username }) => {
                 if (response.ok) {
                     const data  = await response.json();
                     setSong(data.body); // Set the song data
-                    setAudioUrl(data.body.audio_url);
+                    console.log(data.body.audio_url);
+                    // setAudioUrl(data.body.audio_url);
                 } else {
                     setError('Song not found');
                 }
@@ -76,17 +78,17 @@ const SongPage: React.FC<UserSessionProps> = ({ userId, username }) => {
         }
     };
 
-    const handlePlay = () => {
-        if (audioUrl) {
-            const audio = new Audio(audioUrl);
-            audio.play().catch(error => {
-                console.error(`Error playing audio: ${error}`);
-                setMessage('Unable to play audio.');
-            });
-        } else {
-            setMessage('Audio URL unavailable');
-        }
-    }
+    // const handlePlay = () => {
+    //     if (audioUrl) {
+    //         const audio = new Audio(audioUrl);
+    //         audio.play().catch(error => {
+    //             console.error(`Error playing audio: ${error}`);
+    //             setMessage('Unable to play audio.');
+    //         });
+    //     } else {
+    //         setMessage('Audio URL unavailable');
+    //     }
+    // }
 
     if (loading) return <LoadingDots />;
     if (error) return <div>{error}</div>;
@@ -108,13 +110,14 @@ const SongPage: React.FC<UserSessionProps> = ({ userId, username }) => {
                          Display unfollow/follow/error message here
                          !TODO! Add timeout logic so that the follow message isnt permanent
                          */}
-                        <br />
-                        {/* <Button isSpecial={true} isActive={song.liked} onClick={handleLikeToggle}>
-                            {song.liked? 'Unlike' : 'Like'}
-                        </Button> */}
-                        <Button isSpecial={false} onClick={handlePlay}>
+                        {/* <Button isSpecial={false} onClick={handlePlay}>
                             Play Audio
-                        </Button>
+                        </Button> */}
+                        <AudioPlayer
+                            src={song.audio_url}
+                            title={song.title}
+                            artist={song.artist}
+                            />
                         {message && <Message className="info-message">{message}</Message>}
                     </div>
                 ) : (

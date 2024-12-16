@@ -19,6 +19,7 @@
     width: 100%; /* Leave some space around the edges */
     display: flex; /* Optionally add flex for inner alignment */
     flex-direction: column; /* Arrange children vertically */
+    padding-bottom: 80px;
 }
 
 h1 {
