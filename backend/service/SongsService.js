@@ -36,11 +36,28 @@ exports.get_song_by_id = function(userId, songId) {
 
         console.log(songData.audio_url);
 
+        // Check if the cover is null in the database
+        if (!songData.cover) {
+          console.log(`Cover missing for album: ${songData.album}. Fetching from Spotify...`);
+          const coverUrl = await getSongCover(songData.album);
+
+          if (coverUrl) {
+            songData.cover = coverUrl;
+
+            // Update the cover in the database
+            const updateQuery = `
+              UPDATE songs
+              SET cover = ?
+              WHERE id = ?
+            `;
+            await db.executeQuery(connection, updateQuery, [coverUrl, songId]);
+          } else {
+            console.warn(`Failed to fetch cover for album: ${songData.album}`);
+          }
+        }
+
         // Create a Song instance with the retrieved data
         const song = Song.fromObject(songData);
-
-        // Fetch album cover and set it
-        song.cover = await getSongCover(song.album);
 
         // Check if the song has been liked by the user
         const likeQuery = `
