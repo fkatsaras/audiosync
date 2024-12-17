@@ -3,7 +3,7 @@
 .navbar {
     font-family: 'Montserrat', sans-serif;
     width: 200px; /* Fixed width */
-    height: calc(100vh - 40px); /* Leave space at the top and bottom */
+    height: calc(100vh - 210px); /* Leave space at the top and bottom */
     background-color: #121212; /* Navbar background color */
     padding: 20px;
     position: fixed;

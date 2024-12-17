@@ -1,4 +1,5 @@
 import React, { useRef, useState } from "react";
+import PlayButton from "../Buttons/PlayButton";
 import './AudioPlayer.css';
 
 interface AudioPlayerProps {
@@ -78,13 +79,19 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({ src, title, artist }) => {
                 onPause={() => setIsPlaying(false)}
             />
             <div className="audio-info">
+                {/* Visualizer bars */}
+                <div className={`visualizer ${isPlaying ? "active" : ""}`}>
+                    <div className="bar"></div>
+                    <div className="bar"></div>
+                    <div className="bar"></div>
+                    <div className="bar"></div>
+                    <div className="bar"></div>
+                </div>
                 <h4>{title || "Unknown Title"}</h4>
                 <p>{artist || "Unknown Artist"}</p>
             </div>
             <div className="controls">
-                <button onClick={togglePlayPause}>
-                    {isPlaying ? "Pause" : "Play"}
-                </button>
+                <PlayButton isPlaying={isPlaying} onToggle={togglePlayPause}/>
                 <span>{formatTime(currentTime)} / {formatTime(duration)}</span>
                 <input
                     type="range"

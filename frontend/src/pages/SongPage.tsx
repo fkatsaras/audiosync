@@ -71,7 +71,7 @@ const SongPage: React.FC<UserSessionProps> = ({ userId, username }) => {
                 ...prevSong!,
                 liked: data.body.liked  // Update the songs liked status
             }));
-            setMessage(data.message);
+            setMessage('Song added to Liked Songs');
         } else {
             const errorData = await response.json();
             setMessage(errorData.message);

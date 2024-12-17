@@ -8,6 +8,7 @@
     width: 100vw;
     background-color: #181818;
     font-family: 'Montserrat', sans-serif;
+    overflow: hidden;
 }
 
 .app-body-main {
@@ -15,11 +16,13 @@
     border-radius: 16px; /* Add rounded corners */
     padding: 20px; /* Add padding inside the container */
     margin: 10px auto; /* Center and leave a small gap around */
-    height: 100%; /* Take up most of the parent's height */
+    height: 80%; /* Take up most of the parent's height */
     width: 100%; /* Leave some space around the edges */
     display: flex; /* Optionally add flex for inner alignment */
     flex-direction: column; /* Arrange children vertically */
     padding-bottom: 80px;
+    position: fixed;
+    overflow-y: auto; /* Enables vertical scrolling */
 }
 
 h1 {

@@ -3,7 +3,7 @@
 const db = require('../utils/dbUtils');
 const Song = require('../models/Song');
 const { getSongCover } = require('../utils/spotify');
-const { getYTSongAudioUrl } = require('../utils/youtubeUtils');
+const { getYTSongAudioUrl, isExpired, extractVideoId } = require('../utils/youtubeUtils');
 
 
 /**
@@ -29,30 +29,43 @@ exports.get_song_by_id = function(userId, songId) {
       if (songResult.length > 0) {
         const songData = songResult[0];
         songData.artist = songData.artist_name;
+        // Check if the audio_url is missing or expired
+        if (!songData.audio_url || isExpired(songData.audio_url)) {
+          console.log(`Audio URL missing or expired for song: ${songData.title}. Fetching from YouTube...`);
 
-        // // Fetch the song info from youtube
-        // const ytAudioUrl = await getYTSongAudioUrl(songData.title);
-        // songData.audio_url = ytAudioUrl;
+          // If video_id exists, fetch the URL directly
+          if (songData.video_id) {
+            const ytAudioUrl = await getYTSongAudioUrl(songData.video_id);
+            if (ytAudioUrl) {
+              songData.audio_url = ytAudioUrl;
 
-        // console.log(songData.audio_url);
-        // Check if the audio_url is missing
-        if (!songData.audio_url) {
-          console.log(`Audio URL missing for song: ${songData.title}, Fetching from YouTube...`);
-          const ytAudioUrl = await getYTSongAudioUrl(songData.title);
-
-          if (ytAudioUrl) {
-            songData.audio_url = ytAudioUrl;
-
-            // Update the url in the db
-            const updateAudioQuery = `
-              UPDATE songs
-              SET audio_url = ?
-              WHERE id = ?
-            `;
-
-            await db.executeQuery(connection, updateAudioQuery, [ytAudioUrl, songId])
+              // Update the URL in the database
+              const updateAudioQuery = `
+                UPDATE songs
+                SET audio_url = ?
+                WHERE id = ?
+              `;
+              await db.executeQuery(connection, updateAudioQuery, [ytAudioUrl, songId]);
+            } else {
+              console.warn(`Failed to regenerate audio URL for video ID: ${songData.video_id}`);
+            }
           } else {
-            console.warn('Failed to fetch audio URL for song');
+            // Fallback: Search by title if no video_id exists
+            const ytAudioUrl = await getYTSongAudioUrl(songData.title);
+            if (ytAudioUrl) {
+              songData.audio_url = ytAudioUrl;
+
+              // Extract and store video_id
+              const videoId = extractVideoId(ytAudioUrl);
+              const updateQuery = `
+                UPDATE songs
+                SET audio_url = ?, video_id = ?
+                WHERE id = ?
+              `;
+              await db.executeQuery(connection, updateQuery, [ytAudioUrl, videoId, songId]);
+            } else {
+              console.warn(`Failed to fetch audio URL for song: ${songData.title}`);
+            }
           }
         }
 

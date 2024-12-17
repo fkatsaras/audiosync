@@ -3,6 +3,7 @@
     bottom: 0;
     left: 0;
     width: 100%;
+    height: 8%;
     background-color: #121212;
     color: #ffffff;
     font-family: 'Montserrat', sans-serif;
@@ -42,21 +43,6 @@
     justify-content: space-evenly;
 }
 
-.controls button {
-    background: none;
-    border: none;
-    color: #ffffff;
-    font-size: 16px;
-    font-weight: 700;
-    cursor: pointer;
-    padding: 5px 10px;
-    transition: color 0.3s ease;
-}
-
-.controls button:hover {
-    color: #8e24aa;
-}
-
 .controls span {
     font-size: 14px;
     color: #b3b3b3;
@@ -78,8 +64,59 @@
     -webkit-appearance: none;
     width: 12px;
     height: 12px;
-    background-color: #1db954;
+    background-color: #8e24aa;
     border-radius: 50%;
     cursor: pointer;
     /* box-shadow: 0 0 2px rgba(0, 0, 0, 0.5); */
+}
+
+.visualizer {
+    display: flex;
+    gap: 4px;
+}
+
+.visualizer .bar {
+    width: 4px;
+    height: 20px;
+    background-color: #6a1b9a;
+    border-radius: 4px;
+    transform: scaleY(0.1);
+    animation: barBounce 1.2s infinite ease-in-out;
+    animation-delay: calc(var(--delay, 0) * 0.2s );
+}
+
+/* Apply delay to each bar for staggered animation */
+.visualizer .bar:nth-child(1) {
+    --delay: 1;
+}
+.visualizer .bar:nth-child(2) {
+    --delay: 2;
+}
+.visualizer .bar:nth-child(3) {
+    --delay: 3;
+}
+.visualizer .bar:nth-child(4) {
+    --delay: 4;
+}
+.visualizer .bar:nth-child(5) {
+    --delay: 5;
+}
+
+/* Animation */
+@keyframes barBounce {
+    0%,
+    100% {
+        transform: scaleY(0.3);
+    }
+    50% {
+        transform: scaleY(1);
+    }
+}
+
+.visualizer.active .bar {
+    animation-play-state: running;
+}
+
+.visualizer .bar {
+    animation-play-state: paused;
 }
