@@ -8,6 +8,7 @@ import Button from '../components/Buttons/Button';
 import Input from '../components/Input/Input';
 import Message from '../components/Message/Message';
 import ResultItem from '../components/ResultItem/ResultItem';
+import ProfileBar from '../components/ProfileBar/ProfileBar';
 
 interface UserSessionProps {
     userId?: string;
@@ -201,6 +202,7 @@ const Search: React.FC<UserSessionProps> = ({ userId, username }) => {
                 <Message className='info-message'>No results found</Message>
                 )}
             </AppBody>
+            <ProfileBar userId={userId || ''} username={username || ''}/>
         </div>
     );
 };

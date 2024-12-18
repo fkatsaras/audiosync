@@ -10,6 +10,7 @@ import defaultSongCover from '../assets/images/song_default_cover.svg';
 import likedSongsCover from '../assets/images/liked_songs_cover.svg';
 import Navbar from "../components/Navbar/Navbar";
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
+import ProfileBar from "../components/ProfileBar/ProfileBar";
 
 interface UserSessionProps {
     userId?: string;
@@ -33,7 +34,10 @@ const PlaylistPage: React.FC<UserSessionProps> = ({ userId, username }) => {
 
                 if (response.ok) {
                     const playlistData = await response.json();
-                    setPlaylist(playlistData.body);
+                    setPlaylist({
+                        ...playlistData.body,
+                        songs: playlistData.body.songs || [], // Default to empty array if songs is null
+                    });
 
                     // Check if the playlist is the "Liked Songs" playlist
                     if (playlistData.isLikedSongs) {
@@ -87,68 +91,71 @@ const PlaylistPage: React.FC<UserSessionProps> = ({ userId, username }) => {
     if (error) return <div>{error}</div>;
 
     return (
-        <AppBody>
-            <Navbar userId={userId || ''} username={username || ''} />
-            <div className="playlist-container">
-                {playlist && (
-                    <div className="playlist-content-container">
-                        <div className="playlist-info">
-                            <h1>{playlist.title}</h1>
-                            <img
-                                src={playlist.isLikedSongs? likedSongsCover : playlist.cover? playlist.cover : defaultPlaylistCover}
-                                alt={`${playlist.title} cover`}
-                                className="playlist-cover"
-                            />
+        <div>
+            <AppBody>
+                <Navbar userId={userId || ''} username={username || ''} />
+                <div className="playlist-container">
+                    {playlist && (
+                        <div className="playlist-content-container">
+                            <div className="playlist-info">
+                                <h1>{playlist.title}</h1>
+                                <img
+                                    src={playlist.isLikedSongs? likedSongsCover : playlist.cover? playlist.cover : defaultPlaylistCover}
+                                    alt={`${playlist.title} cover`}
+                                    className="playlist-cover"
+                                />
+                            </div>
+                            <div className="playlist-songs">
+                                <h2>Songs</h2>
+                                {playlist.songs && playlist.songs.length > 0 ? (
+                                    <DragDropContext onDragEnd={handleDragEnd}>
+                                    <Droppable 
+                                        droppableId="songs"
+                                    >
+                                        {(provided) => (
+                                            <ul {...provided.droppableProps} ref={provided.innerRef}>
+                                                {playlist.songs?.map((song, index) => song && ( // Defensive check : ensure song is not null before render
+                                                    <Draggable 
+                                                        key={song.id.toString()}
+                                                        draggableId={song.id.toString()}
+                                                        index={index}
+                                                    >
+                                                        {(provided) => (
+                                                            <li
+                                                                ref={provided.innerRef}
+                                                                {...provided.draggableProps}
+                                                                {...provided.dragHandleProps}
+                                                                className="draggable-container"
+                                                            >
+                                                                <ResultItem 
+                                                                    key={song.id}
+                                                                    id={song.id}
+                                                                    imageSrc={song.cover ? song.cover : defaultSongCover}
+                                                                    title={song.title}
+                                                                    subtitle={`${song.artist}`}
+                                                                    linkPath={`/songs`}
+                                                                    altText={`${song.title} cover`}
+                                                                    className="song-result-image"     
+                                                                />
+                                                            </li>
+                                                        )}
+                                                    </Draggable>
+                                                ))}
+                                                {provided.placeholder}
+                                            </ul>
+                                        )}
+                                    </Droppable>
+                                </DragDropContext>
+                                ) : (
+                                    playlist.isLikedSongs ? <p>No Liked Songs</p> : <p>Add songs to this playlist</p>
+                                )}
+                            </div>
                         </div>
-                        <div className="playlist-songs">
-                            <h2>Songs</h2>
-                            {playlist.songs && playlist.songs.length > 0 ? (
-                                <DragDropContext onDragEnd={handleDragEnd}>
-                                <Droppable 
-                                    droppableId="songs"
-                                >
-                                    {(provided) => (
-                                        <ul {...provided.droppableProps} ref={provided.innerRef}>
-                                            {playlist.songs?.map((song, index) => (
-                                                <Draggable 
-                                                    key={song.id.toString()}
-                                                    draggableId={song.id.toString()}
-                                                    index={index}
-                                                >
-                                                    {(provided) => (
-                                                        <li
-                                                            ref={provided.innerRef}
-                                                            {...provided.draggableProps}
-                                                            {...provided.dragHandleProps}
-                                                            className="draggable-container"
-                                                        >
-                                                            <ResultItem 
-                                                                key={song.id}
-                                                                id={song.id}
-                                                                imageSrc={song.cover ? song.cover : defaultSongCover}
-                                                                title={song.title}
-                                                                subtitle={`${song.artist}`}
-                                                                linkPath={`/songs`}
-                                                                altText={`${song.title} cover`}
-                                                                className="song-result-image"     
-                                                            />
-                                                        </li>
-                                                    )}
-                                                </Draggable>
-                                            ))}
-                                            {provided.placeholder}
-                                        </ul>
-                                    )}
-                                </Droppable>
-                            </DragDropContext>
-                            ) : (
-                                playlist.isLikedSongs ? <p>No Liked Songs</p> : <p>Add songs to this playlist</p>
-                            )}
-                        </div>
-                    </div>
-                )}
-            </div>
-        </AppBody>
+                    )}
+                </div>
+            </AppBody>
+            <ProfileBar userId={userId || ''} username={username || ''}/>
+        </div>
     );
 };
 

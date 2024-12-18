@@ -12,6 +12,7 @@ import PopUp from '../components/PopUp/PopUp';
 import Input from '../components/Input/Input';
 import Options from '../components/Buttons/Options';
 import '../styles/MyPlaylistsPage.css';
+import ProfileBar from '../components/ProfileBar/ProfileBar';
 
 interface UserSessionProps {
     userId?: string;
@@ -175,6 +176,7 @@ const MyPlaylistsPage: React.FC<UserSessionProps> = ({ userId, username }) => {
                     )}
                 </ul>
             </AppBody>
+            <ProfileBar userId={userId || ''} username={username || ''}/>
 
             {isPopUpOpen && (
                 <PopUp

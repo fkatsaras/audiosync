@@ -35,7 +35,7 @@ exports.get_song_by_id = function(userId, songId) {
 
           // If video_id exists, fetch the URL directly
           if (songData.video_id) {
-            const [ytAudioUrl, fetchedVideoId] = await getYTSongVideo(songData.video_id);
+            const [ytAudioUrl, fetchedVideoId] = await getYTSongVideo(null, null, songData.video_id);
             if (ytAudioUrl) {
               songData.audio_url = ytAudioUrl;
 
@@ -51,7 +51,7 @@ exports.get_song_by_id = function(userId, songId) {
             }
           } else {
             // Fallback: Search by title if no video_id exists
-            const [ytAudioUrl, fetchedVideoId] = await getYTSongVideo(songData.title);
+            const [ytAudioUrl, fetchedVideoId] = await getYTSongVideo(songData.title, songData.artist_name, null);
             if (ytAudioUrl) {
               songData.audio_url = ytAudioUrl;
 

@@ -9,6 +9,7 @@ import Navbar from "../components/Navbar/Navbar";
 import LikeButton from "../components/Buttons/LikeButton";
 import AudioPlayer from "../components/AudioPlayer/AudioPlayer";
 import '../styles/SongPage.css'
+import ProfileBar from "../components/ProfileBar/ProfileBar";
 
 interface UserSessionProps {
     userId?: string;
@@ -94,37 +95,40 @@ const SongPage: React.FC<UserSessionProps> = ({ userId, username }) => {
     if (error) return <div>{error}</div>;
 
     return (
-        <AppBody>
-            <Navbar userId={userId || ''} username={username || ''} />
-            <div className="song-container">
-                { song ? (
-                    <div className="song-info">
-                        <h1>{song.title}</h1>
-                        <LikeButton isLiked={song.liked} onToggle={handleLikeToggle}/>
-                        <p>Artist: <Link to={`/artists/${song.artist_id}`}>{song.artist}</Link></p>
-                        <p>Album: {song.album}</p>
-                        <p>Duration: {song.duration} seconds</p>
-                        <img src={song.cover} alt={`${song.title} cover`} className="song-cover"/>
-                        {/* Additional song info here*/}
-                        {/*
-                         Display unfollow/follow/error message here
-                         !TODO! Add timeout logic so that the follow message isnt permanent
-                         */}
-                        {/* <Button isSpecial={false} onClick={handlePlay}>
-                            Play Audio
-                        </Button> */}
-                        <AudioPlayer
-                            src={song.audio_url}
-                            title={song.title}
-                            artist={song.artist}
-                            />
-                        {message && <Message className="info-message">{message}</Message>}
-                    </div>
-                ) : (
-                    <Message className="info-message">Song not found.</Message>
-                )}
-            </div>
-        </AppBody>
+        <div>
+            <AppBody>
+                <Navbar userId={userId || ''} username={username || ''} />
+                <div className="song-container">
+                    { song ? (
+                        <div className="song-info">
+                            <h1>{song.title}</h1>
+                            <LikeButton isLiked={song.liked} onToggle={handleLikeToggle}/>
+                            <p>Artist: <Link to={`/artists/${song.artist_id}`}>{song.artist}</Link></p>
+                            <p>Album: {song.album}</p>
+                            <p>Duration: {song.duration} seconds</p>
+                            <img src={song.cover} alt={`${song.title} cover`} className="song-cover"/>
+                            {/* Additional song info here*/}
+                            {/*
+                             Display unfollow/follow/error message here
+                             !TODO! Add timeout logic so that the follow message isnt permanent
+                             */}
+                            {/* <Button isSpecial={false} onClick={handlePlay}>
+                                Play Audio
+                            </Button> */}
+                            <AudioPlayer
+                                src={song.audio_url}
+                                title={song.title}
+                                artist={song.artist}
+                                />
+                            {message && <Message className="info-message">{message}</Message>}
+                        </div>
+                    ) : (
+                        <Message className="info-message">Song not found.</Message>
+                    )}
+                </div>
+            </AppBody>
+            <ProfileBar userId={userId || ''} username={username || ''}/>
+        </div>
     )
 }
 

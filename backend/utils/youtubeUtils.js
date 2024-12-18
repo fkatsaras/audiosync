@@ -53,10 +53,12 @@
 
 const youtubedl = require('youtube-dl-exec');
 
-async function getYTSongVideo(songTitle) {
+async function getYTSongVideo(songTitle, artistName, video_id) {
     try {
+        // Search by either video id or song title + artist name
+        const searchQuery = video_id ? `${video_id}` : `${artistName} ${songTitle}`.trim();
         // Use ytsearch to retrieve a single video (not playlists)
-        const result = await youtubedl(`ytsearch:${songTitle}`, {
+        const result = await youtubedl(`ytsearch:${searchQuery}`, {
             dumpSingleJson: true,
             noWarnings: true,
             noCheckCertificate: true,

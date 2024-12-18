@@ -1,5 +1,5 @@
 import React from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import './Navbar.css';
 import Button from "../Buttons/Button";
 
@@ -10,7 +10,7 @@ interface UserSessionProps {
 
 const Navbar: React.FC<UserSessionProps> = ({ userId, username }) => {
 
-    const navigate = useNavigate();
+    // const navigate = useNavigate();
 
     const links = {
         liked_songs: `/${userId}/liked-songs`,
@@ -21,32 +21,32 @@ const Navbar: React.FC<UserSessionProps> = ({ userId, username }) => {
     };
 
 
-    const handleLogout = async () => {
+    // const handleLogout = async () => {
 
-        try {
-            const response = await fetch('/api/v1/users/logout', {
-                method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`,
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    username: username,  // Send the username as part of the body
-                }),
+    //     try {
+    //         const response = await fetch('/api/v1/users/logout', {
+    //             method: 'POST',
+    //             headers: {
+    //                 'Authorization': `Bearer ${localStorage.getItem('token')}`,
+    //                 'Content-Type': 'application/json',
+    //             },
+    //             body: JSON.stringify({
+    //                 username: username,  // Send the username as part of the body
+    //             }),
             
-            });
+    //         });
 
-            if(response.ok) {
-                // If the logout call is successful remove the token
-                localStorage.removeItem('token');
-                navigate('/login');
-            } else {
-                console.error('Logout failed:', await response.text());
-            }
-        } catch (error) {
-            console.error('Error during logout:', error);
-        }
-    };
+    //         if(response.ok) {
+    //             // If the logout call is successful remove the token
+    //             localStorage.removeItem('token');
+    //             navigate('/login');
+    //         } else {
+    //             console.error('Logout failed:', await response.text());
+    //         }
+    //     } catch (error) {
+    //         console.error('Error during logout:', error);
+    //     }
+    // };
 
     return (
         <div>
@@ -85,9 +85,9 @@ const Navbar: React.FC<UserSessionProps> = ({ userId, username }) => {
                 </ul>
     
                 <ul className="navbar-buttons">
-                    <li>
+                    {/* <li>
                         <Button onClick={handleLogout} className="logout-button">Logout</Button>
-                    </li>
+                    </li> */}
                 </ul>
             </nav>
         </div>
