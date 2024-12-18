@@ -53,7 +53,7 @@
 
 const youtubedl = require('youtube-dl-exec');
 
-async function getYTSongAudioUrl(songTitle) {
+async function getYTSongVideo(songTitle) {
     try {
         // Use ytsearch to retrieve a single video (not playlists)
         const result = await youtubedl(`ytsearch:${songTitle}`, {
@@ -79,7 +79,7 @@ async function getYTSongAudioUrl(songTitle) {
         });
 
         console.log(`Audio URL: ${audioDetails}`);
-        return audioDetails;
+        return [audioDetails, video.url];
 
     } catch (error) {
         console.error(`Error: ${error.message}`);
@@ -123,7 +123,7 @@ function extractVideoId(URL) {
 }
 
 module.exports = {
-    getYTSongAudioUrl,
+    getYTSongVideo,
     isExpired,
     extractVideoId
 };

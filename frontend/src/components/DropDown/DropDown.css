@@ -1,45 +1,66 @@
-.dropdown-container {
-    position: relative;
-    top: 100%;
-    right: 0;
+/* Dropdown toggle button */
+.dropdown-toggle {
     background-color: #121212;
+    color: #fff;
+    border: none;
     border-radius: 8px;
-    padding: 10px 0;
-    width: 200px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
-    z-index: 1001;
-    animation: fadeInDropDown 0.3s ease-in-out;
-}
-
-/* Drop down list */
-.dropdown-list {
-    z-index: 1001;
-    list-style: none;
-    margin: 0;
-    padding: 0;
-}
-
-/* Dropdown item */
-.dropdown-item {
     padding: 10px 15px;
     font-size: 1rem;
-    color: #ffffff;
-    background-color: transparent;
     cursor: pointer;
-    transition: background-color 0.2s;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+    transition: background-color 0.3s ease;
+}
+
+.dropdown-toggle:hover {
+    background-color: #333333;
+}
+
+/* Dropdown list: Positioned relative to viewport */
+.dropdown-container {
+    display: inline-block; /* Keeps the toggle button inline */
+    top: calc(100% + 10px); /* Adds a slight gap below the toggle button */
+    left: 0; /* Aligns to the left by default */
+    background-color: #181818;
+    border-radius: 4px;
+    width: 220px;
+    padding: 8px 0; /* Spacing above and below the items */
+    margin: 0;
+    list-style: none;
+    animation: fadeInDropDown 0.2s ease-in-out;
+    z-index: 9999; /* Ensure dropdown appears above other elements */
+}
+
+/* Dropdown items */
+.dropdown-item {
+    display: flex;
+    align-items: center;
+    padding: 12px 15px; /* Slightly larger padding for a cleaner look */
+    border-radius: 4px;
+    color: #ffffff;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: background-color 0.2s, color 0.2s;
 }
 
 .dropdown-item:hover {
     background-color: #333333;
+    color: #ffffff;
 }
 
+/* Dropdown item with an icon */
+.dropdown-icon {
+    margin-right: 12px;
+    font-size: 1.2rem;
+}
+
+/* Animations */
 @keyframes fadeInDropDown {
     from {
         opacity: 0;
-        transform: translateY(-10px);
+        transform: translateY(-5px);
     }
     to {
         opacity: 1;
-        transform: translate(0)
+        transform: translateY(0);
     }
 }

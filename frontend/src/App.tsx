@@ -12,6 +12,7 @@ import ArtistPage from "./pages/ArtistPage";
 import MyPlaylistsPage from "./pages/MyPlaylistsPage";
 import PlaylistPage from "./pages/PlaylistPage";
 import LikedSongsPlaylist from "./pages/LikedSongsPage";
+import './App.css';
 
 const router = createBrowserRouter([
   { path: "/", element: <Landing /> },

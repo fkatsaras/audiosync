@@ -5,6 +5,7 @@ import Navbar from '../components/Navbar/Navbar';
 import AppBody from '../components/AppBody/AppBody';
 import LoadingDots from '../components/LoadingDots/LoadingDots';
 import Message from '../components/Message/Message';
+import ProfileBar from '../components/ProfileBar/ProfileBar';
 
 interface UserSessionProps {
   userId?: string;
@@ -92,6 +93,7 @@ const Home: React.FC<UserSessionProps> = ({ userId, username }) => {
       <AppBody>
         <h1>Welcome to Your Home Page</h1>
       </AppBody>
+      <ProfileBar userId={userId || ''} username={username || ''}/>
     </div>
   );
 }

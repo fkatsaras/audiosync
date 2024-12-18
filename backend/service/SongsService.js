@@ -3,7 +3,7 @@
 const db = require('../utils/dbUtils');
 const Song = require('../models/Song');
 const { getSongCover } = require('../utils/spotify');
-const { getYTSongAudioUrl, isExpired, extractVideoId } = require('../utils/youtubeUtils');
+const { getYTSongVideo, isExpired, extractVideoId } = require('../utils/youtubeUtils');
 
 
 /**
@@ -35,7 +35,7 @@ exports.get_song_by_id = function(userId, songId) {
 
           // If video_id exists, fetch the URL directly
           if (songData.video_id) {
-            const ytAudioUrl = await getYTSongAudioUrl(songData.video_id);
+            const [ytAudioUrl, fetchedVideoId] = await getYTSongVideo(songData.video_id);
             if (ytAudioUrl) {
               songData.audio_url = ytAudioUrl;
 
@@ -51,12 +51,12 @@ exports.get_song_by_id = function(userId, songId) {
             }
           } else {
             // Fallback: Search by title if no video_id exists
-            const ytAudioUrl = await getYTSongAudioUrl(songData.title);
+            const [ytAudioUrl, fetchedVideoId] = await getYTSongVideo(songData.title);
             if (ytAudioUrl) {
               songData.audio_url = ytAudioUrl;
 
-              // Extract and store video_id
-              const videoId = extractVideoId(ytAudioUrl);
+              // Extract and store video_id - cache the video Id which is constant
+              const videoId = extractVideoId(fetchedVideoId);
               const updateQuery = `
                 UPDATE songs
                 SET audio_url = ?, video_id = ?

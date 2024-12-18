@@ -1,9 +1,10 @@
 import React, { useRef, useState } from "react";
 import PlayButton from "../Buttons/PlayButton";
 import './AudioPlayer.css';
+import { FaVolumeMute, FaVolumeUp } from "react-icons/fa";
 
 interface AudioPlayerProps {
-    src: string;
+    src: string | undefined;
     title?: string;
     artist?: string;
 }
@@ -15,6 +16,7 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({ src, title, artist }) => {
     const [currentTime, setCurrentTime] = useState(0);
     const [duration, setDuration] = useState(0);
     const [volume, setVolume] = useState(1);
+    const [isMuted, setIsMuted] = useState(false);
 
     const togglePlayPause = () => {
         const audio = audioRef.current;
@@ -62,6 +64,14 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({ src, title, artist }) => {
         }
     };
 
+    const toggleMute = () => {
+        const audio = audioRef.current;
+        if (audio) {
+            audio.muted = !isMuted;
+            setIsMuted(!isMuted);
+        }
+    }
+
     const formatTime = (time: number) => {
         const minutes = Math.floor(time / 60);
         const seconds = Math.floor(time % 60);
@@ -90,7 +100,7 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({ src, title, artist }) => {
                 <h4>{title || "Unknown Title"}</h4>
                 <p>{artist || "Unknown Artist"}</p>
             </div>
-            <div className="controls">
+            <div className="playback">
                 <PlayButton isPlaying={isPlaying} onToggle={togglePlayPause}/>
                 <span>{formatTime(currentTime)} / {formatTime(duration)}</span>
                 <input
@@ -101,6 +111,8 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({ src, title, artist }) => {
                     value={currentTime}
                     onChange={handleSeek}
                 />
+            </div>
+            <div className="controls">
                 <input
                     type="range"
                     min="0"
@@ -109,6 +121,9 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({ src, title, artist }) => {
                     value={volume}
                     onChange={handleVolumeChange}
                 />
+                <div className="volume-icon" onClick={toggleMute}>
+                    {isMuted ? <FaVolumeMute /> : <FaVolumeUp />}
+                </div>
             </div>
         </div>
     );

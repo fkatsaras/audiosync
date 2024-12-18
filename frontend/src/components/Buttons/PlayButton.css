@@ -27,9 +27,10 @@
 }
 
 .play-button .icon {
-    color: #ffffff; /* White play/pause icon */
+    color: #121212; /* White play/pause icon */
     font-size: 24px; /* Icon size */
     transition: transform 0.2s ease;
+    display: block;
 }
 
 .play-button.playing .icon {
