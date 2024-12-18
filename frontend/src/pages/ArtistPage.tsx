@@ -7,6 +7,8 @@ import AppBody from "../components/AppBody/AppBody";
 import ResultItem from "../components/ResultItem/ResultItem";
 import LoadingDots from "../components/LoadingDots/LoadingDots";
 import Navbar from "../components/Navbar/Navbar";
+import FollowButton from "../components/Buttons/FollowButton";
+import Message from "../components/Message/Message";
 
 interface UserSessionProps {
     userId?: string;
@@ -85,18 +87,15 @@ const ArtistPage: React.FC<UserSessionProps> = ({ userId, username }) => {
                     <div className="artist-content-container">
                         <div className="artist-info">
                             <h1>{artist.name}</h1>
+                            <FollowButton isFollowing={artist.is_followed} onToggle={handleFollowToggle}/>
+                            <p>Followers: {artist.followers}</p>
                             <img
                                 src={artist.profile_picture}
                                 alt={`${artist.name} profile`}
                                 className="artist-profile-picture"
                             />
-                            <p>Followers: {artist.followers}</p>
-                            <Button isSpecial={true} isActive={artist.is_followed} onClick={handleFollowToggle}>
-                                {artist.is_followed ? 'Following' : 'Follow'}
-                            </Button>
-
                             {/* Display follow/unfollow/error message */}
-                            {message && <p>{message}</p>}
+                            {message && <Message className="info-message">{message}</Message>}
                         </div>
 
                         <div className="artist-songs">

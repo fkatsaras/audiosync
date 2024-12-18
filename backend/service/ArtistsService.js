@@ -99,13 +99,6 @@ exports.get_artist_by_id = function(userId, artistId) {
 
         const songsResult = await db.executeQuery(connection, songsQuery, [artistId]);
 
-        // Step 3: Create Song instances from query
-        // const songs = songsResult.map(songData => {
-        //   const song = Song.fromObject(songData); // Create s Song instance
-        //   song.cover = getSongCover(song.album);  // Fetch and set album cover for song
-        //   return song;  // Add to list
-        // });
-
         const songs = await Promise.all(
           songsResult.map(async (songData) => {
             const song = Song.fromObject(songData); // Create a song instance
@@ -134,10 +127,25 @@ exports.get_artist_by_id = function(userId, artistId) {
         artist.songs = songs; 
         artist.is_followed = is_followed;
 
-        // Fetch artists pfp 
-        const artistsPfp = await getArtistProfilePicture(artist.name);
-        artist.profile_picture = artistsPfp;
+        // Step 6: Check if the artists pfp is stored
+        if (!artist.profile_picture) {
+          console.log(`Profile picture missing for artist: ${artist.name}, Fetching from Spotify...`);
+          const artistPfp = await getArtistProfilePicture(artist.name); // Fetch from spotify
 
+          if (artistPfp) {
+            artist.profile_picture = artistPfp;
+
+            const updateQuery = `
+              UPDATE artists
+              SET profile_picture = ?
+              WHERE id = ?
+            `;
+            await  db.executeQuery(connection, updateQuery, [artistPfp, artistId]);
+          } else {
+            console.warn(`Failed to fetch profile picture for artist: ${artist.name}`)
+          }
+
+        }
         // Respond with artist data
         return resolve({
           message: 'Artist retrieved successfully.',

@@ -1,0 +1,41 @@
+.follow-button {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    border: 2px solid #888888; /* Grey border for unfollowed state */
+    background-color: transparent;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+    line-height: 0; /* Ensure icon is centered */
+}
+
+.follow-button.unfollowed:hover {
+    border-color: #b0b0b0; /* Lighter grey on hover */
+}
+
+.follow-button.following {
+    background-color: #6a1b9a; /* Purple fill for followed state */
+    border: none; /* Remove border when following */
+}
+
+.follow-button.following:hover {
+    background-color: #8e24aa; /* Lighter purple on hover */
+}
+
+/* Icon styles */
+.icon {
+    font-size: 18px;
+    transition: color 0.3s ease;
+    color: #888888;
+}
+
+.icon:hover {
+    color: #b0b0b0; /* Lighter grey icon on hover */
+}
+
+.follow-button.following .icon {
+    color: #181818; /* Black icon for following state */
+}
