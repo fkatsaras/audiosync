@@ -6,14 +6,13 @@ import Register from './pages/RegisterPage';
 import Home from './pages/HomePage';
 import Search from './pages/SearchPage';
 import NotFound from "./components/NotFound";
-import UserSession from "./components/UserSession";
+import Layout from "./components/Layout";
 import SongPage from "./pages/SongPage";
 import ArtistPage from "./pages/ArtistPage";
 import MyPlaylistsPage from "./pages/MyPlaylistsPage";
 import PlaylistPage from "./pages/PlaylistPage";
 import LikedSongsPlaylist from "./pages/LikedSongsPage";
 import './App.css';
-import AudioPlayer from "./components/AudioPlayer/AudioPlayer";
 import { AudioPlayerProvider } from './context/AudioPlayerContext';
 
 const router = createBrowserRouter([
@@ -23,16 +22,16 @@ const router = createBrowserRouter([
   {
     path: "/home",
     element:
-      <UserSession>
+      <Layout>
         <Home />
-      </UserSession>
+      </Layout>
   },
-  { path: "/search", element: <UserSession><Search /></UserSession> },
-  { path: "/songs/:songId", element: <UserSession><SongPage /></UserSession> },
-  { path: "/artists/:artistId", element: <UserSession><ArtistPage /></UserSession> },
-  { path: "/:userId/my-playlists", element: <UserSession><MyPlaylistsPage /></UserSession> },
-  { path: "/:userId/playlists/:playlistId", element: <UserSession><PlaylistPage /></UserSession> },
-  { path: "/:userId/liked-songs", element: <UserSession><LikedSongsPlaylist /></UserSession> },
+  { path: "/search", element: <Layout><Search /></Layout> },
+  { path: "/songs/:songId", element: <Layout><SongPage /></Layout> },
+  { path: "/artists/:artistId", element: <Layout><ArtistPage /></Layout> },
+  { path: "/:userId/my-playlists", element: <Layout><MyPlaylistsPage /></Layout> },
+  { path: "/:userId/playlists/:playlistId", element: <Layout><PlaylistPage /></Layout> },
+  { path: "/:userId/liked-songs", element: <Layout><LikedSongsPlaylist /></Layout> },
   { path: "*", element: <NotFound /> }
 ]);
 
@@ -40,7 +39,6 @@ function App() {
   return (
     <AudioPlayerProvider>
       <RouterProvider router={router} />
-      <AudioPlayer />  {/* This ensures AudioPlayer is always accessible */}
     </AudioPlayerProvider>
   );
 }

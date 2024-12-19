@@ -8,24 +8,11 @@ import Navbar from "../components/Navbar/Navbar";
 import LikeButton from "../components/Buttons/LikeButton";
 import '../styles/SongPage.css'
 import ProfileBar from "../components/ProfileBar/ProfileBar";
-import { useAudioPlayer } from "../context/AudioPlayerContext";
+import { useAudioPlayer } from "../hooks/useAudioPlayer";
 
 interface UserSessionProps {
     userId?: string;
     username?: string;
-}
-
-interface AudioPlayerContextProps {
-    currentSong: {
-        id: number;
-        src: string;
-        title: string;
-        artist: string;
-    } | null;
-    isPlaying: boolean;
-    setCurrentSong: (song: AudioPlayerContextProps['currentSong']) => void;
-    togglePlayPause: () => void;
-    audioRef: React.RefObject<HTMLAudioElement>;
 }
 
 const SongPage: React.FC<UserSessionProps> = ({ userId, username  }) => {

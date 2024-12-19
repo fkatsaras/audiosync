@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useRef } from 'react';
+import React, { createContext, useState, useRef } from 'react';
 
 // Create a 'global state' for the audio player component using context
 
@@ -15,7 +15,7 @@ interface AudioPlayerContextProps {
     audioRef: React.RefObject<HTMLAudioElement>;
 }
 
-const AudioPlayerContext = createContext<AudioPlayerContextProps | undefined>(undefined);
+export const AudioPlayerContext = createContext<AudioPlayerContextProps | undefined>(undefined);
 
 export const AudioPlayerProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const [currentSong, setCurrentSong] = useState<AudioPlayerContextProps['currentSong']>(null);
@@ -47,10 +47,4 @@ export const AudioPlayerProvider: React.FC<{ children: React.ReactNode }> = ({ c
             {currentSong && <audio ref={audioRef} src={currentSong?.src || ""} />}
         </AudioPlayerContext.Provider>
     );
-};
-
-export const useAudioPlayer = () => {
-    const context = useContext(AudioPlayerContext);
-    if (!context) throw new Error('useAudioPlayer must be used within AudioPlayerProvider');
-    return context;
 };

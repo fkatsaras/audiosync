@@ -2,7 +2,7 @@ import React from "react";
 import PlayButton from "../Buttons/PlayButton";
 import './AudioPlayer.css';
 import { FaVolumeMute, FaVolumeUp } from "react-icons/fa";
-import { useAudioPlayer } from "../../context/AudioPlayerContext";
+import { useAudioPlayer } from "../../hooks/useAudioPlayer";
 
 const AudioPlayer: React.FC = () => {
     const {
