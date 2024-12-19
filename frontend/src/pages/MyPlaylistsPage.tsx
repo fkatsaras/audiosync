@@ -135,7 +135,6 @@ const MyPlaylistsPage: React.FC<UserSessionProps> = ({ userId, username }) => {
                 <h1>Your Playlists</h1>
                 <Button 
                     className='create-playlist-btn'
-                    isSpecial={false}
                     onClick={() => setIsPopUpOpen(true)}
                 >
                     <span className="plus-sign">+</span>   
