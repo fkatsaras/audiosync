@@ -15,8 +15,12 @@ const Button: React.FC<ButtonProps> = ({
     onClick,
     ...props    // Spread additional props that will be given in some cases
 }) => {
+
+    // Add active or inactive class dynamically
+    const buttonClass = `default-button ${className}`;
+
     return (
-        <button type={type} className={className} onClick={onClick} {...props}> 
+        <button type={type} className={buttonClass} onClick={onClick} {...props}> 
             {children}
         </button>   // for custom styles
     );
