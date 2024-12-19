@@ -4,7 +4,7 @@ import Landing from './pages/LandingPage';
 import Login from './pages/LoginPage';
 import Register from './pages/RegisterPage';
 import Home from './pages/HomePage';
-import Search from './pages/SearchPage'
+import Search from './pages/SearchPage';
 import NotFound from "./components/NotFound";
 import UserSession from "./components/UserSession";
 import SongPage from "./pages/SongPage";
@@ -16,88 +16,33 @@ import './App.css';
 import AudioPlayer from "./components/AudioPlayer/AudioPlayer";
 import { AudioPlayerProvider } from './context/AudioPlayerContext';
 
-
-console.log(AudioPlayer, UserSession); // Ensure they are not undefined
-
-
 const router = createBrowserRouter([
   { path: "/", element: <Landing /> },
   { path: "/login", element: <Login /> },
   { path: "/register", element: <Register /> },
   {
     path: "/home",
-    element: 
-    <UserSession>
-      <AudioPlayerProvider>
+    element:
+      <UserSession>
         <Home />
-        <AudioPlayer />
-      </AudioPlayerProvider>
-    </UserSession>
-  },
-  { path: "/search",
-    element: 
-    <UserSession>
-      <AudioPlayerProvider>
-        <Search />
-        <AudioPlayer />
-      </AudioPlayerProvider>
-    </UserSession>
-  },
-  { 
-    path: "/songs/:songId",
-    element: 
-      <UserSession>
-        <AudioPlayerProvider>
-          <SongPage />
-          <AudioPlayer />
-        </AudioPlayerProvider>
-      </UserSession> 
-  },
-  { 
-    path: "/artists/:artistId",
-    element: 
-      <UserSession>
-        <AudioPlayerProvider>
-          <ArtistPage />
-          <AudioPlayer />
-        </AudioPlayerProvider>
-      </UserSession> 
-  },
-  { 
-    path: "/:userId/my-playlists",
-    element: 
-      <UserSession>
-        <AudioPlayerProvider>
-          <MyPlaylistsPage />
-          <AudioPlayer />
-        </AudioPlayerProvider>
-      </UserSession> 
-  },
-  { 
-    path: "/:userId/playlists/:playlistId",
-    element: 
-      <UserSession>
-        <AudioPlayerProvider>
-          <PlaylistPage />
-          <AudioPlayer />
-        </AudioPlayerProvider>
-      </UserSession> 
-  },
-  {
-    path: "/:userId/liked-songs",
-    element: 
-      <UserSession>
-        <AudioPlayerProvider>
-          <LikedSongsPlaylist />
-          <AudioPlayer />
-        </AudioPlayerProvider>
       </UserSession>
   },
-  { path: "*", element: <NotFound />}
+  { path: "/search", element: <UserSession><Search /></UserSession> },
+  { path: "/songs/:songId", element: <UserSession><SongPage /></UserSession> },
+  { path: "/artists/:artistId", element: <UserSession><ArtistPage /></UserSession> },
+  { path: "/:userId/my-playlists", element: <UserSession><MyPlaylistsPage /></UserSession> },
+  { path: "/:userId/playlists/:playlistId", element: <UserSession><PlaylistPage /></UserSession> },
+  { path: "/:userId/liked-songs", element: <UserSession><LikedSongsPlaylist /></UserSession> },
+  { path: "*", element: <NotFound /> }
 ]);
 
 function App() {
-  return <RouterProvider router={router} />;
+  return (
+    <AudioPlayerProvider>
+      <RouterProvider router={router} />
+      <AudioPlayer />  {/* This ensures AudioPlayer is always accessible */}
+    </AudioPlayerProvider>
+  );
 }
 
 export default App;
