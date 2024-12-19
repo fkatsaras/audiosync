@@ -13,6 +13,12 @@ import MyPlaylistsPage from "./pages/MyPlaylistsPage";
 import PlaylistPage from "./pages/PlaylistPage";
 import LikedSongsPlaylist from "./pages/LikedSongsPage";
 import './App.css';
+import AudioPlayer from "./components/AudioPlayer/AudioPlayer";
+import { AudioPlayerProvider } from './context/AudioPlayerContext';
+
+
+console.log(AudioPlayer, UserSession); // Ensure they are not undefined
+
 
 const router = createBrowserRouter([
   { path: "/", element: <Landing /> },
@@ -20,30 +26,72 @@ const router = createBrowserRouter([
   { path: "/register", element: <Register /> },
   {
     path: "/home",
-    element: <UserSession><Home /></UserSession>
+    element: 
+    <UserSession>
+      <AudioPlayerProvider>
+        <Home />
+        <AudioPlayer />
+      </AudioPlayerProvider>
+    </UserSession>
   },
   { path: "/search",
-    element: <UserSession><Search /></UserSession>
+    element: 
+    <UserSession>
+      <AudioPlayerProvider>
+        <Search />
+        <AudioPlayer />
+      </AudioPlayerProvider>
+    </UserSession>
   },
   { 
     path: "/songs/:songId",
-    element: <UserSession><SongPage /></UserSession> 
+    element: 
+      <UserSession>
+        <AudioPlayerProvider>
+          <SongPage />
+          <AudioPlayer />
+        </AudioPlayerProvider>
+      </UserSession> 
   },
   { 
     path: "/artists/:artistId",
-    element: <UserSession><ArtistPage /></UserSession> 
+    element: 
+      <UserSession>
+        <AudioPlayerProvider>
+          <ArtistPage />
+          <AudioPlayer />
+        </AudioPlayerProvider>
+      </UserSession> 
   },
   { 
     path: "/:userId/my-playlists",
-    element: <UserSession><MyPlaylistsPage /></UserSession> 
+    element: 
+      <UserSession>
+        <AudioPlayerProvider>
+          <MyPlaylistsPage />
+          <AudioPlayer />
+        </AudioPlayerProvider>
+      </UserSession> 
   },
   { 
     path: "/:userId/playlists/:playlistId",
-    element: <UserSession><PlaylistPage /></UserSession> 
+    element: 
+      <UserSession>
+        <AudioPlayerProvider>
+          <PlaylistPage />
+          <AudioPlayer />
+        </AudioPlayerProvider>
+      </UserSession> 
   },
   {
     path: "/:userId/liked-songs",
-    element: <UserSession><LikedSongsPlaylist /></UserSession>
+    element: 
+      <UserSession>
+        <AudioPlayerProvider>
+          <LikedSongsPlaylist />
+          <AudioPlayer />
+        </AudioPlayerProvider>
+      </UserSession>
   },
   { path: "*", element: <NotFound />}
 ]);

@@ -44,7 +44,7 @@ export const AudioPlayerProvider: React.FC<{ children: React.ReactNode }> = ({ c
             }}
         >
             {children}
-            <audio ref={audioRef} src={currentSong?.src || undefined} />
+            {currentSong && <audio ref={audioRef} src={currentSong?.src || ""} />}
         </AudioPlayerContext.Provider>
     );
 };

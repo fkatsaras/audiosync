@@ -6,21 +6,39 @@ import Message from "../components/Message/Message";
 import LoadingDots from "../components/LoadingDots/LoadingDots";
 import Navbar from "../components/Navbar/Navbar";
 import LikeButton from "../components/Buttons/LikeButton";
-import AudioPlayer from "../components/AudioPlayer/AudioPlayer";
 import '../styles/SongPage.css'
 import ProfileBar from "../components/ProfileBar/ProfileBar";
+import { useAudioPlayer } from "../context/AudioPlayerContext";
 
 interface UserSessionProps {
     userId?: string;
     username?: string;
 }
 
-const SongPage: React.FC<UserSessionProps> = ({ userId, username }) => {
+interface AudioPlayerContextProps {
+    currentSong: {
+        id: number;
+        src: string;
+        title: string;
+        artist: string;
+    } | null;
+    isPlaying: boolean;
+    setCurrentSong: (song: AudioPlayerContextProps['currentSong']) => void;
+    togglePlayPause: () => void;
+    audioRef: React.RefObject<HTMLAudioElement>;
+}
+
+const SongPage: React.FC<UserSessionProps> = ({ userId, username  }) => {
     const { songId } = useParams<{ songId: string }>(); // Get song ID from URL parameters
     const [song, setSong] = useState<Song | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [message, setMessage] = useState<string | null>(null);
+
+    // State for the Audio Player
+    // const [currentSong, setCurrentSong] = useState<AudioPlayerContextProps['currentSong'] | null>(null);
+    // const { currentSong, audioRef, isPlaying } = useAudioPlayer();
+    const { setCurrentSong, togglePlayPause } = useAudioPlayer();
 
     useEffect(() => {
         // Fetch the song details from the backend
@@ -78,6 +96,9 @@ const SongPage: React.FC<UserSessionProps> = ({ userId, username }) => {
     if (loading) return <LoadingDots />;
     if (error) return <div>{error}</div>;
 
+    // console.log({ currentSong, isPlaying, audioRef });
+
+
     return (
         <div>
             <AppBody>
@@ -95,11 +116,17 @@ const SongPage: React.FC<UserSessionProps> = ({ userId, username }) => {
                              Display unfollow/follow/error message here
                              !TODO! Add timeout logic so that the follow message isnt permanent
                              */}
-                            <AudioPlayer
-                                src={song.audio_url}
-                                title={song.title}
-                                artist={song.artist}
-                                />
+                             <button onClick={() => {
+                                if (song) {
+                                    setCurrentSong({
+                                        id: song.id,
+                                        src: song.audio_url, // Replace with the actual audio URL field
+                                        title: song.title,
+                                        artist: song.artist,
+                                    });
+                                    togglePlayPause();
+                                }
+                             }}>Play</button>
                             {message && <Message className="info-message">{message}</Message>}
                         </div>
                     ) : (
