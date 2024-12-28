@@ -5,12 +5,13 @@ import './PlayButton.css';
 interface PlayButtonProps {
     isPlaying: boolean;
     onToggle: () => void;
+    className?: string;
 }
 
-const PlayButton: React.FC<PlayButtonProps> = ({ isPlaying, onToggle }) => {
+const PlayButton: React.FC<PlayButtonProps> = ({ isPlaying, onToggle, className }) => {
     return (
         <button
-            className={`play-button ${isPlaying? "playing" : ""}`}
+            className={`play-button ${className} ${isPlaying? "playing" : ""}`}
             onClick={onToggle}
         >
             <span className="icon">

@@ -52,7 +52,7 @@
     margin-top: auto; /* Push the logout button to the bottom */
 }
 
-.navbar-home-button {
+.default-button.navbar-home-button {
     display: inline-flex;
     justify-content: center;
     align-items: center;
@@ -60,7 +60,7 @@
     height: 50px; /* Round button height */
     border-radius: 50%; /* Make it round */
     background-color: #6a1b9a; /* Purple background */
-    border: 2px solid white; /* White border */
+    border: none; /* remove defualt button border*/
     color: white;
     cursor: pointer;
     transition: background-color 0.3s ease, transform 0.2s ease;
@@ -68,7 +68,7 @@
 
 .navbar-home-button:hover {
     background-color: #8e24aa; /* Lighter purple on hover */
-    transform: scale(1.1); /* Slight zoom effect on hover */
+    transform: scale(1.05); /* Slight zoom effect on hover */
 }
 
 .logout-button {

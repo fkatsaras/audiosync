@@ -9,6 +9,7 @@ import LikeButton from "../components/Buttons/LikeButton";
 import '../styles/SongPage.css'
 import ProfileBar from "../components/ProfileBar/ProfileBar";
 import { useAudioPlayer } from "../hooks/useAudioPlayer";
+import PlayButton from "../components/Buttons/PlayButton";
 
 interface UserSessionProps {
     userId?: string;
@@ -25,7 +26,7 @@ const SongPage: React.FC<UserSessionProps> = ({ userId, username  }) => {
     // State for the Audio Player
     // const [currentSong, setCurrentSong] = useState<AudioPlayerContextProps['currentSong'] | null>(null);
     // const { currentSong, audioRef, isPlaying } = useAudioPlayer();
-    const { setCurrentSong, togglePlayPause } = useAudioPlayer();
+    const { setCurrentSong, togglePlayPause, isPlaying } = useAudioPlayer();
 
     useEffect(() => {
         // Fetch the song details from the backend
@@ -97,23 +98,26 @@ const SongPage: React.FC<UserSessionProps> = ({ userId, username  }) => {
                             <LikeButton isLiked={song.liked} onToggle={handleLikeToggle}/>
                             <p>Artist: <Link to={`/artists/${song.artist_id}`}>{song.artist}</Link></p>
                             <p>Album: {song.album}</p>
-                            <img src={song.cover} alt={`${song.title} cover`} className="song-cover"/>
+                            <div className="song-image-container">
+                                <img src={song.cover} alt={`${song.title} cover`} className="song-cover"/>
+                                <PlayButton className="image-button" isPlaying={false} onToggle={() => {    // Override isPlaying to fix icon
+                                    if (song) {
+                                        setCurrentSong({
+                                            id: song.id,
+                                            src: song.audio_url,
+                                            title: song.title,
+                                            artist: song.artist,
+                                        });
+                                        togglePlayPause();
+                                       }
+                                    }}
+                                />
+                            </div>
                             {/* Additional song info here*/}
                             {/*
                              Display unfollow/follow/error message here
                              !TODO! Add timeout logic so that the follow message isnt permanent
                              */}
-                             <button onClick={() => {
-                                if (song) {
-                                    setCurrentSong({
-                                        id: song.id,
-                                        src: song.audio_url, // Replace with the actual audio URL field
-                                        title: song.title,
-                                        artist: song.artist,
-                                    });
-                                    togglePlayPause();
-                                }
-                             }}>Play</button>
                             {message && <Message className="info-message">{message}</Message>}
                         </div>
                     ) : (

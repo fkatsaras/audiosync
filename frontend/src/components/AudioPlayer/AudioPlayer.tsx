@@ -49,6 +49,16 @@ const AudioPlayer: React.FC = () => {
                 />
             </div>
             <div className="controls">
+                <div
+                    className="volume-icon"
+                    onClick={() => {
+                        if (audioRef.current) {
+                            audioRef.current.muted = !audioRef.current.muted;
+                        }
+                    }}
+                >
+                    {audioRef.current?.muted ? <FaVolumeMute /> : <FaVolumeUp />}
+                </div>
                 <input
                     type="range"
                     min="0"
@@ -61,16 +71,6 @@ const AudioPlayer: React.FC = () => {
                         }
                     }}
                 />
-                <div
-                    className="volume-icon"
-                    onClick={() => {
-                        if (audioRef.current) {
-                            audioRef.current.muted = !audioRef.current.muted;
-                        }
-                    }}
-                >
-                    {audioRef.current?.muted ? <FaVolumeMute /> : <FaVolumeUp />}
-                </div>
             </div>
         </div>
     );

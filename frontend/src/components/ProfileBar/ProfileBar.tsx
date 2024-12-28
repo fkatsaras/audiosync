@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import DropDown from '../DropDown/DropDown';
 import Button from '../Buttons/Button';
+import defaultPfp from '../../assets/images/default_profile_picture.svg'
 import './ProfileBar.css';
 import { useNavigate } from 'react-router-dom';
 
@@ -67,7 +68,7 @@ const ProfileBar: React.FC<UserSessionProps> = ({ userId, username }) => {
       <div className="profile-button" onClick={toggleDropdown}>
         <Button className="profile-btn">
           <img
-            src="/path-to-placeholder-image"
+            src={defaultPfp}
             alt="Profile"
             className="profile-image"
           />
