@@ -4,6 +4,8 @@ const Artist = require('../models/Artist');
 const Song = require('../models/Song');
 const db = require('../utils/dbUtils');
 const { getSongCover, getArtistProfilePicture } = require('../utils/spotify');
+const ErrorHandler = require('../middleware/ErrorHandler');
+const ArtistRepository = require('../data/repository/ArtistRepository');
 
 
 /**
@@ -14,86 +16,65 @@ const { getSongCover, getArtistProfilePicture } = require('../utils/spotify');
  * returns Artist
  **/
 exports.get_artist_by_id = async function(userId, artistId) {
+  const connection = db.createConnection();
+
+  console.log(userId);
+
   try {
-    const connection = db.createConnection();
-    const query = `
-      SELECT *
-      FROM artists
-      WHERE id = ?
-    `;
-    // Step 1: Fetch the artists details from the DB
-    const artistResult = await db.executeQuery(connection, query, [artistId]);
-    if (artistResult.length > 0) {
-      const artistData = artistResult[0];
-      
-      // Step 2: Fetch the artists songs from the DB
-      const songsQuery = `
-        SELECT *
-        FROM songs
-        WHERE artist_id = ?
-      `;
-      const songsResult = await db.executeQuery(connection, songsQuery, [artistId]);
-      const songs = await Promise.all(
-        songsResult.map(async (songData) => {
-          const song = Song.fromObject(songData); // Create a song instance
-          try {
-            song.cover = await getSongCover(song.album);
-          } catch (error) {
-            console.error(`Failed to fetch album cover for song ${song.title}`);
-          }
-          return song;
-        })
-      );
-      // Step 4: Check if the user is already following the artist
-      const followQuery = `
-        SELECT 1
-        FROM followed_artists
-        WHERE 
-          user_id = ? AND artist_id = ?
-      `;
-      const followResult = await db.executeQuery(connection, followQuery, [userId, artistId]);
-      const is_followed = Boolean(followResult.length);
-      // Step 5: Create the artist obj
-      const artist = Artist.fromObject(artistData);
-      artist.songs = songs; 
-      artist.is_followed = is_followed;
-      // Step 6: Check if the artists pfp is stored
-      if (!artist.profile_picture) {
-        console.log(`Profile picture missing for artist: ${artist.name}, Fetching from Spotify...`);
-        const artistPfp = await getArtistProfilePicture(artist.name); // Fetch from spotify
-        if (artistPfp) {
-          artist.profile_picture = artistPfp;
-          const updateQuery = `
-            UPDATE artists
-            SET profile_picture = ?
-            WHERE id = ?
-          `;
-          await  db.executeQuery(connection, updateQuery, [artistPfp, artistId]);
-        } else {
-          console.warn(`Failed to fetch profile picture for artist: ${artist.name}`)
-        }
-      }
-      // Respond with artist data
-      return {
-        message: 'Artist retrieved successfully.',
-        body: artist.toJSON()
-      };
+    // Step 1 : Fetch the artists details from the DB
+    const artistResult = await ArtistRepository.getArtistById(connection, artistId);
 
-    } else {
-      // Artist not found
-      throw {
-        message: `Artist with ID: ${artistId} not found.`,
-        code: 404
-      };
+    if (artistResult.length == 0) {
+      throw ErrorHandler.createError(404, `Artist with ID: ${artistId} not found.`)
     }
-  } catch (error) {
-    console.error('Error in retrieving artist:', error.message);
-    if (error.code) throw error; // Re-throw expected errors without modification
 
-    throw {
-      message: error.message,
-      code: 500
+    const artistData = artistResult[0];
+
+    // Step 2: Fetch the artists songs
+    const songsResult = await ArtistRepository.getSongsByArtistId(connection, artistId);
+    const songs = await Promise.all(
+      songsResult.map(async (songData) => {
+        const song = Song.fromObject(songData); // Create a song instance
+        try {
+          song.cover = await getSongCover(song.album);
+        } catch (error) {
+          console.error(`Failed to fetch album cover for song ${song.title}`, error.message);
+        }
+        return song;
+      })
+    );
+
+    // Step 3: Check if the user is following the artist
+    const followResult = await ArtistRepository.isArtistFollowedByUser(connection, userId, artistId);
+
+    console.log(followResult);
+    const is_followed = Boolean(followResult.length);
+
+    // Step 4: Create the artist object
+    const artist = Artist.fromObject(artistData);
+    artist.songs = songs;
+    artist.is_followed = is_followed;
+
+    // Step 5: Check and fetch artist's profile picture if missing
+    if (!artist.profile_picture) {
+      console.log(`Profile picture missing for artist: ${artist.name}, Fetching from Spotify...`);
+      const artistPfp = await getArtistProfilePicture(artist.name);
+      if (artistPfp) {
+        artist.profile_picture = artistPfp;
+        await ArtistRepository.updateProfilePicture(connection, artistId, artistPfp);
+      } else {
+        console.warn(`Failed to fetch profile picture for artist: ${artist.name}`);
+      }
+    }
+
+    // Respond with the artist data
+    return {
+      message: 'Artist retrieved successfully.',
+      body: artist.toJSON()
     };
+  } catch (error) {
+    throw ErrorHandler.handle(error);
+  } finally {
+    db.closeConnection(connection);
   }
-};
-
+}
