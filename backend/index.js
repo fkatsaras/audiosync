@@ -8,7 +8,7 @@ const express = require('express');
 const session = require('express-session');
 const cors = require('cors');
 
-const auth = require('./utils/auth');
+const auth = require('./middleware/auth');
 
 // Load environment variables
 dotenv.config({ path: path.resolve(__dirname, './.env')});

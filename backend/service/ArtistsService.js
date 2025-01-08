@@ -7,19 +7,6 @@ const { getSongCover, getArtistProfilePicture } = require('../utils/spotify');
 
 
 /**
- * Get artist songs
- * Retrieve the list of songs by a specific artist
- *
- * artistId Integer The ID of the artist
- * returns List
- **/
-// exports.get_artist_songs = function(artistId) {
-//   return new Promise(function(resolve, reject) {
-//   });
-// }
-
-
-/**
  * Get artist by id
  * Retrieve information about a specific artist
  *

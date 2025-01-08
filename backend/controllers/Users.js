@@ -69,25 +69,6 @@ module.exports.create_user_playlist = function create_user_playlist (req, res, n
     });
 };
 
-module.exports.delete_playlist_by_id = function delete_playlist_by_id (req, res, next, userId, playlistId) {
-  Users.delete_playlist_by_id(userId, playlistId)
-    .then(function (response) {
-      utils.writeJson(res, response);
-    })
-    .catch(function (response) {
-      utils.writeJson(res, response);
-    });
-};
-
-module.exports.delete_user_playlist = function delete_user_playlist (req, res, next, userId, playlistId) {
-  Users.delete_user_playlist(userId, playlistId)
-    .then(function (response) {
-      utils.writeJson(res, response);
-    })
-    .catch(function (response) {
-      utils.writeJson(res, response);
-    });
-};
 
 module.exports.get_liked_songs = function get_liked_songs (req, res, next) {
   const userId = req.session.user.id;
@@ -100,15 +81,15 @@ module.exports.get_liked_songs = function get_liked_songs (req, res, next) {
     });
 };
 
-module.exports.get_recommended_songs = function get_recommended_songs (req, res, next, userId) {
-  Users.get_recommended_songs(userId)
-    .then(function (response) {
-      utils.writeJson(res, response);
-    })
-    .catch(function (response) {
-      utils.writeJson(res, response);
-    });
-};
+// module.exports.get_recommended_songs = function get_recommended_songs (req, res, next, userId) {
+//   Users.get_recommended_songs(userId)
+//     .then(function (response) {
+//       utils.writeJson(res, response);
+//     })
+//     .catch(function (response) {
+//       utils.writeJson(res, response);
+//     });
+// };
 
 module.exports.get_user_followed_artists = function get_user_followed_artists (req, res, next, userId) {
   Users.get_user_followed_artists(userId)
