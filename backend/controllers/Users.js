@@ -4,80 +4,79 @@ var utils = require('../utils/writer.js');
 var Users = require('../service/UsersService.js');
 const { successResponse, errorResponse } = require('../utils/apiUtils.js');
 
-module.exports.like_song = function (req, res, next) {
-  const songId = req.query.songId;
-  const userId = req.session.user.id;
-  Users.like_song(userId, songId)
-    .then(function (response) {
-      successResponse(res, response.message, response.body);
-    })
-    .catch(function (error) {
-      errorResponse(res, error.message, error.code);
-    });
-};
+module.exports.like_song = async function (req, res, next) {
+  try {
+    const songId = req.query?.songId;
+    const userId = req.session?.user?.id;
 
-module.exports.unlike_song = function (req, res, next) {
-  const songId = req.query.songId;
-  const userId = req.session.user.id;
-  Users.unlike_song(userId, songId)
-    .then(function (response) {
-      successResponse(res, response.message, response.body);
-    })
-    .catch(function (error) {
-      errorResponse(res, error.message, error.code);
-    });
-};
-
-module.exports.follow_artist = function (req, res, next) {
-  const artistId = req.query.artistId;
-  const userId = req.session.user.id;
-  Users.follow_artist(artistId, userId)
-    .then(function (response) {
-      successResponse(res, response.message, response.body);
-    })
-    .catch(function (error) {
-      errorResponse(res, error.message, error.code);
-    });
-};
-
-module.exports.unfollow_artist = function (req, res, next) {
-  const artistId = req.query.artistId;
-  const userId = req.session.user.id;
-  Users.unfollow_artist(artistId, userId)
-    .then(function (response) {
-      successResponse(res, response.message, response.body);
-    })
-    .catch(function (error) {
-      errorResponse(res, error.message, error.code);
-    });
-};
-
-
-module.exports.create_user_playlist = function (req, res, next, body) {
-  const userId = req.session.user.id;
-  // Check if title is provided
-  if (!body.title || !body.title.trim()) {
-    return errorResponse(res, 'Please provide a name for your Playlist', 400);
+    const { message, body: responseBody } = await Users.like_song(userId, songId);
+    successResponse(res, message, responseBody);
+  } catch (error) {
+    errorResponse(res, error.message, error.code);
   }
-  Users.create_user_playlist(body, userId)
-    .then(function (response) {
-      successResponse(res, response.message, response.body);
-    })
-    .catch(function (error) {
-      errorResponse(res, error.message, error.code);
-    });
 };
 
+module.exports.unlike_song = async function (req, res, next) {
+  try {
+    const songId = req.query?.songId;
+    const userId = req.session?.user?.id;
 
-module.exports.get_liked_songs = function (req, res, next) {
-  const userId = req.session.user.id;
-  Users.get_liked_songs(userId)
-    .then(function (response) {
-      successResponse(res, response.message, response.body);
-    })
-    .catch(function (error) {
-      errorResponse(res, error.message, error.code);
-    });
+    const { message, body: responseBody } = await Users.unlike_song(userId, songId);
+    successResponse(res, message, responseBody);
+  } catch (error) {
+    errorResponse(res, error.message, error.code);
+  }
+};
+
+module.exports.follow_artist = async function (req, res, next) {
+  try {
+    const artistId = req.query?.artistId;
+    const userId = req.session?.user?.id;
+
+    const { message, body: responseBody } = await Users.follow_artist(artistId, userId);
+    successResponse(res, message, responseBody);
+  } catch (error) {
+    errorResponse(res, error.message, error.code);
+  }
+};
+
+module.exports.unfollow_artist = async function (req, res, next) {
+  try {
+    const artistId = req.query?.artistId;
+    const userId = req.session?.user?.id;
+
+    const { message, body: responseBody } = await Users.unfollow_artist(artistId, userId);
+    successResponse(res, message, responseBody);
+  } catch (error) {
+    errorResponse(res, error.message, error.code);
+  }
+};
+
+module.exports.create_user_playlist = async function (req, res, next, body) {
+  try {
+    const userId = req.session?.user?.id;
+
+    // Check if title is provided
+    if (!body?.title?.trim()) { // Optional chaining for safer access
+      return errorResponse(res, 'Please provide a name for your Playlist', 400);
+    }
+
+    const { message, body: responseBody } = await Users.create_user_playlist(body, userId);
+    successResponse(res, message, responseBody);
+  } catch (error) {
+    errorResponse(res, error.message, error.code);
+  }
+};
+
+module.exports.get_liked_songs = async function (req, res, next) {
+  try {
+    const userId = req.session?.user?.id;
+
+    const { message, body: responseBody } = await Users.get_liked_songs(userId);
+    successResponse(res, message, responseBody);
+  } catch (error) {
+    errorResponse(res, error.message, error.code);
+  }
 };
 
 // module.exports.get_recommended_songs = function get_recommended_songs (req, res, next, userId) {
@@ -90,27 +89,17 @@ module.exports.get_liked_songs = function (req, res, next) {
 //     });
 // };
 
-module.exports.get_user_followed_artists = function (req, res, next, userId) {
-  Users.get_user_followed_artists(userId)
-    .then(function (response) {
-      utils.writeJson(res, response);
-    })
-    .catch(function (response) {
-      utils.writeJson(res, response);
-    });
+module.exports.get_user_playlists = async function (req, res, next) {
+  try {
+    const userId = req.session.user.id;
+    const { message, body } = await Users.get_user_playlists(userId);
+
+    successResponse(res, message, body);
+  } catch (error) {
+    errorResponse(res, error.message, error.code);
+  }
 };
 
-module.exports.get_user_playlists = function (req, res, next) {
-  const userId = req.session.user.id;
-  Users.get_user_playlists(userId)
-    .then(function (response) {
-      console.log(response.body);
-      successResponse(res, response.message, response.body);
-    })
-    .catch(function (error) {
-      errorResponse(res, error.message, error.code);
-    });
-};
 
 module.exports.login_user = async function (req, res) {
   const { username, password } = req.body;
