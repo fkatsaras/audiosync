@@ -5,7 +5,7 @@ var Artists = require('../service/ArtistsService');
 const { successResponse, errorResponse } = require('../utils/apiUtils.js');
 
 
-module.exports.get_artist_by_id = function get_artist_by_id (req, res, next) {
+module.exports.get_artist_by_id = function (req, res, next) {
   const artistId = req.openapi.pathParams.artistId;
   const userId = req.session.user.id; 
   Artists.get_artist_by_id(userId, artistId)

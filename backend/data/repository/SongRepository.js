@@ -14,15 +14,6 @@ class SongsRepository {
         return db.executeQuery(connection, query, [songId]);
     }
 
-    static async updateAudioUrl(connection, songId, audioUrl) {
-        const query = `
-            UPDATE songs
-            SET audio_url = ?
-            WHERE id = ?
-        `;
-        return db.executeQuery(connection, query, [audioUrl, songId]);
-    }
-
     static async updateCover(connection, songId, coverUrl) {
         const query = `
             UPDATE songs
