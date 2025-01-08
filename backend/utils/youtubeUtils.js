@@ -53,6 +53,42 @@
 
 const youtubedl = require('youtube-dl-exec');
 
+/**
+ * Fetch Youtube audio URL and video ID for a song
+ * 
+ * @param {Object} songData - Song Data JSON 
+ * @returns {Object|null} Contains audioUrl and videoId if successful, null otherwise
+ */
+async function fetchYoutubeAudio(songData) {
+    try {
+        // If video_id exists, fetch the URL directly
+        if (songData.video_id) {
+            const [audioUrl, fetchedVideoId] = await getYTSongVideo(null, null, songData.video_id);
+            if (audioUrl) {
+                return {
+                    audioUrl,
+                    video_id: fetchedVideoId
+                }
+            }
+            console.warn(`Failed to regenerate audio URL for video ID: ${songData.video_id}`);
+        } else {
+            // Fallback: Search by title if no video_id exists
+            const [audioUrl, fetchedVideoId] = await getYTSongVideo(songData.title, songData.artist_name, null);
+            if (audioUrl) {
+                return {
+                    audioUrl,
+                    video_id: extractVideoId(fetchedVideoId)
+                }
+            }
+            console.warn(`Failed to fetch audio URL for song: ${songData.title}`);
+        }
+        return null;
+    } catch (error) {
+        console.error(`Error fetching YouTube audio:`, error.message);
+        return null;
+    }
+}
+
 async function getYTSongVideo(songTitle, artistName, video_id) {
     try {
         // Search by either video id or song title + artist name
@@ -127,5 +163,6 @@ function extractVideoId(URL) {
 module.exports = {
     getYTSongVideo,
     isExpired,
-    extractVideoId
+    extractVideoId,
+    fetchYoutubeAudio
 };
