@@ -20,7 +20,6 @@
     "axios": "^1.7.7",
     "bcrypt": "^5.1.1",
     "bcryptjs": "^2.4.3",
-    "body-parser": "^1.20.3",
     "connect": "^3.2.0",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
@@ -37,6 +36,9 @@
     "swagger-routes-express": "^3.3.2",
     "swagger-ui-express": "^5.0.1",
     "youtube-dl-exec": "^3.0.10"
+  },
+  "overrides": {
+    "body-parser": "1.20.3"
   },
   "devDependencies": {
     "@types/react-icons": "^2.2.7",
