@@ -111,7 +111,7 @@ const ArtistPage: React.FC<UserSessionProps> = ({ userId, username }) => {
                                             subtitle={String(song.duration)} // Duration as subtitle
                                             linkPath="/songs" // Path to song page
                                             altText={`${song.title} cover`}
-                                            className="song-result-image" // Use the song class for styling
+                                            className="song-result" // Use the song class for styling
                                         />
                                     ))}
                                 </ul>

@@ -129,7 +129,7 @@ const LikedSongsPlaylist: React.FC<UserSessionProps> = ({ userId, username }) =>
                                                                     subtitle={`${song.artist}`}
                                                                     linkPath={`/songs`}
                                                                     altText={`${song.title} cover`}
-                                                                    className="song-result-image"     
+                                                                    className="song-result"     
                                                                 />
                                                             </li>
                                                         )}

@@ -156,7 +156,7 @@ const MyPlaylistsPage: React.FC<UserSessionProps> = ({ userId, username }) => {
                                     }
                                     linkPath={`/${userId}/playlists`}
                                     altText='Playlist cover'
-                                    className='playlist-result-image'
+                                    className='playlist-result'
                                     optionsComponent={ !playlist.isLikedSongs &&    // User cant edit their Liked Songs Playlist
                                         <Options 
                                             onOptionSelect={(value) => 

@@ -16,4 +16,33 @@
     background-color: #181818;
 }
 
-/* CUSTON style for show more button */
+.top-result {
+    border: 3px solid #6a1b9a; 
+    background-color: #282828; 
+    transform: scale(1.02); 
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    height: 80px;
+    border-radius: 5px;
+}
+
+.top-result:hover {
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+}
+
+
+.result-container.top-result {
+    height: 200px;
+}
+
+.result-container.top-result .result-content {
+    flex-direction: column;
+    display: flex;
+    align-items: flex-start;
+    padding: 10px;
+    padding-top: 40px;
+}
+.result-container.top-result .result-title {
+    padding-top: 30px;
+    font-size: xx-large;
+}
+

@@ -37,6 +37,11 @@ function closeConnection(connection) {
     }
 }
 
+function escapeQuotesInString(value) {
+    // Replace single quotes to avoid mysql2 issues
+    return value.replace(/'/g,"''")
+}
+
 function executeQuery(connection, query, values = []) {
     return new Promise((resolve, reject) => {
 
@@ -47,8 +52,12 @@ function executeQuery(connection, query, values = []) {
             fQuery = query.replace(/\?/g, () => {
                 // Pop the first element from the values array and replace the placeholder
                 const value = values.shift();
-                // For safety, you might want to sanitize or format this value for logging
-                return typeof value === 'string' ? `'${value}'` : value;
+                // For safety, sanitize or format this value for logging
+                if (typeof value === 'string') {
+                    return `'${escapeQuotesInString(value)}'`
+                } else {
+                    return value
+                }
             });
         }
 

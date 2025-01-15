@@ -25,10 +25,12 @@ interface UserSessionProps {
  */
 const Search: React.FC<UserSessionProps> = ({ userId, username }) => {
     const [query, setQuery] = useState<string>('');
+    const [searchType, setSearchType] = useState<string>('');
     const [artistResults, setArtistResults] = useState<Artist[]>([]);
     const [songResults, setSongResults] = useState<Song[]>([]);
     const [artistOffset, setArtistOffset] = useState<number>(0);
     const [songOffset, setSongOffset] = useState<number>(0);
+    const [topResult, setTopResult] = useState<Artist |Song | null>(null);
     const [loading, setLoading] = useState<boolean>(false);
     const [error, setError] = useState<string>('');
     const [hasMoreArtists, setHasMoreArtists] = useState<boolean>(false);
@@ -69,17 +71,25 @@ const Search: React.FC<UserSessionProps> = ({ userId, username }) => {
                 setHasSearched(true);
                 return;
             }
+
+            // Extract top result
+            const fetchedResults = type === 'artists' ? data.body.artists : data.body.songs;
+
+            if (fetchedResults.length > 0 && offset === 0) {
+                setTopResult(fetchedResults[0]);
+                fetchedResults.shift();
+            }
     
             if (type === 'artists') {
-                setArtistResults((prevResults) => [...prevResults, ...data.body.artists]);
+                setArtistResults((prevResults) => [...prevResults, ...fetchedResults]);
     
-                if (data.body.artists.length < 5) {
+                if (fetchedResults.length < 5) {
                     setHasMoreArtists(false);
                 }
             } else {
-                setSongResults((prevResults) => [...prevResults, ...data.body.songs]);
+                setSongResults((prevResults) => [...prevResults, ...fetchedResults]);
     
-                if (data.body.songs.length < 5) {
+                if (fetchedResults.length < 5) {
                     setHasMoreSongs(false);
                 }
             }
@@ -106,10 +116,12 @@ const Search: React.FC<UserSessionProps> = ({ userId, username }) => {
         setError('');
         setArtistResults([]);
         setSongResults([]);
+        setTopResult(null);
         setArtistOffset(0);
         setSongOffset(0);
         setHasMoreArtists(true);
         setHasMoreSongs(true);
+        setSearchType(type);
 
         // fetch the results
         fetchResults(type, 0);
@@ -153,7 +165,25 @@ const Search: React.FC<UserSessionProps> = ({ userId, username }) => {
                     <Button onClick={() => handleSearch('artists')} className='search-button'>Artists</Button>
                     <Button onClick={() => handleSearch('songs')} className='search-button'>Songs</Button>
                 </div>
-                <ul>
+
+                {/* Top result */}
+                {topResult && (
+                        <div className='top-result-container'>
+                            <h2>Top Result</h2>
+                            <ResultItem
+                            id={topResult.id}
+                            imageSrc={'cover' in topResult ? topResult.cover : topResult.profile_picture}
+                            title={'title' in topResult ? topResult.title : topResult.name}
+                            subtitle={'duration' in topResult ? String(topResult.duration) : ''}
+                            linkPath={searchType === 'songs' ? '/songs' : '/artists' }
+                            altText='Top Result'
+                            className='top-result'
+                            />
+                        </div>
+                    )}
+                
+                <ul className='result-list'>
+                    
                     {/*Artists results*/}
                     {artistResults.length > 0 && artistResults.map((artist, index) => (
                         <li key={artist.id}>
@@ -164,7 +194,7 @@ const Search: React.FC<UserSessionProps> = ({ userId, username }) => {
                                 subtitle=''
                                 linkPath='/artists'
                                 altText='Artist profile'
-                                className='artist-result-image'
+                                className='artist-result'
                             />
                         </li>
                     ))}
@@ -179,7 +209,7 @@ const Search: React.FC<UserSessionProps> = ({ userId, username }) => {
                                 subtitle={String(song.duration)}
                                 linkPath='/songs'
                                 altText='Song cover'
-                                className='song-result-image'
+                                className='song-result'
                             />
                         </li>
                     ))}
@@ -198,7 +228,7 @@ const Search: React.FC<UserSessionProps> = ({ userId, username }) => {
                 </ul>
                 
                 {/* In case no results match the query*/}
-                {hasSearched && artistResults.length === 0 && songResults.length === 0 && !loading && (
+                {hasSearched && artistResults.length === 0 && songResults.length === 0 && topResult != null && !loading && (
                 <Message className='info-message'>No results found</Message>
                 )}
             </AppBody>

@@ -39,6 +39,7 @@ li {
 .result-container:hover {
     border: 2px solid #2a2a2a;    /* Highlight border n hover */
     box-shadow:  0 0 10px rgba(0, 0, 0, 0.2);   /* Shadow effect */
+    background-color: #2a2a2a;
 }
 
 .result-content {
@@ -47,16 +48,16 @@ li {
 }
 
 /* Different styling based on item type */
-.result-container:hover .playlist-result-image,
-.result-container:hover .artist-result-image,
-.result-container:hover .song-result-image {
+.result-container:hover .playlist-result,
+.result-container:hover .artist-result,
+.result-container:hover .song-result {
     box-shadow: 0 0 10px rgba(255, 255, 255, 0.5); /* Shadow effect instead of a border */
 }
 
 /* Different styling based on item type */
-.result-container .playlist-result-image,
-.result-container .artist-result-image,
-.result-container .song-result-image {
+.result-container .playlist-result,
+.result-container .artist-result,
+.result-container .song-result {
     width: 80px;
     height: 80px;
     border-radius: 50%; /* Circular image for artists */
@@ -64,8 +65,8 @@ li {
     margin-right: 10px;
 }
 
-.result-container .song-result-image,
-.result-container .playlist-result-image {
+.result-container .song-result,
+.result-container .playlist-result {
     border-radius: 5px; /* Rectangular shape for song album cover */
 }
 
