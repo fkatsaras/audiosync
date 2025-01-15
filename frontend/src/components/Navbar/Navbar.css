@@ -2,23 +2,26 @@
 
 .navbar {
     font-family: 'Montserrat', sans-serif;
-    width: 200px; /* Slightly increase the width for better spacing */
-    height: 100vh;
+    width: 13.2%;
+    height: 84.5%;
     background-color: #121212;
     padding: 20px;
     position: fixed;
     left: 0;
-    top: 0;
+    top: 10px;
+    border-radius: 0 16px 16px 0;
     display: flex;
     flex-direction: column;
+    flex-wrap: wrap;
     justify-content: space-between;
+    box-shadow: none;
 }
 
 .navbar-list {
     list-style-type: none;
     padding: 0;
-    margin: 0;
-    flex-grow: 1; /* Allow links to take available space */
+    margin: 20px 0 0 0; /* Push the list 20px down */
+    flex-grow: 1;
 }
 
 .navbar-item {
@@ -42,15 +45,30 @@
     list-style-type: none;
     padding: 0;
     margin: 0;
+    margin-top: auto; /* Push the buttons to the bottom */
 }
 
 .navbar-buttons li {
     margin-top: auto; /* Push the logout button to the bottom */
 }
 
-.navbar-home-button {
-    width: 100%; /* Make the home button stretch to the full width */
-    margin-bottom: 20px; /* Give some space below */
+.default-button.navbar-home-button {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    width: 50px; /* Round button width */
+    height: 50px; /* Round button height */
+    border-radius: 50%; /* Make it round */
+    background-color: #6a1b9a; /* Purple background */
+    border: none; /* remove defualt button border*/
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.navbar-home-button:hover {
+    background-color: #8e24aa; /* Lighter purple on hover */
+    transform: scale(1.05); /* Slight zoom effect on hover */
 }
 
 .logout-button {

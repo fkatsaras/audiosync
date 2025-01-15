@@ -1,5 +1,4 @@
 const got = require('got');
-const test = require('ava');
 const db = require('./dbUtils');
 const BASE_URL = `http://localhost`;
 
@@ -42,6 +41,19 @@ const getUsernameFromToken = async (PORT, token) => {
     
     const userId = response.session.user.id;
     return userId;
+};
+
+const getPlaylistRequest = async (userId, playlistId, token, PORT) => {
+    const URL = `${BASE_URL}:${PORT}/api/v1/users/${userId}/playlists?playlistId=${playlistId}`;
+
+    const options = {
+        headers: {
+            'Authorization': `Bearer ${token}`,
+        },
+        responseType: 'json',
+        throwHttpErrors: false
+    }
+    return await got(URL, options);
 };
 
 const searchRequest = async ( PORT, token, type, query, limit = 10, offset = 0) => {
@@ -124,8 +136,9 @@ const unfollowArtistRequest = async (PORT, token, userId, artistId) => {
 const seedData = async (tableName, columns, data) => {
     const connection = db.createConnection(); // Connect to the test db
 
-    const query = `INSERT INTO ${tableName} (${columns.join(', ')}) VALUES ?`;
+    const query = `INSERT INTO ${tableName} (\`${columns.join('`, `')}\`) VALUES ?`;      // Using backticks to escape SQL keywords
     const values = data.map((row) => columns.map((col) => row[col]));
+    console.log(query, values);
 
     return new Promise((resolve, reject) => {
         connection.query(query, [values], (err, results) => {
@@ -162,12 +175,70 @@ const clearData = async (tableName, condition = '') => {
     });
 };
 
+// Specific seeding for Playlists
+const seedPlaylists = async (users_playlists) => {
+    try {
+        return await seedData('playlists', ['id', 'title', 'owner', 'cover'], users_playlists)
+    } catch (error) {
+        console.log(`Failed to seedData in test DB: ${error.message}`);
+        throw Error;
+    }
+}
+
+const seedPlaylistSongs = async (data) => {
+    try {
+        return await seedData('playlist_songs', ['playlist_id', 'song_id', 'order'], data);
+    } catch (error) {
+        console.error(`Failed to seed playlist_songs with data: ${error}`);
+        throw error;
+    }
+}
+
+// Helper function to seed playlist data
+const seedPlaylistsWithSongs = async (playlists) => {
+  try {
+      // Seed the playlists table
+      await seedPlaylists(playlists.map(playlist => ({
+          id: playlist.id,
+          title: playlist.title,
+          owner: playlist.owner,
+          cover: playlist.cover,
+          is_public: playlist.is_public
+        })));
+      // After seeding playlists, seed the playlist_songs table
+      for (const playlist of playlists) {
+        const playlistSongData = playlist.songs.map(song => ({
+          playlist_id: playlist.id, // playlist_id
+          song_id: song.song_id, // song_id
+          order: song.order,     // order
+      }));
+      // Seed playlist_songs table
+      await seedData('playlist_songs', ['playlist_id', 'song_id', 'order'], playlistSongData);
+      }
+    console.log('Playlists and songs seeded successfully');
+  } catch (error) {
+    console.log(`Failed to seed playlists and songs: ${error.message}`);
+    throw error;
+  }
+};
+
+// Specific clearing for artists
+const clearArtists = async (artist_name_str='') => {
+    try {
+    return await clearData('artists', `WHERE name LIKE '${artist_name_str}%'`);
+    } catch (error) {
+    console.log(`Failed to clearData in test DB: ${error.message}`);
+    throw Error;
+    }
+};
+
+
 // Specific seeding for artists
 const seedArtists = async (artists) => {
     try {
     return await seedData('artists', ['id', 'name', 'followers'], artists);
     } catch (error) {
-    console.log(`Failed to seedData in test DB`);
+    console.log(`Failed to seedData in test DB: ${error.message}`);
     throw Error;
     }
 };
@@ -177,27 +248,42 @@ const seedSongs = async (songs) => {
     try {
     return await seedData('songs', ['id', 'title', 'artist_id', 'album', 'duration', 'cover', 'is_playing'], songs);
     } catch (error) {
-    console.log(`Failed to seedData in test DB`);
+    console.log(`Failed to seedData in test DB: ${error.message}`);
     throw Error;
     }
 };
 
-// Specific clearing for artists
-const clearArtists = async (artist_name_str='Artist') => {
+const clearPlaylistSongs = async (playlistId) => {
     try {
-    return await clearData('artists', `WHERE name LIKE '${artist_name_str}%'`);
+        await clearData('playlist_songs', `WHERE playlist_id = ${playlistId}`);
     } catch (error) {
-    console.log(`Failed to clearData in test DB`);
-    throw Error;
+        console.error(`Failed to clear playlist_songs: ${error}`);
+        throw error;
     }
-};
+}
+
+// Helper function to clear playlist and its songs
+const clearPlaylistWithSongs = async (playlistId) => {
+    try {
+      // First, delete the songs associated with the playlist from playlist_songs table
+      await clearData('playlist_songs', `WHERE playlist_id = ${playlistId}`);
+      
+      // Then, delete the playlist itself
+      await clearData('playlists', `WHERE id = ${playlistId}`);
+      
+      console.log(`Playlist with ID ${playlistId} and its songs cleared successfully`);
+    } catch (error) {
+      console.log(`Failed to clear playlist and its songs: ${error.message}`);
+      throw error;
+    }
+  };
 
 // Specific clearing for songs
 const clearSongs = async (song_title_str) => {
     try {
     return await clearData('songs', `WHERE title LIKE '${song_title_str}%'`);
     } catch (error) {
-    console.log(`Failed to clearData in test DB`);
+    console.log(`Failed to clearData in test DB: ${error.message}`);
     throw Error;
     }
 };
@@ -207,7 +293,7 @@ const seedLikedSongs = async (users_songs) => {
     try {
     return await seedData('liked_songs', ['user_id', 'song_id'], users_songs);
     } catch (error) {
-    console.log(`Failed to seedData in test DB`);
+    console.log(`Failed to seedData in test DB: ${error.message}`);
     throw Error;
     }
 };
@@ -217,7 +303,7 @@ const seedFollowedArtists = async (users_artists) => {
     try {
     return await seedData('followed_artists', ['user_id', 'artist_id'], users_artists);
 } catch (error) {
-    console.log(`Failed to seedData in test DB`);
+    console.log(`Failed to seedData in test DB: ${error.message}`);
     throw Error;
 }
 };
@@ -227,7 +313,7 @@ const clearLikedSongs = async (user_id) => {
     try {
     return await clearData('liked_songs', `WHERE user_id = ${user_id}`);
     } catch (error) {
-    console.log(`Failed to clearData in test DB`);
+    console.log(`Failed to clearData in test DB: ${error.message}`);
     throw Error;
     }
 };
@@ -237,7 +323,7 @@ const clearFollowedArtists = async (user_id) => {
     try {
     return await clearData('followed_artists', `WHERE user_id = ${user_id}`);
     } catch (error) {
-    console.log(`Failed to clearData in test DB`);
+    console.log(`Failed to clearData in test DB: ${error.message}`);
     throw Error;
     }
 };
@@ -260,5 +346,11 @@ module.exports = {
     seedFollowedArtists,
     clearFollowedArtists,
     unfollowArtistRequest,
-    seedLikedSongs
+    seedLikedSongs,
+    getPlaylistRequest,
+    seedPlaylistsWithSongs,
+    clearPlaylistWithSongs,
+    seedPlaylists,
+    clearPlaylistSongs,
+    seedPlaylistSongs
 }

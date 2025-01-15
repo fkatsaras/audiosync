@@ -475,7 +475,6 @@ paths:
                 x-content-type: application/json
         "404":
           description: User not found or no liked songs found
-      x-openapi-router-controller: app.controllers.users_controller
       x-swagger-router-controller: Users
     post:
       tags:
@@ -674,7 +673,6 @@ paths:
                 x-content-type: application/json
         "404":
           description: User not found or no playlists found
-      x-openapi-router-controller: app.controllers.users_controller
       x-swagger-router-controller: Users
     post:
       tags:
@@ -709,16 +707,15 @@ paths:
           description: Invalid request body
         "404":
           description: User not found
-      x-openapi-router-controller: app.controllers.users_controller
       x-swagger-router-controller: Users
     delete:
       tags:
       - users
       summary: Delete a user's playlist
       description: Delete a specific playlist created by a user
-      operationId: delete_user_playlist
+      operationId: delete_playlist_by_id
       parameters:
-      - name: user-id
+      - name: userId
         in: path
         description: ID of the user who owns the playlist to delete
         required: true
@@ -726,7 +723,7 @@ paths:
         explode: false
         schema:
           type: integer
-      - name: playlist-id
+      - name: playlistId
         in: query
         description: ID of the playlist to delete
         required: true
@@ -739,8 +736,7 @@ paths:
           description: Playlist deleted successfully
         "404":
           description: User or playlist not found
-      x-openapi-router-controller: app.controllers.users_controller
-      x-swagger-router-controller: Users
+      x-swagger-router-controller: Playlists
   /api/v1/songs/{song-id}/play:
     get:
       tags:

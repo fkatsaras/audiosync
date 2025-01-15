@@ -18,12 +18,10 @@ const PopUp: React.FC<PopUpProps> = ({ title, onConfirm, onCancel, children }) =
                 <div className="popup-actions">
                     <Button 
                         className="popup-confirm"
-                        isSpecial={false}
                         onClick={onConfirm}
                     >OK</Button>
                     <Button 
                         className="popup-cancel"
-                        isSpecial={false}
                         onClick={onCancel}
                     >Cancel</Button>
                 </div>

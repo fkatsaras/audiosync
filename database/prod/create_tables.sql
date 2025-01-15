@@ -46,9 +46,16 @@ CREATE TABLE IF NOT EXISTS `songs` (
   `id` int unsigned NOT NULL AUTO_INCREMENT,
   `title` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
   `artist_id` INT UNSIGNED NOT NULL,  -- Foreign key for artist
+  `audio_url` TEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  `video_id` VARCHAR(20) DEFAULT NULL,
   `album` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
   `duration` int NOT NULL,
   `cover` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  `lyrics` TEXT DEFAULT NULL,
+  `genre` VARCHAR(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  `release_date` DATE DEFAULT NULL,
+  `play_count` INT UNSIGNED DEFAULT 0,
+  `popularity` FLOAT DEFAULT 0.0,
   `is_playing` boolean NOT NULL,
   PRIMARY KEY (`id`),
   CONSTRAINT `fk_artist` FOREIGN KEY (`artist_id`) REFERENCES `artists` (`id`) ON DELETE CASCADE
@@ -88,10 +95,11 @@ CREATE TABLE IF NOT EXISTS `playlists` (
   `is_public` boolean NOT NULL DEFAULT false,
   `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `isLikedSongs` boolean NOT NULL DEFAULT false,
   PRIMARY KEY (`id`),
   FOREIGN KEY (`owner`) REFERENCES `users`(`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
+  
 -- Data exported was unselected
 
 

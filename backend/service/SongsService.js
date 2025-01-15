@@ -3,6 +3,9 @@
 const db = require('../utils/dbUtils');
 const Song = require('../models/Song');
 const { getSongCover } = require('../utils/spotify');
+const { fetchYoutubeAudio, isExpired, extractVideoId } = require('../utils/youtubeUtils');
+const ErrorHandler = require('../middleware/ErrorHandler');
+const SongsRepository = require('../data/repository/SongRepository');
 
 
 /**
@@ -12,95 +15,64 @@ const { getSongCover } = require('../utils/spotify');
  * songId Integer The ID of the song to fetch
  * returns Song
  **/
-exports.get_song_by_id = function(userId, songId) {
-  return new Promise(async (resolve, reject) => {
-    try {
-      const connection = db.createConnection();
+exports.get_song_by_id = async function (userId, songId) {
+  const connection = db.createConnection();
 
-      const query = `
-        SELECT songs.*, artists.name AS artist_name
-        FROM songs
-        JOIN artists ON songs.artist_id = artists.id
-        WHERE songs.id = ?
-      `;
-      const songResult = await db.executeQuery(connection, query, [songId]);
+  try  {
 
-      if (songResult.length > 0) {
-        const songData = songResult[0];
-        songData.artist = songData.artist_name;
-        console.log(songData);
+    const songResult = await SongsRepository.getSongById(connection, songId);
 
-        // Create a Song instance with the retrieved data
-        const song = Song.fromObject(songData);
+    if (songResult.length === 0) {
+      throw ErrorHandler.createError(404, `Song with ID: ${songId} not found`);
+    }
 
-        // Fetch album cover and set it
-        song.cover = await getSongCover(song.album);
+    const songData = songResult[0];
 
-        // Check if the song has been liked by the user
-        const likeQuery = `
-          SELECT 1 FROM liked_songs
-          WHERE user_id = ? AND song_id = ?
-        `;
+    songData.artist = songData.artist_name;
 
-        const likeResult = await db.executeQuery(connection, likeQuery, [userId, songId]);
-        song.liked = Boolean(likeResult.length);
+    // Update audio URL if missing or expired
+    if (!songData.audio_url || isExpired(songData.audio_url)) {
+      console.log(`Audio URL missing or expired for song: ${songData.title}. Fetching from YouTube...`);
+      const ytAudioInfo = await fetchYoutubeAudio(songData);
 
-        // Respond with song data
-        return resolve({
-          message: 'Song retrieved successfully.',
-          body: song.toJSON()
-        });
+      if (ytAudioInfo) {
+        const { audioUrl, videoId } = ytAudioInfo;
+        songData.audio_url = audioUrl;
+        
+        await SongsRepository.updateAudioUrl(connection, songId, audioUrl);
 
-      } else {
-        // Song not found 
-        return reject({
-          message: `Song with ID: ${songId} not found.`,
-          code: 404
-        });
+        if (videoId) await SongsRepository.updateVideoId(connection, songId, videoId);
       }
-    } catch (error) {
-      console.error('Error in retrieving song:', error.message);
-      reject({
-        message: error.message,
-        body: 500
-      });
     }
-  })
-}
 
+    // Update cover if missing
+    if (!songData.cover) {
+      console.log(`Cover missing for album: ${songData.album}. Fetching from Spotify...`);
+      const coverUrl = await getSongCover(songData.album);
 
-/**
- * Get play status of a song
- * Retrieve the current play status (playing or paused) of a specific song
- *
- * songId Integer ID of the song to retrieve play status for
- * returns inline_response_200
- **/
-exports.get_song_play_status = function(songId) {
-  return new Promise(function(resolve, reject) {
-    var examples = {};
-    examples['application/json'] = {
-  "is_playing" : true
-};
-    if (Object.keys(examples).length > 0) {
-      resolve(examples[Object.keys(examples)[0]]);
-    } else {
-      resolve();
+      if (coverUrl) {
+        songData.cover = coverUrl;
+        
+        await SongsRepository.updateCover(connection, songId, coverUrl);
+      }
     }
-  });
+
+    // Create a Song instance
+    const song = Song.fromObject(songData);
+
+    // Check if the song has been liked by the user
+    const likeResult = await SongsRepository.isSongLikedByUser(connection, userId, songId);
+    song.liked = Boolean(likeResult.length);
+
+    // Return the song data
+    return {
+      message: 'Song retrieved successfully.',
+      body: song.toJSON(),
+    };
+
+  } catch (error) {
+    throw ErrorHandler.handle(error);
+  } finally {
+    db.closeConnection(connection);
+  }
 }
-
-
-/**
- * Toggle play/pause of a song
- * Start or pause playback of a specific song
- *
- * songId Integer ID of the song to toggle play/pause
- * no response value expected for this operation
- **/
-exports.toggle_song_playback = function(songId) {
-  return new Promise(function(resolve, reject) {
-    resolve();
-  });
-}
-

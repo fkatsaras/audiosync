@@ -2,11 +2,13 @@ import React, { useEffect, useState} from "react";
 import { useParams } from "react-router-dom";
 import { Artist } from "../types/data";
 import '../styles/ArtistPage.css'
-import Button from "../components/Buttons/Button";
 import AppBody from "../components/AppBody/AppBody";
 import ResultItem from "../components/ResultItem/ResultItem";
 import LoadingDots from "../components/LoadingDots/LoadingDots";
 import Navbar from "../components/Navbar/Navbar";
+import FollowButton from "../components/Buttons/FollowButton";
+import Message from "../components/Message/Message";
+import ProfileBar from "../components/ProfileBar/ProfileBar";
 
 interface UserSessionProps {
     userId?: string;
@@ -78,48 +80,48 @@ const ArtistPage: React.FC<UserSessionProps> = ({ userId, username }) => {
     if (error) return <div>{error}</div>;
 
     return (
-        <AppBody>
-            <Navbar userId={userId || ''} username={username || ''} />
-            <div className="artist-container">
-                {artist && (
-                    <div className="artist-content-container">
-                        <div className="artist-info">
-                            <h1>{artist.name}</h1>
-                            <img
-                                src={artist.profile_picture}
-                                alt={`${artist.name} profile`}
-                                className="artist-profile-picture"
-                            />
-                            <p>Followers: {artist.followers}</p>
-                            <Button isSpecial={true} isActive={artist.is_followed} onClick={handleFollowToggle}>
-                                {artist.is_followed ? 'Following' : 'Follow'}
-                            </Button>
+        <div>
+            <AppBody>
+                <Navbar userId={userId || ''} username={username || ''} />
+                <div className="artist-container">
+                    {artist && (
+                        <div className="artist-content-container">
+                            <div className="artist-info">
+                                <h1>{artist.name}</h1>
+                                <FollowButton isFollowing={artist.is_followed} onToggle={handleFollowToggle}/>
+                                <p>Followers: {artist.followers}</p>
+                                <img
+                                    src={artist.profile_picture}
+                                    alt={`${artist.name} profile`}
+                                    className="artist-picture"
+                                />
+                                {/* Display follow/unfollow/error message */}
+                                {message && <Message className="info-message">{message}</Message>}
+                            </div>
 
-                            {/* Display follow/unfollow/error message */}
-                            {message && <p>{message}</p>}
+                            <div className="artist-songs">
+                                <h2>Songs</h2>
+                                <ul>
+                                    {artist.songs.map((song) => (
+                                        <ResultItem
+                                            key={song.id}
+                                            id={song.id}
+                                            imageSrc={song.cover}
+                                            title={song.title}
+                                            subtitle={String(song.duration)} // Duration as subtitle
+                                            linkPath="/songs" // Path to song page
+                                            altText={`${song.title} cover`}
+                                            className="song-result-image" // Use the song class for styling
+                                        />
+                                    ))}
+                                </ul>
+                            </div>
                         </div>
-
-                        <div className="artist-songs">
-                            <h2>Songs</h2>
-                            <ul>
-                                {artist.songs.map((song) => (
-                                    <ResultItem
-                                        key={song.id}
-                                        id={song.id}
-                                        imageSrc={song.cover}
-                                        title={song.title}
-                                        subtitle={String(song.duration)} // Duration as subtitle
-                                        linkPath="/songs" // Path to song page
-                                        altText={`${song.title} cover`}
-                                        className="song-result-image" // Use the song class for styling
-                                    />
-                                ))}
-                            </ul>
-                        </div>
-                    </div>
-                )}
-            </div>
-        </AppBody>
+                    )}
+                </div>
+            </AppBody>
+            <ProfileBar userId={userId || ''} username={username || ''}/>
+        </div>
     )
 }
 

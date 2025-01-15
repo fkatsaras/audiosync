@@ -1,0 +1,38 @@
+.play-button {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background-color: #6a1b9a;
+    border: none;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.1s ease;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+    line-height: 0;
+}
+
+.play-button:hover {
+    background-color: #8e24aa; /* Lighter purple fill on hover */
+    box-shadow: 0 6px 8px rgba(0, 0, 0, 0.3);
+}
+
+.play-button:active {
+    transform: scale(0.95); /* Bounce effect on click */
+}
+
+.play-button.playing {
+    background-color: #8e24aa; /* Lighter purple fill when playing */
+}
+
+.play-button .icon {
+    color: #121212;
+    font-size: 24px; /* Icon size */
+    transition: transform 0.2s ease;
+    display: block;
+}
+
+.play-button.playing .icon {
+    transform: scale(1.1); /* Slight zoom on playing */
+}

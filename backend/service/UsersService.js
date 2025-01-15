@@ -3,6 +3,8 @@
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const db = require('../utils/dbUtils');
+const { fromObject } = require('../models/Song');
+const { get_playlist_by_id } = require('./PlaylistsService');
 
 
 /**
@@ -13,43 +15,55 @@ const db = require('../utils/dbUtils');
  * userId Integer ID of the user to add the liked song
  * no response value expected for this operation
  **/
-exports.like_song = function(userId, songId) {
-  return new Promise(async (resolve, reject) => {
+exports.like_song = async function(userId, songId) {
 
-    const connection = db.createConnection();
-    try {
-      // Step 1: Insert the song into the liked_songs table
-      const insertQuery = `
-        INSERT INTO liked_songs (user_id, song_id)
-        VALUES (?, ?)
-      `;
-
-      const insertSuccess = await db.executeQuery(connection, insertQuery, [userId, songId]);
-
-      if (insertSuccess.affectedRows > 0) {
-        // Successfully liked the song
-        resolve({
-          message: 'Song liked successfully',
-          body: {
-            liked: true
-          }
-        });
-      } else {
-        reject({
-          message: 'Failed to like song.',
-        });
-      }
-    } catch (error) {
-      console.log(`Unexpected: ${error}`);
-      reject({
-        message: 'Unexpected error'
-      });
-    } finally {
-      // Ensure db connection is closed at the end
-      db.closeConnection(connection);
+  const connection = db.createConnection();
+  try {
+    // Step 1: Insert the song into the liked_songs table
+    const insertLikedSongsQuery = `
+      INSERT INTO liked_songs (user_id, song_id)
+      VALUES (?, ?)
+    `;
+    const insertLikedPlaylistQuery = `
+      INSERT INTO playlist_songs (playlist_id, song_id)
+      VALUES (?, ?);
+    `;
+    // Step 2 : Get the users Liked Songs Playlist
+    const getLikedPlaylistQuery = `
+      SELECT id FROM playlists
+      WHERE owner = ? AND isLikedSongs = true;
+    `;
+    const likedPlaylistResult = await db.executeQuery(connection, getLikedPlaylistQuery, [userId]);
+    const playlistId = likedPlaylistResult[0].id;
+    // Step 3: Insert the song into the liked playlist / update the liked status of the song
+    const insertPlaylistSongResult = await db.executeQuery(connection, insertLikedPlaylistQuery, [playlistId, songId]);
+    const insertSuccess = await db.executeQuery(connection, insertLikedSongsQuery, [userId, songId]);
+    if (insertSuccess.affectedRows > 0 && insertPlaylistSongResult.affectedRows > 0) {  // TODO: implement better error checking here
+      // Successfully liked the song
+      return {
+        message: 'Song liked successfully',
+        body: {
+          liked: true
+        }
+      };
+    } else {
+      throw {
+        message: 'Failed to like song.',
+      };
     }
-  });
+  } catch (error) {
+    if (error.code) throw error; // Re-throw expected errors without modification
+
+    console.log(`Unexpected: ${error}`);
+    throw {
+      message: 'Unexpected error'
+    };
+  } finally {
+    // Ensure db connection is closed at the end
+    db.closeConnection(connection);
+  }
 };
+
 
 /**
  * User unlikes a song
@@ -59,41 +73,51 @@ exports.like_song = function(userId, songId) {
  * songId Integer ID of the song to be removed from liked songs
  * no response value expected for this operation
  **/
-exports.unlike_song = function(userId, songId) {
-  return new Promise(async (resolve, reject) => {
-    const connection = db.createConnection();
-    try {
-      // Step 1: Delete the song from the liked_songs table
-      const deleteQuery = `
-        DELETE FROM liked_songs
-        WHERE user_id = ? AND song_id = ?
-      `;
-
-      const deleteSuccess = await db.executeQuery(connection, deleteQuery, [userId, songId]);
-
-      if (deleteSuccess.affectedRows > 0) {
-        // Successfully unliked the song
-        resolve({
-          message: 'Song unliked successfully.',
-          body: {
-            liked: false
-          }
-        });
-      } else {
-        reject({
-          message: 'Failed to unlike the song.',
-        });
-      }
-    } catch (error) {
-      console.log(`Unexpected: ${error}`);
-      reject({
-        message: 'Unexpected error'
-      });
-    } finally {
-      // Ensure db connection is closed at the end
-      db.closeConnection(connection);
+exports.unlike_song = async function(userId, songId) {
+  const connection = db.createConnection();
+  try {
+    // Step 1: Delete the song from the liked_songs table
+    const deleteQuery = `
+      DELETE FROM liked_songs
+      WHERE user_id = ? AND song_id = ?
+    `;
+    const deleteSongPlaylistQuery = `
+      DELETE FROM playlist_songs
+      WHERE playlist_id = ? AND song_id = ?
+    `;
+    // Get the users Liked Songs Playlist
+    const getLikedPlaylistQuery = `
+      SELECT id FROM playlists
+      WHERE owner = ? AND isLikedSongs = true;
+    `;
+    const likedPlaylistResult = await db.executeQuery(connection, getLikedPlaylistQuery, [userId]);
+    const playlistId = likedPlaylistResult[0].id;
+    const deletePlaylistSongResult = await db.executeQuery(connection, deleteSongPlaylistQuery, [playlistId, songId]);
+    const deleteSuccess = await db.executeQuery(connection, deleteQuery, [userId, songId]);
+    if (deleteSuccess.affectedRows > 0 && deletePlaylistSongResult.affectedRows > 0) {  // TODO: implement better error checking here
+      // Successfully unliked the song
+      return {
+        message: 'Song unliked successfully.',
+        body: {
+          liked: false
+        }
+      };
+    } else {
+      throw {
+        message: 'Failed to unlike the song.',
+      };
     }
-  });
+  } catch (error) {
+    if (error.code) throw error; // Re-throw expected errors without modification
+
+    console.log(`Unexpected: ${error}`);
+    throw {
+      message: 'Unexpected error'
+    };
+  } finally {
+    // Ensure db connection is closed at the end
+    db.closeConnection(connection);
+  }
 };
 
 
@@ -105,83 +129,52 @@ exports.unlike_song = function(userId, songId) {
  * userId Integer ID of the user to create the playlist for
  * returns Playlist
  **/
-exports.create_user_playlist = function(body,userId) {
-  return new Promise(async (resolve, reject) => {
-    const connection = db.createConnection();
-    try {
+exports.create_user_playlist = async function(body,userId) {
+   const connection = db.createConnection();
+   try {
 
-      const insertQuery = `
-        INSERT INTO playlists (title, owner)
-        VALUES (?, ?);
-      `;
-      const insertResult = await db.executeQuery(connection, insertQuery, [body.title, userId]);
+     const insertQuery = `
+       INSERT INTO playlists (title, owner)
+       VALUES (?, ?);
+     `;
+     const insertResult = await db.executeQuery(connection, insertQuery, [body.title, userId]);
 
-      if (insertResult.affectedRows > 0) {
-        // Successfully inserted the new playlist
-        // Resolve with the data
-        const newPlaylist = {
-          // id: result.insertId,
-          title: body.title,
-          owner: userId,
-          cover: null,  // Default null, could be added later
-          edit_mode: false,  // Default value
-          is_public: false,  // Default value
-          created_at: new Date(),
-          updated_at: new Date(),
-        };
+     if (insertResult.affectedRows > 0) {
+       // Successfully inserted the new playlist
+       // Resolve with the data
+       const newPlaylist = {
+         // id: result.insertId,
+         title: body.title,
+         owner: userId,
+         cover: null,  // Default null, could be added later
+         edit_mode: false,  // Default value
+         is_public: false,  // Default value
+         created_at: new Date(),
+         updated_at: new Date(),
+       };
 
-        resolve({
-          message: 'Successfully created new playlist',
-          body: newPlaylist,
-          code: 201
-        });
-      } else {
-        reject({
-          message: 'Failed to create new playlist',
-        })
-      }
-    } catch (error) {
-      console.error('Unexpected error:', error);
-      reject({
-        message: 'Unexpected',
-        code: 500
-      })
-    } finally {
-      db.closeConnection(connection);
-    }  
-  });
-}
+       return {
+         message: 'Successfully created new playlist',
+         body: newPlaylist,
+         code: 201
+       };
+     } else {
+       throw {
+         message: 'Failed to create new playlist',
+       }
+     }
+   } catch (error) {
+    if (error.code) throw error; // Re-throw expected errors without modification
 
-
-/**
- * Delete a specific playlist
- * Delete a specific playlist created by a user
- *
- * userId Integer ID of the user who owns the playlist
- * playlistId Integer ID of the playlist to delete
- * no response value expected for this operation
- **/
-exports.delete_playlist_by_id = function(userId,playlistId) {
-  return new Promise(function(resolve, reject) {
-    resolve();
-  });
-}
-
-
-/**
- * Delete a user's playlist
- * Delete a specific playlist created by a user
- *
- * userId Integer ID of the user who owns the playlist to delete
- * playlistId Integer ID of the playlist to delete
- * no response value expected for this operation
- **/
-exports.delete_user_playlist = function(userId,playlistId) {
-  return new Promise(function(resolve, reject) {
-    resolve();
-  });
-}
-
+    console.error('Unexpected error:', error);
+    throw {
+      message: 'Unexpected',
+      code: 500
+    }
+   } finally {
+     db.closeConnection(connection);
+   }  
+ };
 
 /**
  * Follow an artist
@@ -191,67 +184,62 @@ exports.delete_user_playlist = function(userId,playlistId) {
  * userId Integer The ID of the user
  * no response value expected for this operation
  **/
-exports.follow_artist = function(artistId,userId) {
-  return new Promise(async (resolve, reject) => {
+exports.follow_artist = async function(artistId,userId) {
 
-    const connection = db.createConnection();
-    try {
-      //  Insert the artist into the followed artists table
-      const insertQuery = `
-        INSERT INTO followed_artists (user_id, artist_id)
-        VALUES (?, ?)
+  const connection = db.createConnection();
+  try {
+    //  Insert the artist into the followed artists table
+    const insertQuery = `
+      INSERT INTO followed_artists (user_id, artist_id)
+      VALUES (?, ?)
+    `;
+    const insertSuccess = await db.executeQuery(connection, insertQuery, [userId, artistId]);
+    if (insertSuccess.affectedRows > 0) {
+      // Successfully followed the artist, update the artists followers 
+      const updateQuery = `
+        UPDATE artists
+        SET followers = followers + 1
+        WHERE id = ?
       `;
-
-      const insertSuccess = await db.executeQuery(connection, insertQuery, [userId, artistId]);
-
-      if (insertSuccess.affectedRows > 0) {
-        // Successfully followed the artist, update the artists followers 
-        const updateQuery = `
-          UPDATE artists
-          SET followers = followers + 1
-          WHERE id = ?
-        `;
-
-        const updateSuccess = await db.executeQuery(connection, updateQuery, [artistId]);
-
-        if (updateSuccess.affectedRows > 0) {
-          resolve({
-            message: 'Artist followed successfully',
-            body: {
-              is_followed: true
-            },
-          });
-        } else {
-          // Roll back the insertion if the update failed
-          const rollbackQuery = `
-            DELETE 
-            FROM folowed_artists
-            WHERE
-              user_id = ? AND artist_id = ?
-          `;
-
-          await db.executeQuery(connection, rollbackQuery, [userId, artistId]);
-
-          reject({
-            message:  'Failed to update followers count, rolled back follow operation.'
-          })
-        }
+      const updateSuccess = await db.executeQuery(connection, updateQuery, [artistId]);
+      if (updateSuccess.affectedRows > 0) {
+        return {
+          message: 'Artist followed successfully',
+          body: {
+            is_followed: true
+          },
+        };
       } else {
-        reject({
-          message: 'Failed to follow artist.',
-        });
+        // Roll back the insertion if the update failed
+        const rollbackQuery = `
+          DELETE 
+          FROM folowed_artists
+          WHERE
+            user_id = ? AND artist_id = ?
+        `;
+        await db.executeQuery(connection, rollbackQuery, [userId, artistId]);
+        throw {
+          message:  'Failed to update followers count, rolled back follow operation.'
+        }
       }
-    } catch (error) {
-      console.log(`Unexpected: ${error}`);
-      reject({
-        message: 'Unexpected error'
-      });
-    } finally {
-      // Ensure db connection is closed at the end
-      db.closeConnection(connection);
+    } else {
+      throw {
+        message: 'Failed to follow artist.',
+      };
     }
-  });
-}
+  } catch (error) {
+    if (error.code) throw error; // Re-throw expected errors without modification
+
+    console.log(`Unexpected: ${error}`);
+    throw {
+      message: 'Unexpected error'
+    };
+  } finally {
+    // Ensure db connection is closed at the end
+    db.closeConnection(connection);
+  }
+};
+
 
 /**
  * Unfollow an artist
@@ -261,66 +249,61 @@ exports.follow_artist = function(artistId,userId) {
  * artist_id Integer The ID of the artist to unfollow
  * no response value expected for this operation
  **/
-exports.unfollow_artist = function(artistId,userId) {
-  return new Promise(async (resolve, reject) => {
-    const connection = db.createConnection();
-    try {
-      // Delete artist from followed artists table
-      const deleteQuery = `
-        DELETE 
-        FROM followed_artists
-        WHERE
-          user_id = ? AND artist_id = ?
+exports.unfollow_artist = async function(artistId,userId) {
+  const connection = db.createConnection();
+  try {
+    // Delete artist from followed artists table
+    const deleteQuery = `
+      DELETE 
+      FROM followed_artists
+      WHERE
+        user_id = ? AND artist_id = ?
+    `;
+    const deleteSuccess = await db.executeQuery(connection, deleteQuery, [userId, artistId]);
+    if (deleteSuccess.affectedRows > 0) {
+      // Successfully deleted the artist from the table, now update their followers count
+      const updateQuery = `
+        UPDATE artists
+        SET followers = GREATEST(followers - 1, 0)
+        WHERE id = ?
       `;
-
-      const deleteSuccess = await db.executeQuery(connection, deleteQuery, [userId, artistId]);
-
-      if (deleteSuccess.affectedRows > 0) {
-        // Successfully deleted the artist from the table, now update their followers count
-        const updateQuery = `
-          UPDATE artists
-          SET followers = GREATEST(followers - 1, 0)
-          WHERE id = ?
-        `;
-
-        const updateSuccess = await db.executeQuery(connection, updateQuery, [artistId]);
-
-        if (updateSuccess.affectedRows > 0) {
-          resolve({
-            message: 'Artist unfollowed successfully',
-            body: {
-              is_followed: false
-            },
-          });
-        } else {
-          // Roll back the delete if the update failed
-          const rollbackQuery = `
-            INSERT INTO followed_artists (user_id, artist_id)
-            VALUES (?, ?)
-          `;
-
-          await db.executeQuery(connection, rollbackQuery, [userId, artistId]);
-
-          reject({
-            message:  'Failed to update followers count, rolled back follow operation.'
-          })
-        }
+      const updateSuccess = await db.executeQuery(connection, updateQuery, [artistId]);
+      if (updateSuccess.affectedRows > 0) {
+        return {
+          message: 'Artist unfollowed successfully',
+          body: {
+            is_followed: false
+          },
+        };
       } else {
-        reject({
-          message: 'Failed to unfollow artist.',
-        });
+        // Roll back the delete if the update failed
+        const rollbackQuery = `
+          INSERT INTO followed_artists (user_id, artist_id)
+          VALUES (?, ?)
+        `;
+        await db.executeQuery(connection, rollbackQuery, [userId, artistId]);
+        throw {
+          message:  'Failed to update followers count, rolled back follow operation.'
+        }
       }
-    } catch (error) {
-      console.log(`Unexpected: ${error}`);
-      reject({
-        message: 'Unexpected error'
-      });
-    } finally {
-      // Ensure db connection is closed at the end
-      db.closeConnection(connection);
+    } else {
+      throw {
+        message: 'Failed to unfollow artist.',
+      };
     }
-  });
-}
+  } catch (error) {
+    if (error.code) throw error; // Re-throw expected errors without modification
+
+    console.log(`Unexpected: ${error}`);
+    throw {
+      message: 'Unexpected error'
+    };
+  } finally {
+    // Ensure db connection is closed at the end
+    db.closeConnection(connection);
+  }
+};
+
 
 
 
@@ -331,150 +314,46 @@ exports.unfollow_artist = function(artistId,userId) {
  * userId Integer ID of the user whose liked songs are to be fetched
  * returns List
  **/
-exports.get_liked_songs = function(userId) {
-  return new Promise(function(resolve, reject) {
-    var examples = {};
-    examples['application/json'] = [ {
-  "duration" : 300,
-  "cover" : "https://1.bp.blogspot.com/-e2j5SK7JAC8/XmHhBKZJyEI/AAAAAAAABto/A1cfumUwHuA_8MFlAEtdpN5rLHlpVOd6ACLcBGAsYHQ/s1600/Iron%2BMaiden%2B-%2BPowerslave%2B%25281984%2529%2Bfront%2Bback%2Balbum%2Bcovers.jpg",
-  "artist" : "Iron Maiden",
-  "album" : "Powerslave",
-  "playlists" : [ {
-    "songs" : [ null, null ],
-    "editMode" : true,
-    "id" : 123,
-    "title" : "My Favorite Songs"
-  }, {
-    "songs" : [ null, null ],
-    "editMode" : true,
-    "id" : 123,
-    "title" : "My Favorite Songs"
-  } ],
-  "is_playing" : false,
-  "id" : 456,
-  "title" : "Aces High",
-  "liked" : true
-}, {
-  "duration" : 300,
-  "cover" : "https://1.bp.blogspot.com/-e2j5SK7JAC8/XmHhBKZJyEI/AAAAAAAABto/A1cfumUwHuA_8MFlAEtdpN5rLHlpVOd6ACLcBGAsYHQ/s1600/Iron%2BMaiden%2B-%2BPowerslave%2B%25281984%2529%2Bfront%2Bback%2Balbum%2Bcovers.jpg",
-  "artist" : "Iron Maiden",
-  "album" : "Powerslave",
-  "playlists" : [ {
-    "songs" : [ null, null ],
-    "editMode" : true,
-    "id" : 123,
-    "title" : "My Favorite Songs"
-  }, {
-    "songs" : [ null, null ],
-    "editMode" : true,
-    "id" : 123,
-    "title" : "My Favorite Songs"
-  } ],
-  "is_playing" : false,
-  "id" : 456,
-  "title" : "Aces High",
-  "liked" : true
-} ];
-    if (Object.keys(examples).length > 0) {
-      resolve(examples[Object.keys(examples)[0]]);
+exports.get_liked_songs = async function(userId) {
+  const connection = db.createConnection();
+  try {
+    // Step 1: Find the users liked songs playlists id using the isLikedSongs flag
+    const selectQuery = `
+      SELECT
+        id
+      FROM playlists
+      WHERE owner = ? AND isLikedSongs = true;
+    `;
+    const selectResult = await db.executeQuery(connection, selectQuery, [userId]);
+    if (selectResult.length > 0) {
+      // Step 2: Call the get_playlist_by_id service to retrieve the rest of the playlist data
+      const playlistId = selectResult[0].id;
+      
+      // Await the response from get_playlist_by_id
+      const playlistResponse = await get_playlist_by_id(userId, playlistId);
+      
+      // Return the liked songs playlist data
+      return {
+        message: 'Liked songs retrieved successfully',
+        body: playlistResponse.body // Propagate the response from the service
+      };
     } else {
-      resolve();
+      throw {
+        message: 'No liked songs playlist found for this user',
+        code: 404
+      };
     }
-  });
-}
-
-
-/**
- * Get recommended songs for a user
- * Retrieve recommended songs for a specific user based on their preferences
- *
- * userId Integer ID of the user to fetch recommended songs for
- * returns List
- **/
-exports.get_recommended_songs = function(userId) {
-  return new Promise(function(resolve, reject) {
-    var examples = {};
-    examples['application/json'] = [ {
-  "duration" : 300,
-  "cover" : "https://1.bp.blogspot.com/-e2j5SK7JAC8/XmHhBKZJyEI/AAAAAAAABto/A1cfumUwHuA_8MFlAEtdpN5rLHlpVOd6ACLcBGAsYHQ/s1600/Iron%2BMaiden%2B-%2BPowerslave%2B%25281984%2529%2Bfront%2Bback%2Balbum%2Bcovers.jpg",
-  "artist" : "Iron Maiden",
-  "album" : "Powerslave",
-  "playlists" : [ {
-    "songs" : [ null, null ],
-    "editMode" : true,
-    "id" : 123,
-    "title" : "My Favorite Songs"
-  }, {
-    "songs" : [ null, null ],
-    "editMode" : true,
-    "id" : 123,
-    "title" : "My Favorite Songs"
-  } ],
-  "is_playing" : false,
-  "id" : 456,
-  "title" : "Aces High",
-  "liked" : true
-}, {
-  "duration" : 300,
-  "cover" : "https://1.bp.blogspot.com/-e2j5SK7JAC8/XmHhBKZJyEI/AAAAAAAABto/A1cfumUwHuA_8MFlAEtdpN5rLHlpVOd6ACLcBGAsYHQ/s1600/Iron%2BMaiden%2B-%2BPowerslave%2B%25281984%2529%2Bfront%2Bback%2Balbum%2Bcovers.jpg",
-  "artist" : "Iron Maiden",
-  "album" : "Powerslave",
-  "playlists" : [ {
-    "songs" : [ null, null ],
-    "editMode" : true,
-    "id" : 123,
-    "title" : "My Favorite Songs"
-  }, {
-    "songs" : [ null, null ],
-    "editMode" : true,
-    "id" : 123,
-    "title" : "My Favorite Songs"
-  } ],
-  "is_playing" : false,
-  "id" : 456,
-  "title" : "Aces High",
-  "liked" : true
-} ];
-    if (Object.keys(examples).length > 0) {
-      resolve(examples[Object.keys(examples)[0]]);
-    } else {
-      resolve();
-    }
-  });
-}
-
-
-/**
- * Get followed artists
- * Retrieve the list of artists followed by the user
- *
- * userId Integer The ID of the user
- * returns List
- **/
-exports.get_user_followed_artists = function(userId) {
-  return new Promise(function(resolve, reject) {
-    var examples = {};
-    examples['application/json'] = [ {
-  "followers" : 5000,
-  "songs" : [ null, null ],
-  "name" : "Iron Maiden",
-  "is_followed" : true,
-  "id" : 1
-}, {
-  "followers" : 5000,
-  "songs" : [ null, null ],
-  "name" : "Iron Maiden",
-  "is_followed" : true,
-  "id" : 1
-} ];
-    if (Object.keys(examples).length > 0) {
-      resolve(examples[Object.keys(examples)[0]]);
-    } else {
-      resolve();
-    }
-  });
-}
-
+  } catch (error) {
+    console.error(`Error fetching liked songs: ${error}`);
+    if (error.code) throw error; // Re-throw expected errors without modification
+    throw {
+      message: 'Unexpected error fetching liked songs',
+      code: 500
+    };
+  } finally {
+    db.closeConnection(connection);
+  }
+};
 
 /**
  * Get user's playlists
@@ -483,55 +362,53 @@ exports.get_user_followed_artists = function(userId) {
  * userId Integer ID of the user whose playlists are to be fetched
  * returns List
  **/
-exports.get_user_playlists = function(userId) {
-  return new Promise(async (resolve, reject) => {
-    const connection = db.createConnection();
-    try {
-      const selectQuery = `
-        SELECT
-          playlists.id,
-          playlists.title,
-          playlists.created_at,
-          playlists.updated_at,
-          GROUP_CONCAT(COALESCE(playlist_songs.song_id, '')) AS song_ids
-        FROM playlists
-        LEFT JOIN playlist_songs ON playlist_songs.playlist_id = playlists.id
-        WHERE owner = ?
-        GROUP BY playlists.id
-      `
-      const selectResult = await db.executeQuery(connection, selectQuery, [userId]);
-
-      if (selectResult.length > 0 ) {
-
-        const playlists = selectResult.map(row => ({
-          id: row.id,
-          title: row.title,
-          created_at: row.created_at,
-          updated_at: row.updated_at,
-          song_ids: row.song_ids ? row.song_ids.split(',').map(Number) : [] // Convert into an array of numbers
-        }))
-
-        resolve({
-          message: "Playlists retrieved successfully.",
-          body: playlists
-        })
-      } else {
-
-        resolve({
-          message: "No playlists found",
-          code: 404
-        })
+exports.get_user_playlists = async function(userId) {
+  const connection = db.createConnection();
+  try {
+    const selectQuery = `
+      SELECT
+        playlists.id,
+        playlists.title,
+        playlists.created_at,
+        playlists.updated_at,
+        playlists.isLikedSongs,
+        GROUP_CONCAT(COALESCE(playlist_songs.song_id, '')) AS song_ids
+      FROM playlists
+      LEFT JOIN playlist_songs ON playlist_songs.playlist_id = playlists.id
+      WHERE owner = ?
+      GROUP BY playlists.id
+    `
+    const selectResult = await db.executeQuery(connection, selectQuery, [userId]);
+    if (selectResult.length > 0 ) {
+      const playlists = selectResult.map(row => ({
+        id: row.id,
+        title: row.title,
+        created_at: row.created_at,
+        updated_at: row.updated_at,
+        isLikedSongs: row.isLikedSongs,
+        song_ids: row.song_ids ? row.song_ids.split(',').map(Number) : [] // Convert into an array of numbers
+      }))
+      return {
+        message: "Playlists retrieved successfully.",
+        body: playlists
       }
-    } catch (error) {
-      console.error(`Unexpected: ${error}`);
-      reject({
-        message: "Unexpected error"
-      })
-    } finally {
-      db.closeConnection(connection);
+    } else {
+      return {
+        message: "No playlists found",
+        code: 404
+      }
     }
-  });
-}
+  } catch (error) {
+    if (error.code) throw error; // Re-throw expected errors without modification
+    console.error(`Unexpected: ${error}`);
+    throw {
+      message: "Unexpected error"
+    }
+  } finally {
+    db.closeConnection(connection);
+  }
+};
+
 
 
 /**
@@ -542,50 +419,45 @@ exports.get_user_playlists = function(userId) {
  * @param {string} password - The password provided by the user for authentication.
  * @returns {Promise<Object>} - A promise that resolves with a JWT token if successful, or an error object if not.
  */
-exports.login_user = function(username, password) {
-  return new Promise(async (resolve, reject) => {
-    const connection = db.createConnection();
-
-    if (!connection) {
-      return reject({ message: 'Database connection failed', code: 500 });
-    }
-
-    try {
-      const userDetails = await db.callProcedure(
-        connection,
-        'login_user',
-        [username],
-        ['p_password_hash', 'p_user_id', 'p_success', 'p_message']
-      );
-
-      const [userId, passwordHash, success, message] = userDetails;
-
-      if (success === 1 && passwordHash) {  // User exists in the database
-        if (bcrypt.compareSync(password, passwordHash)) {
-          const token = jwt.sign(
-            {
-              user_id: userId,
-              username: username,
-              exp: Math.floor(Date.now() / 1000) + 60 * 60, // 1-hour expiry
-            },
-            process.env.JWT_SECRET_KEY,
-            { algorithm: 'HS256' }
-          );
-          return resolve({ userId, username, token });
-        } else {
-          return reject({ message: 'Invalid username or password', code: 401 });
-        }
+exports.login_user = async function(username, password) {
+  const connection = db.createConnection();
+  if (!connection) {
+    throw { message: 'Database connection failed', code: 500 };
+  }
+  try {
+    const userDetails = await db.callProcedure(
+      connection,
+      'login_user',
+      [username],
+      ['p_password_hash', 'p_user_id', 'p_success', 'p_message']
+    );
+    const [userId, passwordHash, success, message] = userDetails;
+    if (success === 1 && passwordHash) {  // User exists in the database
+      if (bcrypt.compareSync(password, passwordHash)) {
+        const token = jwt.sign(
+          {
+            user_id: userId,
+            username: username,
+            exp: Math.floor(Date.now() / 1000) + 60 * 60, // 1-hour expiry
+          },
+          process.env.JWT_SECRET_KEY,
+          { algorithm: 'HS256' }
+        );
+        return { userId, username, token };
+      } else {
+        throw { message: 'Invalid username or password', code: 401 };
       }
-
-      // User not found
-      return reject({ message: message || 'User not found', code: 404 });
-    } catch (error) {
-      return reject({ message: 'Internal server error', code: 500, details: error.message });
-    } finally {
-      db.closeConnection(connection);
     }
-  });
+    // User not found
+    throw { message: message || 'User not found', code: 404 };
+  } catch (error) {
+    if (error.code) throw error; // Re-throw expected errors without modification
+    throw { message: 'Internal server error', code: 500, details: error.message };
+  } finally {
+    db.closeConnection(connection);
+  }
 };
+
 
 
 /**
@@ -624,42 +496,38 @@ exports.logout_user = function(body) {
  * 
  * @returns {Promise<Object>} - Resolves with a success message and user details if registration is successful.
  */
-exports.register_user = function(body) {
-  return new Promise(async (resolve, reject) => {
-    const { username, password, email, first_name, last_name } = body;
-
-    const connection = db.createConnection();
-    if (!connection) {
-      return reject({ message: 'Database connection failed', code: 500 });
+exports.register_user = async function(body) {
+  const { username, password, email, first_name, last_name } = body;
+  const connection = db.createConnection();
+  if (!connection) {
+    throw { message: 'Database connection failed', code: 500 };
+  }
+  try {
+    // Hash the password
+    const passwordHash = await bcrypt.hash(password, 10);
+    // Call the database procedure for user registration
+    const [p_success, p_message] = await db.callProcedure(
+      connection,
+      'register_user',
+      [username, passwordHash, email, first_name, last_name],
+      ['p_success', 'p_message']
+    );
+    if (p_success === 1) {
+      // User registered successfully
+      return {
+        message: p_message || 'User registered successfully',
+        body: { username, email },
+      };
+    } else {
+      // Registration failed due to conflict or other issues
+      throw { message: p_message || 'Username or email already exists', code: 400 };
     }
+  } catch (error) {
+    console.error(`Registration error for user ${username}: ${error.message}`);
+    if (error.code) throw error; // Re-throw expected errors without modification
 
-    try {
-      // Hash the password
-      const passwordHash = await bcrypt.hash(password, 10);
-
-      // Call the database procedure for user registration
-      const [p_success, p_message] = await db.callProcedure(
-        connection,
-        'register_user',
-        [username, passwordHash, email, first_name, last_name],
-        ['p_success', 'p_message']
-      );
-
-      if (p_success === 1) {
-        // User registered successfully
-        return resolve({
-          message: p_message || 'User registered successfully',
-          body: { username, email },
-        });
-      } else {
-        // Registration failed due to conflict or other issues
-        return reject({ message: p_message || 'Username or email already exists', code: 400 });
-      }
-    } catch (error) {
-      console.error(`Registration error for user ${username}: ${error.message}`);
-      return reject({ message: 'Internal server error', code: 500, details: error.message });
-    } finally {
-      db.closeConnection(connection);
-    }
-  });
+    throw { message: 'Internal server error', code: 500, details: error.message };
+  } finally {
+    db.closeConnection(connection);
+  }
 };

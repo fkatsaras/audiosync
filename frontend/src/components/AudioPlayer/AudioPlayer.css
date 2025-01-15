@@ -1,0 +1,135 @@
+.audio-player {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 98.5%;
+    height: 9%;
+    background-color: #181818;
+    color: #ffffff;
+    font-family: 'Montserrat', sans-serif;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 20px;
+    gap: 20%;
+    z-index: 1000;
+}
+
+.audio-info {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    margin-right: 20px;
+}
+
+.audio-info h4 {
+    font-size: 16px;
+    margin: 0;
+    font-weight: 700;
+    color: #ffffff;
+}
+
+.audio-info p {
+    font-size: 14px;
+    margin: 2px 0 0;
+    color: #b3b3b3;
+}
+
+.playback {
+    flex-direction: column;
+    display: flex;
+    align-items: center;
+    height: 100%;
+    width: 40%;
+    justify-content: space-around;
+}
+
+.playback span {
+    font-size: 14px;
+    color: #b3b3b3;
+    margin: 0 10px;
+}
+
+.playback input[type="range"] {
+    margin: 0 10px;
+    cursor: pointer;
+    -webkit-appearance: none;
+    appearance: none;
+    background-color: #404040;
+    height: 8px;
+    border-radius: 10px;
+    width: 100%;
+}
+
+.playback input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 12px;
+    height: 12px;
+    background-color: #8e24aa;
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+.controls {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end; /* Align volume controls to the right */
+    gap: 10px;
+}
+
+.controls input[type="range"] {
+    width: 100px;
+}
+
+.volume-icon {
+    cursor: pointer;
+}
+
+.visualizer {
+    display: flex;
+    gap: 4px;
+}
+
+.visualizer .bar {
+    width: 4px;
+    height: 20px;
+    background-color: #6a1b9a;
+    border-radius: 4px;
+    transform: scaleY(0.1);
+    animation: barBounce 1.2s infinite ease-in-out;
+    animation-delay: calc(var(--delay, 0) * 0.2s );
+}
+
+/* Apply delay to each bar for staggered animation */
+.visualizer .bar:nth-child(1) {
+    --delay: 1;
+}
+.visualizer .bar:nth-child(2) {
+    --delay: 2;
+}
+.visualizer .bar:nth-child(3) {
+    --delay: 3;
+}
+.visualizer .bar:nth-child(4) {
+    --delay: 4;
+}
+.visualizer .bar:nth-child(5) {
+    --delay: 5;
+}
+
+@keyframes barBounce {
+    0%, 100% {
+        transform: scaleY(0.3);
+    }
+    50% {
+        transform: scaleY(1);
+    }
+}
+
+.visualizer.active .bar {
+    animation-play-state: running;
+}
+
+.visualizer .bar {
+    animation-play-state: paused;
+}

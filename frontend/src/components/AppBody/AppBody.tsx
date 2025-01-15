@@ -6,8 +6,11 @@ interface AppBodyProps {
 }
 
 const AppBody: React.FC<AppBodyProps> = ({ children }) => {
-    return (<div className='app-body'>
-        {children}
+    return (
+    <div className='app-body'>
+        <div className='app-body-main'>
+            {children}
+        </div>
     </div>
     );
 };

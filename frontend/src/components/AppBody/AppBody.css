@@ -1,12 +1,49 @@
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700&display=swap');
 
 .app-body {
-    margin-left: 230px; /* Avoid overlapping with the Nav bar*/
-    padding: 20px;
+    display: flex;
+    flex: 1;
+    margin-left: 14.5%;
+    margin-right: 14.5%;
+    padding: 0px 20px 20px 20px;
     min-height: 100vh;
+    height: 84.5%;
     background-color: #181818;
     font-family: 'Montserrat', sans-serif;
 }
+
+.app-body-main {
+    background-color: #121212;
+    flex: 1 1;
+    border-radius: 16px;
+    padding: 20px;
+    margin: 10px auto;
+    height: 84.5vh;
+    width: calc(100% - 40px);
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+}
+
+/* Target Webkit browsers */
+.app-body-main::-webkit-scrollbar {
+    width: 10px;
+}
+
+.app-body-main::-webkit-scrollbar-track {
+    background: #2e2e2e;
+    border-radius: 10px;
+} 
+
+.app-body-main::-webkit-scrollbar-thumb {
+    background: #555;
+    border-radius: 10px;
+}
+
+.app-body-main::-webkit-scrollbar-thumb:hover {
+    background: #888;
+}
+
 
 h1 {
     color: #ffffff;
@@ -20,12 +57,19 @@ h2 {
     margin-bottom: 20px;
 }
 
-p, 
+/* p, 
 p a {
-    color: inherit;
-}
+    color: #ffffff;
+} */
 
 p a:visited,
 p:visited {
     color: inherit;
+}
+
+html, body {
+    margin: 0;
+    padding: 0;
+    background-color: #181818;
+    font-family: 'Montserrat', sans-serif;
 }

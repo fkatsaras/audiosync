@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate , Link } from "react-router-dom";
-import AppBody from "../components/AppBody/AppBody";
+import Default from "../components/AppBody/Default";
 import Input from "../components/Input/Input";
 import Button from "../components/Buttons/Button";
 import Message from "../components/Message/Message";
@@ -74,10 +74,10 @@ function Register() {
     };
 
     return (
-        <AppBody>
+        <Default>
             <div className="register-container">
                 <h1>Create Your Account</h1>
-                <form id="registerForm" onSubmit={handleRegister}>
+                <form id="registerForm" onSubmit={handleRegister} className="register-form">
                     <label htmlFor="username">Username:</label>
                     <Input 
                         type="text"
@@ -136,7 +136,7 @@ function Register() {
                 {errorMessage && <Message className="error-message">{errorMessage}</Message>}
                 {successMessage && <Message className="success-message">{successMessage}</Message>}
             </div>
-        </AppBody>
+        </Default>
     );
 }
 

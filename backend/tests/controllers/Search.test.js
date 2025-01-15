@@ -154,8 +154,8 @@ test.serial('Search songs succeeds with valid query', async (t) => {
     
     // Assert that the correct song titles are returned
     t.deepEqual(
-        body.body.songs.map((song) => song.title),
-        ['Song One', 'Song Two']
+        body.body.songs.map((song) => song.title).sort(),
+        ['Song One', 'Song Two'].sort()
     );
 
     //Cleanup DB

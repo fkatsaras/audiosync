@@ -1,0 +1,64 @@
+/* ProfileBar.css */
+.profile-bar {
+    font-family: 'Montserrat', sans-serif;
+    width: 13.2%;
+    height: 84.5%;
+    background-color: #121212;
+    padding: 20px;
+    position: fixed;
+    right: 0;
+    top: 10px;
+    border-radius: 16px;
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    box-shadow: none;
+}
+
+.profile-button {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    overflow: hidden;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.profile-button:hover {
+    transform: scale(1.05); /* Slight zoom-in effect */
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.5); /* Stronger shadow on hover */
+}
+
+.profile-image {
+    width: 50px;
+    height: 50px;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 2px solid #ffffff; /* Add a border for emphasis */
+}
+
+/* Dropdown styles */
+.profile-dropdown {
+    background-color: #1e1e1e;
+    position: absolute;
+    top: 70px; /* Adjust to appear below the button */
+    right: 0;
+    z-index: 999; /* On top of other elements */
+    font-size: 14px;
+    color: #f1f1f1;
+}
+
+.profile-dropdown .option {
+    padding: 10px;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: background-color 0.2s ease;
+}
+
+.profile-dropdown .option:hover {
+    background-color: #272727; /* Subtle hover effect */
+}

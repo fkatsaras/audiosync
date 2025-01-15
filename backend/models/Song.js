@@ -18,6 +18,7 @@ class Song {
     title = null,
     artist_id = null,
     artist = null,
+    audio_url = null,
     album = null,
     duration = null,
     cover = null,
@@ -29,6 +30,7 @@ class Song {
     this._title = title;
     this._artist_id = artist_id;
     this._artist = artist;
+    this._audio_url = audio_url;
     this._album = album;
     this._duration = duration;
     this._cover = cover;
@@ -43,6 +45,7 @@ class Song {
       data.title,
       data.artist_id,
       data.artist,
+      data.audio_url,
       data.album,
       data.duration,
       data.cover,
@@ -62,6 +65,7 @@ class Song {
       title: this._title,
       artist_id: this._artist_id,
       artist: this._artist,
+      audio_url: this._audio_url,
       album: this._album,
       duration: this._duration,
       cover: this._cover,
@@ -94,6 +98,15 @@ class Song {
   set artist_id(value) {
     this._artist_id = value;
   }
+
+  get audio_url() {
+    return this._audio_url;
+  }
+
+  set audio_url(value) {
+    this._audio_url = value;
+  }
+
 
   get artist() {
     return this._artist;

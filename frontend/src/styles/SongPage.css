@@ -3,3 +3,24 @@
     border-radius: 8px;
     padding: 10px;
 }
+
+.song-cover {
+    width: 100%; /* Make it responsive to parent container */
+    max-width: 400px; 
+    height: auto; /* Maintain aspect ratio */
+    border-radius: 8px; 
+    object-fit: cover;
+}
+
+.song-image-container {
+    position: relative;
+    display: inline-block;
+}
+
+.play-button.image-button{
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+    width: 60px;
+    height: 60px;
+}

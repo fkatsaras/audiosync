@@ -46,6 +46,17 @@ nosetests.xml
 coverage.xml
 *,cover
 
+# Cypress output
+cypress/screenshots/
+cypress/videos/
+cypress/reports/
+
+# Environment files
+cypress.env.json
+
+# Coverage reports
+.nyc_output/
+
 # Documentation
 docs/_build/
 

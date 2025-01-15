@@ -1,7 +1,11 @@
-/* App Wide Styles*/
+/* App Wide Styles
 
 .App {
   text-align: center;
+}
+
+* {
+  user-select: none;
 }
 
 .App-logo {
@@ -37,4 +41,8 @@
   to {
     transform: rotate(360deg);
   }
+} */
+
+* {
+  user-select: none;
 }

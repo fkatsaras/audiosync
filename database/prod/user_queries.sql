@@ -29,6 +29,7 @@ CREATE PROCEDURE `register_user` (
 )
 BEGIN
     DECLARE `user_exists` INT;
+    DECLARE `new_user_id` INT;
     
     -- Check if username or email already exists
     SELECT COUNT(*) INTO `user_exists`
@@ -42,6 +43,13 @@ BEGIN
         -- Insert new user
         INSERT INTO `users` (`username`, `password_hash`, `email`, `first_name`, `last_name`)
         VALUES (`p_username`, `p_password_hash`, `p_email`, `p_first_name`, `p_last_name`);
+
+        -- Get the ID of the newly created user
+        SET `new_user_id` = LAST_INSERT_ID();
+
+        -- Create a default "Liked Songs" playlist for the new user
+        INSERT INTO `playlists` (`title`, `owner`, `isLikedSongs`, `created_at`, `updated_at`)
+        VALUES ('Liked Songs', `new_user_id`, TRUE, NOW(), NOW());
         
         SET `p_success` = 1;
         SET `p_message` = 'User registered successfully';

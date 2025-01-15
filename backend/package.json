@@ -30,17 +30,25 @@
     "jwt-simple": "^0.5.6",
     "mysql2": "^3.11.4",
     "oas3-tools": "^2.2.3",
+    "spotify-web-api-node": "^5.0.2",
     "swagger-jsdoc": "^6.2.8",
     "swagger-parser": "^10.0.3",
     "swagger-routes-express": "^3.3.2",
-    "swagger-ui-express": "^5.0.1"
+    "swagger-ui-express": "^5.0.1",
+    "youtube-dl-exec": "^3.0.10"
+  },
+  "overrides": {
+    "body-parser": "1.20.3"
   },
   "devDependencies": {
     "@types/react-icons": "^2.2.7",
     "ava": "^5.3.1",
     "c8": "^8.0.1",
+    "cypress": "^13.16.1",
+    "googleapis": "^144.0.0",
     "got": "^11.8.3",
     "nodemon": "^3.1.7",
-    "sinon": "^19.0.2"
+    "sinon": "^19.0.2",
+    "ytdl-core": "^4.11.5"
   }
 }

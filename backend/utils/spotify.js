@@ -1,4 +1,6 @@
 const axios = require('axios');
+const pLimit = require('p-limit');
+const limit = pLimit(5);  // Max 5 concurrent Spotify requests to avoid overwhelming the API
 
 async function getSpotifyToken() {
   try {
@@ -102,8 +104,36 @@ async function getSongCover(albumName) {
     }
 }
 
+async function getSongCoverBatch(albumNames) {
+  const token = await getSpotifyToken();
+  if(!token) {
+    throw new Error('Failed to retrieve Spotify token.');
+  }
+
+  const albumQueries = albumNames.map(name => `album:${encodeURIComponent(name)}`).join(' OR ');
+  const searchUrl = `https://api.spotify.com/v1/search?q=${albumQueries}&type=album&limit=50`;
+
+  const response = await limit(() => 
+    axios.get(searchUrl, {
+      headers: { 'Authorization': `Bearer ${token}` },
+      timeout: 5000,
+    })
+  );
+
+  const covers = {};
+  console.log(response);
+  response.data.albums.items.forEach(album => {
+    covers[album.name.toLowerCase()] = album.images[0]?.url || null;
+  });
+
+  console.log(covers);
+
+  return covers;  // Object with album names as keys and cover URLs as values  
+}
+
 module.exports = {
     getArtistProfilePicture,
     getSpotifyToken,
-    getSongCover
+    getSongCover,
+    getSongCoverBatch,
 }

@@ -1,0 +1,13 @@
+.liked-songs-playlist-info {
+    background-color: #121212;
+    border-radius: 8px;
+    padding: 10px;
+}
+
+.liked-songs-playlist-cover {
+    width: 100%; /* Make it responsive to parent container */
+    max-width: 400px; /* Limit the width to 400px for better aesthetics */
+    height: auto; /* Maintain aspect ratio */
+    border-radius: 8px; /* Add border radius for a modern look */
+    object-fit: cover;
+}

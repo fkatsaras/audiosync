@@ -8,7 +8,7 @@ const express = require('express');
 const session = require('express-session');
 const cors = require('cors');
 
-const auth = require('./utils/auth');
+const auth = require('./middleware/auth');
 
 // Load environment variables
 dotenv.config({ path: path.resolve(__dirname, './.env')});
@@ -47,7 +47,7 @@ app.use((req, res, next) => {
 
 // CORS configuration
 const corsOptions = {
-    origin: ['http://localhost:3000', 'https://localhost:4000', 'http://frontend:3000'],
+    origin: ['http://localhost:3000', 'https://localhost:4000', 'http://frontend:3000','http://audiosync.onrender.com'],
     credentials: true
 };
 

@@ -2,137 +2,106 @@
 
 var utils = require('../utils/writer.js');
 var Users = require('../service/UsersService.js');
-const api = require('../utils/apiUtils.js');
 const { successResponse, errorResponse } = require('../utils/apiUtils.js');
 
-module.exports.like_song = function like_song (req, res, next) {
-  const songId = req.query.songId;
-  const userId = req.session.user.id;
-  Users.like_song(userId, songId)
-    .then(function (response) {
-      successResponse(res, response.message, response.body);
-    })
-    .catch(function (error) {
-      errorResponse(res, error.message, error.code);
-    });
-};
+module.exports.like_song = async function (req, res, next) {
+  try {
+    const songId = req.query?.songId;
+    const userId = req.session?.user?.id;
 
-module.exports.unlike_song = function unlike_song (req, res, next) {
-  const songId = req.query.songId;
-  const userId = req.session.user.id;
-  Users.unlike_song(userId, songId)
-    .then(function (response) {
-      successResponse(res, response.message, response.body);
-    })
-    .catch(function (error) {
-      errorResponse(res, error.message, error.code);
-    });
-};
-
-module.exports.follow_artist = function follow_artist (req, res, next) {
-  const artistId = req.query.artistId;
-  const userId = req.session.user.id;
-  Users.follow_artist(artistId, userId)
-    .then(function (response) {
-      successResponse(res, response.message, response.body);
-    })
-    .catch(function (error) {
-      errorResponse(res, error.message, error.code);
-    });
-};
-
-module.exports.unfollow_artist = function unfollow_artist (req, res, next) {
-  const artistId = req.query.artistId;
-  const userId = req.session.user.id;
-  Users.unfollow_artist(artistId, userId)
-    .then(function (response) {
-      successResponse(res, response.message, response.body);
-    })
-    .catch(function (error) {
-      errorResponse(res, error.message, error.code);
-    });
-};
-
-
-module.exports.create_user_playlist = function create_user_playlist (req, res, next, body) {
-  const userId = req.session.user.id;
-
-  // Check if title is provided
-  if (!body.title || !body.title.trim()) {
-    return errorResponse(res, 'Please provide a name for your Playlist', 400);
+    const { message, body: responseBody } = await Users.like_song(userId, songId);
+    successResponse(res, message, responseBody);
+  } catch (error) {
+    errorResponse(res, error.message, error.code);
   }
-  Users.create_user_playlist(body, userId)
-    .then(function (response) {
-      successResponse(res, response.message, response.body);
-    })
-    .catch(function (error) {
-      errorResponse(res, error.message, error.code);
-    });
 };
 
-module.exports.delete_playlist_by_id = function delete_playlist_by_id (req, res, next, userId, playlistId) {
-  Users.delete_playlist_by_id(userId, playlistId)
-    .then(function (response) {
-      utils.writeJson(res, response);
-    })
-    .catch(function (response) {
-      utils.writeJson(res, response);
-    });
+module.exports.unlike_song = async function (req, res, next) {
+  try {
+    const songId = req.query?.songId;
+    const userId = req.session?.user?.id;
+
+    const { message, body: responseBody } = await Users.unlike_song(userId, songId);
+    successResponse(res, message, responseBody);
+  } catch (error) {
+    errorResponse(res, error.message, error.code);
+  }
 };
 
-module.exports.delete_user_playlist = function delete_user_playlist (req, res, next, userId, playlistId) {
-  Users.delete_user_playlist(userId, playlistId)
-    .then(function (response) {
-      utils.writeJson(res, response);
-    })
-    .catch(function (response) {
-      utils.writeJson(res, response);
-    });
+module.exports.follow_artist = async function (req, res, next) {
+  try {
+    const artistId = req.query?.artistId;
+    const userId = req.session?.user?.id;
+
+    const { message, body: responseBody } = await Users.follow_artist(artistId, userId);
+    successResponse(res, message, responseBody);
+  } catch (error) {
+    errorResponse(res, error.message, error.code);
+  }
 };
 
-module.exports.get_liked_songs = function get_liked_songs (req, res, next, userId) {
-  Users.get_liked_songs(userId)
-    .then(function (response) {
-      utils.writeJson(res, response);
-    })
-    .catch(function (response) {
-      utils.writeJson(res, response);
-    });
+module.exports.unfollow_artist = async function (req, res, next) {
+  try {
+    const artistId = req.query?.artistId;
+    const userId = req.session?.user?.id;
+
+    const { message, body: responseBody } = await Users.unfollow_artist(artistId, userId);
+    successResponse(res, message, responseBody);
+  } catch (error) {
+    errorResponse(res, error.message, error.code);
+  }
 };
 
-module.exports.get_recommended_songs = function get_recommended_songs (req, res, next, userId) {
-  Users.get_recommended_songs(userId)
-    .then(function (response) {
-      utils.writeJson(res, response);
-    })
-    .catch(function (response) {
-      utils.writeJson(res, response);
-    });
+module.exports.create_user_playlist = async function (req, res, next, body) {
+  try {
+    const userId = req.session?.user?.id;
+
+    // Check if title is provided
+    if (!body?.title?.trim()) { // Optional chaining for safer access
+      return errorResponse(res, 'Please provide a name for your Playlist', 400);
+    }
+
+    const { message, body: responseBody } = await Users.create_user_playlist(body, userId);
+    successResponse(res, message, responseBody);
+  } catch (error) {
+    errorResponse(res, error.message, error.code);
+  }
 };
 
-module.exports.get_user_followed_artists = function get_user_followed_artists (req, res, next, userId) {
-  Users.get_user_followed_artists(userId)
-    .then(function (response) {
-      utils.writeJson(res, response);
-    })
-    .catch(function (response) {
-      utils.writeJson(res, response);
-    });
+module.exports.get_liked_songs = async function (req, res, next) {
+  try {
+    const userId = req.session?.user?.id;
+
+    const { message, body: responseBody } = await Users.get_liked_songs(userId);
+    successResponse(res, message, responseBody);
+  } catch (error) {
+    errorResponse(res, error.message, error.code);
+  }
 };
 
-module.exports.get_user_playlists = function get_user_playlists (req, res, next) {
-  const userId = req.session.user.id;
-  Users.get_user_playlists(userId)
-    .then(function (response) {
-      console.log(response.body);
-      successResponse(res, response.message, response.body);
-    })
-    .catch(function (error) {
-      errorResponse(res, error.message, error.code);
-    });
+// module.exports.get_recommended_songs = function get_recommended_songs (req, res, next, userId) {
+//   Users.get_recommended_songs(userId)
+//     .then(function (response) {
+//       utils.writeJson(res, response);
+//     })
+//     .catch(function (response) {
+//       utils.writeJson(res, response);
+//     });
+// };
+
+module.exports.get_user_playlists = async function (req, res, next) {
+  try {
+    const userId = req.session.user.id;
+    const { message, body } = await Users.get_user_playlists(userId);
+
+    successResponse(res, message, body);
+  } catch (error) {
+    errorResponse(res, error.message, error.code);
+  }
 };
 
-module.exports.login_user = async function login_user(req, res) {
+
+module.exports.login_user = async function (req, res) {
   const { username, password } = req.body;
 
   // Validate request body
@@ -166,7 +135,7 @@ module.exports.login_user = async function login_user(req, res) {
  * @param {Object} req - Express request object
  * @param {Object} res - Express response object
  */
-module.exports.logout_user = async function logout_user(req, res) {
+module.exports.logout_user = async function (req, res) {
   const response = await Users.logout_user(req.body);
   try {
     // Destroy the session to log the user out
@@ -208,7 +177,7 @@ module.exports.logout_user = async function logout_user(req, res) {
  * 
  * @returns {Object} JSON response indicating success or error of user registration.
  */
-module.exports.register_user = async function register_user(req, res) {
+module.exports.register_user = async function (req, res) {
   const { username, password, email } = req.body;
 
   // Validate request body

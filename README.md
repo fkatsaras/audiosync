@@ -30,22 +30,84 @@
 
 ## Getting Started
 
-### Backend
+### Without Docker
+If you prefer to run the application without Docker, follow the steps below for each component:
+
+### Backend 
+
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/teogr99/audiosync.git
+   ```
+2. Make sure you have MySQL installed and running.
+3. Set up the database by running the SQL scripts in the `database/prod` folder.
+
+4. Install backend dependencies
+    ```bash
+    cd backend
+    npm install
+    ```
+
+5. Set up the environment variables by creating a .env file in the backend directory and adding the following variables:
+    ```bash
+    MYSQL_HOST
+    MYSQL_PORT
+    MYSQL_USER
+    MYSQL_PASSWORD
+    MYSQL_DATABASE
+    JWT_SECRET
+    ```
+5. Start the backend server:
+    ```bash
+    npm start
+    ```
+
+### Frontend
+1. Make sure your backend server is running on `http://localhost:5000`.
+
+2. Install frontend dependencies:
+    ```bash
+    cd frontend
+    npm install
+    ```
+
+3. Set up environment variables for the frontend:
+    Create a `.env` file in the `frontend` directory and add the following:
+    ```bash
+    REACT_APP_API_URL=http://localhost:5000
+    ```
+
+4. Start the frontend application:
+    ```bash
+    npm start
+    ```
+
+    This will run the React app on `http://localhost:3000`.
+
+### With Docker
 
 1. Clone the repository:
    ```bash
    git clone https://github.com/teogr99/audiosync.git
    ```
 
-2. Navigate to the backend directory
+2. Navigate to the project root directory
     ```bash
-    cd backend
+    cd audiosync
+    ```
+3. Build and start the services using Docker Compose:
+    ```bash
+    docker-compose up --build
     ```
 
-3. Install dependencies
-    ```bash
-    npm install
-    ```
+This will start the following services:
 
-4. Set up environment variables
+- **MySQL** (database)
+- **Backend** (Express server)
+- **Frontend** (React app)
+
+4. The backend will be available at http://localhost:5000, and the frontend will be available at http://localhost:3000
+
+
+
    

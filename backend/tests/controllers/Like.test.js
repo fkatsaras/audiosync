@@ -1,6 +1,6 @@
 const test = require('ava');
 const index = require('../../index');
-const { loginRequest, likeSongRequest, unlikeSongRequest, seedSongs, clearLikedSongs, clearSongs, seedArtists, seedLikedSongs, clearArtists } = require('../../utils/testUtils');
+const { loginRequest, likeSongRequest, unlikeSongRequest, seedSongs, clearLikedSongs, clearSongs, seedArtists, seedLikedSongs, clearArtists, seedPlaylistSongs, clearPlaylistSongs } = require('../../utils/testUtils');
 
 process.env.NODE_ENV = 'test';
 
@@ -24,10 +24,10 @@ test.serial('Like song succeeds with valid user and song', async (t) => {
     await clearLikedSongs(2);
     await clearSongs();
     await seedArtists([
-        { id: 5, name: 'Artist Five', followers: 100 }
+        { id: 5, name: 'Artist Five', followers: 100 }  // Artist should be there so we can seed a song in the db
     ]);
     await seedSongs([
-        { id: 3, title: 'Song Three', artist_id: 5, album: 'Album lol', duration: 500, cover: null, is_playing: false }
+        { id: 3, title: 'Song Three', artist_id: 5, album: 'Album lol', duration: 500, cover: null, is_playing: false } // Seed a song for the user to like
     ]);
 
     // Arrange: Login as a test user
@@ -76,7 +76,12 @@ test.serial('Unlike song succeeds with valid user and song', async (t) => {
     await seedLikedSongs([
         { user_id: 2, song_id: 4 }
     ]);
+    // ...and song is in the Lied Songs Playlist of the user
+    await seedPlaylistSongs([
+        { playlist_id: 11, song_id: 4, order: 1 }
+    ]);
 
+    // ..and song is in the Liked Songs Playlist
     // Arrange: Login as a test user:
     const validLoginData = { username: 'testuser2', password: 'test_password' };
     const loginResponse = await loginRequest(validLoginData, PORT);
@@ -103,5 +108,6 @@ test.serial('Unlike song succeeds with valid user and song', async (t) => {
     // Cleanup: 
     await clearArtists();
     await clearLikedSongs(2);
+    await clearPlaylistSongs(11);
     await clearSongs();
 });

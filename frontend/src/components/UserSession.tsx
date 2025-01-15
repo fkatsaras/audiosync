@@ -12,6 +12,12 @@ interface User {
   username: string;
 }
 
+interface ChildProps {
+  userId: string;
+  username: string;
+  children?: ReactNode;
+}
+
 const UserSession: React.FC<UserSessionProps> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
@@ -81,8 +87,23 @@ const UserSession: React.FC<UserSessionProps> = ({ children }) => {
   if (loading) return <LoadingDots/>
   if (!user) return <Navigate to="/login" />
 
-  // Pass the user data down to children via React Context or props
-  return React.cloneElement(children as React.ReactElement, { userId: user.userId, username: user.username });
+  // // Pass the user data down to children via React Context or props
+  // return React.cloneElement(children as React.ReactElement, { userId: user.userId, username: user.username });
+  // Recursively pass down props to children
+  const addUserPropsToChildren = (children: ReactNode): ReactNode => {
+    return React.Children.map(children, (child) => {
+      if (!React.isValidElement(child)) return child;
+
+      // Explicitly type the cloned element
+      return React.cloneElement(child as React.ReactElement<ChildProps>, {
+        userId: user.userId,
+        username: user.username,
+        children: addUserPropsToChildren(child.props.children),
+      });
+    });
+  };
+
+  return <>{addUserPropsToChildren(children)}</>;
 }
 
 export default UserSession;
