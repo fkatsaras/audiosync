@@ -55,20 +55,23 @@
     cursor: pointer;
     -webkit-appearance: none;
     appearance: none;
-    background-color: #404040;
+    background-color: #ffffff;
     height: 8px;
     border-radius: 10px;
     width: 100%;
+    outline: none;
 }
 
+/* Progress bar thumb */
 .playback input[type="range"]::-webkit-slider-thumb {
     -webkit-appearance: none;
     width: 12px;
     height: 12px;
-    background-color: #8e24aa;
+    background-color: #ffffff;
     border-radius: 50%;
     cursor: pointer;
 }
+
 
 .controls {
     display: flex;
@@ -79,6 +82,23 @@
 
 .controls input[type="range"] {
     width: 100px;
+    cursor: pointer;
+    --webkit-appearance: none;
+    appearance: none;
+    background-color: #ffffff;
+    height: 6px;
+    border-radius: 10px;
+    outline: none;
+}
+
+/* White thumb for volume */
+.controls input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 10px;
+    height: 10px;
+    background-color: #ffffff; /* White thumb */
+    border-radius: 50%;
+    cursor: pointer;
 }
 
 .volume-icon {

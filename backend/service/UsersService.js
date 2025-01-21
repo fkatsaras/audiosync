@@ -3,8 +3,9 @@
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const db = require('../utils/dbUtils');
-const { fromObject } = require('../models/Song');
 const { get_playlist_by_id } = require('./PlaylistsService');
+const UserRepository = require('../data/repository/UsersRepository'); 
+const ErrorHandler = require('../middleware/ErrorHandler');
 
 
 /**
@@ -292,12 +293,7 @@ exports.unfollow_artist = async function(artistId,userId) {
       };
     }
   } catch (error) {
-    if (error.code) throw error; // Re-throw expected errors without modification
-
-    console.log(`Unexpected: ${error}`);
-    throw {
-      message: 'Unexpected error'
-    };
+    throw ErrorHandler.handle(error);
   } finally {
     // Ensure db connection is closed at the end
     db.closeConnection(connection);
@@ -402,12 +398,50 @@ exports.get_user_playlists = async function(userId) {
     if (error.code) throw error; // Re-throw expected errors without modification
     console.error(`Unexpected: ${error}`);
     throw {
-      message: "Unexpected error"
+      message: "Unexpected error",
+      code: 500
     }
   } finally {
     db.closeConnection(connection);
   }
 };
+
+/**
+ * Get user's followed artists
+ * Retrieve the artists followed by a specific user
+ *
+ * userId Integer ID of the user whose followed artists are to be fetched
+ * returns List
+ **/
+exports.get_user_followed_artists = async function (userId) {
+  const connection = db.createConnection();
+
+  try {
+    const artistsResult = await UserRepository.getUsersFollowedArtists(connection, userId);
+
+    if (artistsResult.length === 0) {
+      throw ErrorHandler.createError(404, `No followed artists found.`);
+    }
+
+    const artists = artistsResult.map(row => ({
+      id: row.id,
+      name: row.name,
+      followers: row.followers,
+      profile_picture: row.profile_picture,
+    }));
+
+    return {
+      message: 'Followed artists retrieved successfully.',
+      body: artists
+    }
+  } 
+  catch (error) {
+    throw ErrorHandler.handle(error);
+  } 
+  finally {
+    db.closeConnection(connection);
+  }
+}
 
 
 

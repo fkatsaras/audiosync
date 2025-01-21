@@ -23,4 +23,5 @@
     right: 20px;
     width: 60px;
     height: 60px;
+    justify-content: center; /* Avoid overlaapping styles with audio players play button*/
 }

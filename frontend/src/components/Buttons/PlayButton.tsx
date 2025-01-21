@@ -11,7 +11,7 @@ interface PlayButtonProps {
 const PlayButton: React.FC<PlayButtonProps> = ({ isPlaying, onToggle, className }) => {
     return (
         <button
-            className={`play-button ${className} ${isPlaying? "playing" : ""}`}
+            className={`play-button ${className? className : ""} ${isPlaying? "playing" : ""}`}
             onClick={onToggle}
         >
             <span className="icon">

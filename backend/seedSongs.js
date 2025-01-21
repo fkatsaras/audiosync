@@ -3,7 +3,7 @@ const db = require('./utils/dbUtils');
 const axios = require('axios');
 require('dotenv').config();
 
-process.env.NODE_ENV = 'test';
+// process.env.NODE_ENV = 'test';
 
 // Spotify API credentials 
 let accessToken = null;
@@ -99,7 +99,7 @@ async function insertDatatoDB(songs) {
             const artistResult = await db.executeQuery(
                 connection,
                 'SELECT id FROM artists WHERE name = ?',
-                [song.artistName.includes("'") ? song.artistName.replace('"', '\"') : song.artistName]
+                [song.artistName]
             );
 
             let artistId;

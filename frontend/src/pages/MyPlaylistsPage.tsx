@@ -17,7 +17,7 @@ import ProfileBar from '../components/ProfileBar/ProfileBar';
 interface UserSessionProps {
     userId?: string;
     username?: string;
-  }
+}
 /**
  * MyPlaylistsPage component allows users to view their playlists.
  * It fetches the playlists from the backend and displays them.

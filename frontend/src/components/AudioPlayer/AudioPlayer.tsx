@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import PlayButton from "../Buttons/PlayButton";
 import './AudioPlayer.css';
 import { FaVolumeMute, FaVolumeUp } from "react-icons/fa";
@@ -9,14 +9,35 @@ const AudioPlayer: React.FC = () => {
         currentSong,
         isPlaying,
         togglePlayPause,
+        currentTime,
+        duration,
+        volume,
+        setSeek,
+        setVolume,
         audioRef
     } = useAudioPlayer();
+
+    const [progress, setProgress] = useState(0);
 
     const formatTime = (time: number) => {
         const minutes = Math.floor(time / 60);
         const seconds = Math.floor(time % 60);
         return `${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
     };
+
+    // Dynamic update of progress bar
+    useEffect(() => {
+        if (duration > 0) {
+            const progressPercent = (currentTime / duration) * 100;
+            setProgress(progressPercent);
+        }
+    }, [currentTime, duration]);  
+    
+    // Handle volume change
+    const handleVolumeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const newVol = parseFloat(e.target.value);
+        setVolume(newVol);
+    }
 
     return (
         <div className="audio-player">
@@ -34,17 +55,16 @@ const AudioPlayer: React.FC = () => {
             </div>
             <div className="playback">
                 <PlayButton isPlaying={isPlaying} onToggle={togglePlayPause} />
-                <span>{formatTime(audioRef.current?.currentTime || 0)} / {formatTime(audioRef.current?.duration || 0)}</span>
+                <span>{formatTime(currentTime)} / {formatTime(duration)}</span>
                 <input
                     type="range"
                     min="0"
-                    max={audioRef.current?.duration?.toString() || "0"}
+                    max={duration || 0}
                     step="0.1"
-                    value={audioRef.current?.currentTime || 0}
-                    onChange={(e) => {
-                        if (audioRef.current) {
-                            audioRef.current.currentTime = parseFloat(e.target.value);
-                        }
+                    value={currentTime}
+                    onChange={(e) => setSeek(parseFloat(e.target.value))}
+                    style={{
+                        background: `linear-gradient(to right, #ffffff ${progress}%, #2a2a2a ${progress}%)`
                     }}
                 />
             </div>
@@ -65,10 +85,9 @@ const AudioPlayer: React.FC = () => {
                     max="1"
                     step="0.01"
                     value={audioRef.current?.volume || 1}
-                    onChange={(e) => {
-                        if (audioRef.current) {
-                            audioRef.current.volume = parseFloat(e.target.value);
-                        }
+                    onChange={handleVolumeChange}
+                    style={{
+                        background: `linear-gradient(to right, #ffffff ${volume * 100}%, #2a2a2a ${volume * 100}%)`
                     }}
                 />
             </div>
