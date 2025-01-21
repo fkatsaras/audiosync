@@ -1,10 +1,18 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import PlayButton from "../Buttons/PlayButton";
 import './AudioPlayer.css';
 import { FaVolumeMute, FaVolumeUp } from "react-icons/fa";
 import { useAudioPlayer } from "../../hooks/useAudioPlayer";
+import defaultSongCover from '../../assets/images/song_default_cover.svg';
+import { Link } from "react-router-dom";
+import { Song } from "../../types/data";
 
-const AudioPlayer: React.FC = () => {
+interface UserSessionProps {
+    userId?: string;
+    username?: string;
+}
+
+const AudioPlayer: React.FC<UserSessionProps> = ({ userId, username }) => {
     const {
         currentSong,
         isPlaying,
@@ -37,19 +45,54 @@ const AudioPlayer: React.FC = () => {
         return `${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
     };
 
+    const updateListeningHistory = useCallback(async (currentSong: Song) => {
+        try {
+            const playedAt = new Date().toISOString().slice(0, 19).replace('T', ' '); // Format: 'YYYY-MM-DD HH:MM:SS'
+            await fetch(`/api/v1/users/${userId}/history`, {
+                method: 'POST',
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem('token')}`,
+                    'Content-type': 'application/json'
+                },
+                body: JSON.stringify({
+                    user_id: userId,
+                    song_id: currentSong?.id,
+                    played_at: playedAt
+                })
+            });
+        } catch (error) {
+            console.error('Failed to update history.');
+        }
+    }, [userId]); 
+    
+    useEffect(() => {
+        if (currentSong) {
+            updateListeningHistory(currentSong);
+        }
+    }, [currentSong, updateListeningHistory]);
+   
     return (
         <div className="audio-player">
             <div className="audio-info">
-                {/* Visualizer bars */}
-                <div className={`visualizer ${isPlaying ? "active" : ""}`}>
-                    <div className="bar"></div>
-                    <div className="bar"></div>
-                    <div className="bar"></div>
-                    <div className="bar"></div>
-                    <div className="bar"></div>
+                <div className="now-playing-song-image-container">
+                    <img
+                        src={currentSong? currentSong.cover : defaultSongCover}
+                        alt={`${currentSong? currentSong.title : "Now Playing Song"} cover`}
+                        className="now-playing-song-image"
+                    />
                 </div>
-                <h4>{currentSong?.title || "Unknown Title"}</h4>
-                <p>{currentSong?.artist || "Unknown Artist"}</p>
+                <div className="now-playing-info">
+                    {/* Visualizer bars */}
+                    <div className={`visualizer ${isPlaying ? "active" : ""}`}>
+                        <div className="bar"></div>
+                        <div className="bar"></div>
+                        <div className="bar"></div>
+                        <div className="bar"></div>
+                        <div className="bar"></div>
+                    </div>
+                    <h4>{currentSong? <Link to={`/songs/${currentSong.id}`}>{currentSong.title}</Link> : "Now Playing Song"}</h4>
+                    <p>{currentSong? <Link to={`/artists/${currentSong.artist_id}`}>{currentSong.artist}</Link> : "Now Playing Artist"}</p>
+                </div>
             </div>
             <div className="playback">
                 <PlayButton isPlaying={isPlaying} onToggle={togglePlayPause} />

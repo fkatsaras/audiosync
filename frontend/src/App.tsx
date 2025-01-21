@@ -39,9 +39,9 @@ const router = createBrowserRouter([
 
 function App() {
   return (
-    <AudioPlayerProvider>
-      <RouterProvider router={router} />
-    </AudioPlayerProvider>
+      <AudioPlayerProvider>
+        <RouterProvider router={router} />
+      </AudioPlayerProvider>
   );
 }
 

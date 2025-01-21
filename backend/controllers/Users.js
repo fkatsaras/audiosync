@@ -90,6 +90,32 @@ module.exports.get_user_followed_artists = async function (req, res, next) {
   }
 };
 
+module.exports.get_last_played_song = async function (req, res, next) {
+  try {
+    const userId = req.session.user.id;
+    const { message, body } = await Users.get_last_played_song(userId);
+
+    successResponse(res, message, body);
+  } catch (error) {
+    errorResponse(res, error.message, error.code);
+  }
+}
+
+module.exports.add_to_user_history = async function (req, res, next, body) {
+  try {
+    const userId = req.session.user.id
+    // Check if song id is provided
+    if (!body?.song_id) {
+      return errorResponse(res, 'Please provide a song id to add to history', 400);
+    }
+
+    const { message, body: responseBody } = await Users.add_to_user_history(body, userId)
+    successResponse(res, message, responseBody);
+  } catch (error) {
+    errorResponse(res, error.message, error.code);
+  }
+}
+
 // module.exports.get_recommended_songs = function get_recommended_songs (req, res, next, userId) {
 //   Users.get_recommended_songs(userId)
 //     .then(function (response) {

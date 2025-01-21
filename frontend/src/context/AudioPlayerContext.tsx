@@ -2,7 +2,6 @@ import React, { createContext, useState, useRef, useEffect, useCallback } from '
 import { Song } from '../types/data';
 // Create a 'global state' for the audio player component using context
 
-
 interface AudioPlayerContextProps {
     currentSong: Song | null;
     isPlaying: boolean;

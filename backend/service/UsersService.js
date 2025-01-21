@@ -444,6 +444,59 @@ exports.get_user_followed_artists = async function (userId) {
 }
 
 
+/**
+ * Get user's last played song
+ * Retrieve the users last played song from their listening history
+ * 
+ * userId Integer ID of the user whose last played song is to be fetched
+ * returns Object
+ */
+exports.get_last_played_song = async function (userId) {
+  const connection = db.createConnection();
+
+  try {
+    const lastPlayedSongResult = await UserRepository.getUsersLastPlayedSong(connection, userId);
+
+    if (lastPlayedSongResult.length === 0) {
+      throw ErrorHandler.createError(404, `No listening history or last played song found`);
+    }
+
+    const last_played_song = lastPlayedSongResult[0];
+
+    return {
+      message: 'Last played song retrieved successfully.',
+      body: last_played_song
+    }
+  } catch (error) {
+    throw ErrorHandler.handle(error);
+  } finally {
+    db.closeConnection(connection);
+  }
+}
+
+/**
+ * Add a song to the users listening history
+ * 
+ * body: Object containing song history info 
+ * userId Integer ID of the user
+ * 
+ * @returns {Promise<Object>} - Resolves with a success message if appending is successful.
+ */
+exports.add_to_user_history = async function (body, userId) {
+  const connection = db.createConnection();
+  
+  try {
+    await UserRepository.addSongToUsersHistory(connection, body);
+
+    return {
+      message: 'Song added to listening history successfully'
+    };
+  } catch (error) {
+    ErrorHandler.handle(error);
+  } finally {
+    db.closeConnection(connection);
+  }
+}
 
 /**
  * Authenticates a user and generates a JWT token if the credentials are valid.

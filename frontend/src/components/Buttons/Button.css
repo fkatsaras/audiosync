@@ -25,7 +25,6 @@ button:visited {
     display: inline-flex; 
     align-items: center;
     justify-content: center; 
-    border: none
 }
 
 .default-button:hover {

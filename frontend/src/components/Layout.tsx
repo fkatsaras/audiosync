@@ -12,8 +12,8 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
 
   return (
     <div>
-      {showAudio && <AudioPlayer />} {/* Render AudioPlayer based on route */}
       <UserSession> {/* Wrap children with UserSession */}
+        {showAudio && <AudioPlayer />} {/* Render AudioPlayer inside UserSession so we can get userId, username props in here */}
         {children} {/* Render children (the page content) */}
       </UserSession>
     </div>

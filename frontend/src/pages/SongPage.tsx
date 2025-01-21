@@ -113,7 +113,7 @@ const SongPage: React.FC<UserSessionProps> = ({ userId, username  }) => {
                                             cover: song.cover,
                                             liked: song.liked,
                                             playlists: song.playlists,
-                                            is_playing: song.is_playing
+                                            is_playing: true
                                         });
                                         togglePlayPause();
                                        }

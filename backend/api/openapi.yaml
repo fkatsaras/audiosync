@@ -787,7 +787,7 @@ paths:
           description: Song not found
       x-openapi-router-controller: app.controllers.songs_controller
       x-swagger-router-controller: Songs
-  /api/v1/users/{user-id}/recommended:
+  /api/v1/users/{userId}/recommended:
     get:
       tags:
       - users
@@ -795,7 +795,7 @@ paths:
       description: Retrieve recommended songs for a specific user based on their preferences
       operationId: get_recommended_songs
       parameters:
-      - name: user-id
+      - name: userId
         in: path
         description: ID of the user to fetch recommended songs for
         required: true
@@ -840,6 +840,103 @@ paths:
                 $ref: '#/components/schemas/ApiResponse'
       x-openapi-router-controller: app.controllers.auth_controller
       x-swagger-router-controller: Auth
+  /api/v1/users/{userId}/history:
+    get:
+      tags:
+        - users
+      summary: Get listening history for a user
+      description: Retrieve the list of songs in a user's listening history
+      operationId: get_user_history
+      parameters:
+        - name: userId
+          in: path
+          description: ID of the user to fetch listening history for
+          required: true
+          style: simple
+          explode: false
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: List of songs in the user's listening history
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Song'
+              x-content-type: application/json
+        "404":
+          description: User not found or no history available
+        "500":
+          description: Internal server error
+      x-openapi-router-controller: app.controllers.users_controller
+      x-swagger-router-controller: Users
+
+    post:
+      tags:
+        - users
+      summary: Add a song to the user's listening history
+      description: Adds a song to the user's listening history
+      operationId: add_to_user_history
+      parameters:
+        - name: userId
+          in: path
+          description: ID of the user to add to the listening history
+          required: true
+          style: simple
+          explode: false
+          schema:
+            type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Song'  # Assuming a Song schema exists
+      responses:
+        "201":
+          description: Song added successfully to the user's history
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Song'
+        "404":
+          description: User not found
+        "500":
+          description: Internal server error
+      x-openapi-router-controller: app.controllers.users_controller
+      x-swagger-router-controller: Users
+
+    delete:
+      tags:
+        - users
+      summary: Remove a song from the user's listening history
+      description: Removes a song from the user's listening history
+      operationId: remove_from_user_history
+      parameters:
+        - name: userId
+          in: path
+          description: ID of the user to remove from the listening history
+          required: true
+          style: simple
+          explode: false
+          schema:
+            type: integer
+        - name: song-id
+          in: query
+          description: ID of the song to remove from the user's listening history
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Song removed successfully from the user's history
+        "404":
+          description: User or song not found
+        "500":
+          description: Internal server error
+      x-openapi-router-controller: app.controllers.users_controller
+      x-swagger-router-controller: Users
 components:
   schemas:
     HomePageResponse:
@@ -850,25 +947,25 @@ components:
       example:
         links:
           search: /search
-          myArtists: "/users/{user-id}/my-artists"
-          myPlaylists: "/users/{user-id}/my-playlists"
-          likedSongs: "/users/{user-id}/liked-songs"
-          recommended: "/users/{user-id}/recommended"
+          myArtists: "/users/{userId}/my-artists"
+          myPlaylists: "/users/{userId}/my-playlists"
+          likedSongs: "/users/{userId}/liked-songs"
+          recommended: "/users/{userId}/recommended"
     HomePageResponse_links:
       type: object
       properties:
         likedSongs:
           type: string
           description: URL to navigate to the liked songs page of the user
-          example: "/users/{user-id}/liked-songs"
+          example: "/users/{userId}/liked-songs"
         recommended:
           type: string
           description: URL to navigate to the recommended songs page of the user
-          example: "/users/{user-id}/recommended"
+          example: "/users/{userId}/recommended"
         myArtists:
           type: string
           description: URL to navigate to the followed artists page of the user
-          example: "/users/{user-id}/my-artists"
+          example: "/users/{userId}/my-artists"
         search:
           type: string
           description: URL to navigate to the search page
@@ -876,13 +973,13 @@ components:
         myPlaylists:
           type: string
           description: URL to navigate to My Playlists page
-          example: "/users/{user-id}/my-playlists"
+          example: "/users/{userId}/my-playlists"
       example:
         search: /search
-        myArtists: "/users/{user-id}/my-artists"
-        myPlaylists: "/users/{user-id}/my-playlists"
-        likedSongs: "/users/{user-id}/liked-songs"
-        recommended: "/users/{user-id}/recommended"
+        myArtists: "/users/{userId}/my-artists"
+        myPlaylists: "/users/{userId}/my-playlists"
+        likedSongs: "/users/{userId}/liked-songs"
+        recommended: "/users/{userId}/recommended"
     UserEntity:
       type: object
       properties:

@@ -22,6 +22,26 @@ class UserRepository {
         
         return db.executeQuery(connection, query, [userId])
     }
+
+    static async getUsersLastPlayedSong(connection, userId) {
+        const query = `
+            SELECT * FROM listening_history
+            WHERE user_id = ?
+            ORDER BY played_at DESC
+            LIMIT 1
+        `;
+
+        return db.executeQuery(connection, query, [userId])
+    }
+
+    static async addSongToUsersHistory(connection, { user_id, song_id, played_at }) {
+        const query = `
+            INSERT INTO listening_history (user_id, song_id, played_at)
+            VALUES (?, ?, ?)
+        `
+
+        return db.executeQuery(connection, query, [user_id, song_id, played_at])
+    }
 }
 
 module.exports = UserRepository;
