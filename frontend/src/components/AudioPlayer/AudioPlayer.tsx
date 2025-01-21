@@ -17,27 +17,25 @@ const AudioPlayer: React.FC = () => {
         audioRef
     } = useAudioPlayer();
 
-    const [progress, setProgress] = useState(0);
+    const [isMuted, setIsMuted] = useState(false);
+    
+    // Progress percentage
+    const progress = duration ? (currentTime / duration) * 100 : 0;
 
+    // Handle mute toggle
+    const toggleMute = () => {
+        if (audioRef.current) {
+            audioRef.current.muted = !audioRef.current.muted;
+            setIsMuted(audioRef.current.muted);
+        }
+    };
+
+    // Format time helper
     const formatTime = (time: number) => {
         const minutes = Math.floor(time / 60);
         const seconds = Math.floor(time % 60);
         return `${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
     };
-
-    // Dynamic update of progress bar
-    useEffect(() => {
-        if (duration > 0) {
-            const progressPercent = (currentTime / duration) * 100;
-            setProgress(progressPercent);
-        }
-    }, [currentTime, duration]);  
-    
-    // Handle volume change
-    const handleVolumeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const newVol = parseFloat(e.target.value);
-        setVolume(newVol);
-    }
 
     return (
         <div className="audio-player">
@@ -62,22 +60,15 @@ const AudioPlayer: React.FC = () => {
                     max={duration || 0}
                     step="0.1"
                     value={currentTime}
-                    onChange={(e) => setSeek(parseFloat(e.target.value))}
+                    onChange={(e) => setSeek(Number(e.target.value))}
                     style={{
                         background: `linear-gradient(to right, #ffffff ${progress}%, #2a2a2a ${progress}%)`
                     }}
                 />
             </div>
             <div className="controls">
-                <div
-                    className="volume-icon"
-                    onClick={() => {
-                        if (audioRef.current) {
-                            audioRef.current.muted = !audioRef.current.muted;
-                        }
-                    }}
-                >
-                    {audioRef.current?.muted ? <FaVolumeMute /> : <FaVolumeUp />}
+                <div className="volume-icon" onClick={toggleMute}>
+                    {isMuted ? <FaVolumeMute /> : <FaVolumeUp />}
                 </div>
                 <input
                     type="range"
@@ -85,7 +76,7 @@ const AudioPlayer: React.FC = () => {
                     max="1"
                     step="0.01"
                     value={audioRef.current?.volume || 1}
-                    onChange={handleVolumeChange}
+                    onChange={(e) => setVolume(Number(e.target.value))}
                     style={{
                         background: `linear-gradient(to right, #ffffff ${volume * 100}%, #2a2a2a ${volume * 100}%)`
                     }}

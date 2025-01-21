@@ -104,9 +104,16 @@ const SongPage: React.FC<UserSessionProps> = ({ userId, username  }) => {
                                     if (song) {
                                         setCurrentSong({
                                             id: song.id,
-                                            src: song.audio_url,
                                             title: song.title,
                                             artist: song.artist,
+                                            artist_id: song.artist_id,
+                                            audio_url: song.audio_url,
+                                            album: song.album,
+                                            duration: song.duration,
+                                            cover: song.cover,
+                                            liked: song.liked,
+                                            playlists: song.playlists,
+                                            is_playing: song.is_playing
                                         });
                                         togglePlayPause();
                                        }
