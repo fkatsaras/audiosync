@@ -30,6 +30,7 @@ export const AudioPlayerProvider: React.FC<{ children: React.ReactNode }> = ({ c
     const [isPlaying, setIsPlaying] = useState(false);
     const audioRef = useRef<HTMLAudioElement>(null);
 
+    // Play pause handler
     const togglePlayPause = () => {
         if (!audioRef.current) return;
         
@@ -59,14 +60,15 @@ export const AudioPlayerProvider: React.FC<{ children: React.ReactNode }> = ({ c
         };
 
         audio.addEventListener('timeupdate',updateTime);
-        audio.addEventListener('loadmetadata',updateTime);
+        audio.addEventListener('loadedmetadata',updateTime);
 
         return () => {
             audio.removeEventListener('timeupdate',updateTime);
-            audio.removeEventListener('loadmetadata',updateTime);
+            audio.removeEventListener('loadedmetadata',updateTime);
         };
     },[audioRef]);
 
+    // Effect to track volume update
     useEffect(() => {
         if (audioRef.current) {
             audioRef.current.volume = volume;

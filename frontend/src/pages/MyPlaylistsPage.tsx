@@ -133,12 +133,13 @@ const MyPlaylistsPage: React.FC<UserSessionProps> = ({ userId, username }) => {
             <Navbar userId={userId || ''} username={username || ''}/>
             <AppBody>
                 <h1>Your Playlists</h1>
-                <Button 
-                    className='create-playlist-btn'
-                    onClick={() => setIsPopUpOpen(true)}
-                >
-                    <span className="plus-sign">+</span>   
-                </Button>
+                <div className='buttons-container'>
+                    <Button 
+                        className=''
+                        onClick={() => setIsPopUpOpen(true)}>
+                        New +
+                    </Button>
+                </div>
                 {loading && <LoadingDots />}
                 {error && <Message className='error-message'>{error}</Message>}
                 <ul>

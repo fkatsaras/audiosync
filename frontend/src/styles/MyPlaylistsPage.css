@@ -16,6 +16,13 @@
     justify-content: center;
 }
 
+.buttons-container {
+    display: flex;
+    gap: 10px;  /* Space out buttons */
+    margin-bottom: 10px;
+}
+
+
 .create-playlist-btn:hover {
     background-color: #f1f1f1;
     color: #2a2a2a;

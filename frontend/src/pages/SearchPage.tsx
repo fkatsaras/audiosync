@@ -161,7 +161,7 @@ const Search: React.FC<UserSessionProps> = ({ userId, username }) => {
                     placeholder='Search for artists, songs...'
                     className='search-input'
                 />
-                <div className='search-buttons-container'>
+                <div className='search-buttons-container'>  {/* TODO : create a universal Buttons Container div for global styling */}
                     <Button onClick={() => handleSearch('artists')} className='search-button'>Artists</Button>
                     <Button onClick={() => handleSearch('songs')} className='search-button'>Songs</Button>
                 </div>
