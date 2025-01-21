@@ -6,6 +6,7 @@ const db = require('../utils/dbUtils');
 const { get_playlist_by_id } = require('./PlaylistsService');
 const UserRepository = require('../data/repository/UsersRepository'); 
 const ErrorHandler = require('../middleware/ErrorHandler');
+const { get_song_by_id } = require('./SongsService');
 
 
 /**
@@ -445,30 +446,40 @@ exports.get_user_followed_artists = async function (userId) {
 
 
 /**
- * Get user's last played song
- * Retrieve the users last played song from their listening history
+ * Get user's history
+ * Retrieve the users history (or their last layed song)
  * 
- * userId Integer ID of the user whose last played song is to be fetched
- * returns Object
+ * userId Integer ID of the user whose history | last played song is to be fetched
+ * latest: Request Query Parameter to check if we want the latest song or the full history 
+ * returns Object | List<Object>
  */
-exports.get_last_played_song = async function (userId) {
+// TODO THis has a deficiency: In order to return all the song history
+// TODO each song has to be processed to get the audio URL
+// TODO So we fetch all the song details ONLY in the case of the now playing song
+exports.get_user_history = async function (userId, latest = false) {
   const connection = db.createConnection();
-
   try {
-    const lastPlayedSongResult = await UserRepository.getUsersLastPlayedSong(connection, userId);
+    const history = await UserRepository.getUsersHistory(connection,userId, latest)
+    let latestSong = null;
 
-    if (lastPlayedSongResult.length === 0) {
-      throw ErrorHandler.createError(404, `No listening history or last played song found`);
+    if (!history.length) {
+      throw ErrorHandler(404, 'No listening history found.');
     }
 
-    const last_played_song = lastPlayedSongResult[0];
+    // In case of the latest song we get the full song data using the service function
+    if (latest) {
+      const latestSongId = history[0].id; // Extract the song_id from the latest entry
+      const { body } = await get_song_by_id(userId, latestSongId);
+      latestSong = body;
+      console.log(latestSong);
+    }
 
     return {
-      message: 'Last played song retrieved successfully.',
-      body: last_played_song
-    }
+      message: latest === 'true' ? 'Last played song retrieved successfully' : 'Listening history retrieved successfully',
+      body: latest === 'true' ? latestSong : history 
+    };
   } catch (error) {
-    throw ErrorHandler.handle(error);
+    ErrorHandler.handle(error);
   } finally {
     db.closeConnection(connection);
   }

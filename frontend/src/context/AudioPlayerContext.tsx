@@ -12,6 +12,13 @@ interface AudioPlayerContextProps {
     togglePlayPause: () => void;
     setSeek: (time: number) => void;
     setVolume: (volume: number) => void;
+    setAudioState: React.Dispatch<React.SetStateAction<{    // Normally this wouldnt be here
+        currentSong: Song | null;                           // but i cant pass UserSessionProps to the AudioPlayerContext
+        isPlaying: boolean;
+        currentTime: number;
+        duration: number;
+        volume: number;
+    }>>;
     audioRef: React.RefObject<HTMLAudioElement>;
 }
 
@@ -30,23 +37,25 @@ export const AudioPlayerProvider: React.FC<{ children: React.ReactNode }> = ({ c
 
     // Play/pause audio 
     const togglePlayPause = useCallback(() => {
-        if(!audioRef.current) return;
-
-        if(audioState.isPlaying) {
-            audioRef.current.pause();
-        } else {
-            audioRef.current.play().catch(error => console.error('Audio play error:', error));
-        }
-
-        setAudioState(prev => ({ ...prev, isPlaying: !prev.isPlaying }));
-    },[audioState.isPlaying]);
+        if (!audioRef.current) return;
+    
+        setAudioState(prev => {
+            if (prev.isPlaying) {
+                audioRef.current?.pause();
+            } else {
+                audioRef.current?.play().catch(error => console.error('Audio play error:', error));
+            }
+            return { ...prev, isPlaying: !prev.isPlaying };
+        });
+    }, []);
 
     // Seek audio 
     const setSeek = useCallback((time: number) => {
         if (audioRef.current) {
             audioRef.current.currentTime = time;
+            setAudioState(prev => ({ ...prev, currentTime: time }));
         }
-    },[]);
+    }, []);
 
     // Change Volume 
     const setVolume = useCallback((volume: number) => {
@@ -87,7 +96,7 @@ export const AudioPlayerProvider: React.FC<{ children: React.ReactNode }> = ({ c
             audio.removeEventListener('timeupdate', updateTime);
             audio.removeEventListener('loadedmetadata', updateTime);
         };
-    },[audioRef]);
+    },[audioRef, audioState.currentSong]);
 
     return (
         <AudioPlayerContext.Provider
@@ -97,7 +106,8 @@ export const AudioPlayerProvider: React.FC<{ children: React.ReactNode }> = ({ c
                 setVolume,
                 setCurrentSong,
                 togglePlayPause,
-                audioRef
+                audioRef,
+                setAudioState,
             }}
         >
             {children}

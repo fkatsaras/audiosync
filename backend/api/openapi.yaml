@@ -845,34 +845,37 @@ paths:
       tags:
         - users
       summary: Get listening history for a user
-      description: Retrieve the list of songs in a user's listening history
+      description: Retrieve the list of songs in a user's listening history. Optionally fetch the last played song.
       operationId: get_user_history
       parameters:
         - name: userId
           in: path
           description: ID of the user to fetch listening history for
           required: true
-          style: simple
-          explode: false
           schema:
             type: integer
+        - name: latest
+          in: query
+          description: If set to true, returns only the last played song
+          required: false
+          schema:
+            type: boolean
       responses:
         "200":
-          description: List of songs in the user's listening history
+          description: List of songs or the last played song
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Song'
-              x-content-type: application/json
+                oneOf:
+                  - type: array
+                    items:
+                      $ref: '#/components/schemas/Song'
+                  - $ref: '#/components/schemas/Song'
         "404":
           description: User not found or no history available
         "500":
           description: Internal server error
-      x-openapi-router-controller: app.controllers.users_controller
       x-swagger-router-controller: Users
-
     post:
       tags:
         - users
@@ -904,7 +907,6 @@ paths:
           description: User not found
         "500":
           description: Internal server error
-      x-openapi-router-controller: app.controllers.users_controller
       x-swagger-router-controller: Users
 
     delete:
@@ -935,7 +937,6 @@ paths:
           description: User or song not found
         "500":
           description: Internal server error
-      x-openapi-router-controller: app.controllers.users_controller
       x-swagger-router-controller: Users
 components:
   schemas:

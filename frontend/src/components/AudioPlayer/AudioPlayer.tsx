@@ -15,6 +15,7 @@ interface UserSessionProps {
 const AudioPlayer: React.FC<UserSessionProps> = ({ userId, username }) => {
     const {
         currentSong,
+        setCurrentSong,
         isPlaying,
         togglePlayPause,
         currentTime,
@@ -22,10 +23,45 @@ const AudioPlayer: React.FC<UserSessionProps> = ({ userId, username }) => {
         volume,
         setSeek,
         setVolume,
-        audioRef
+        audioRef,
+        setAudioState
     } = useAudioPlayer();
 
     const [isMuted, setIsMuted] = useState(false);
+
+    // Fetch last played song
+    useEffect(() => {
+        const fetchLastPlayedSong = async () => {
+            try {
+                    // Fetch last played song from API 
+                    const response = await fetch(`/api/v1/users/${userId}/history?latest=true`, {
+                        headers: {
+                            'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                        },
+                    });
+
+                    if (!response.ok) {
+                        throw new Error(`Failed to fetch last played song: ${response.statusText}`);
+                    }
+
+                    const data = await response.json();
+                    const lastPlayedSong = data.body[0];
+
+                    if (!lastPlayedSong) {
+                        console.warn('No song found in history.');
+                        return;
+                    }
+
+                    setAudioState(prev => ({ ...prev, currentSong: lastPlayedSong }));
+                    setCurrentSong(lastPlayedSong);
+
+            } catch (error) {
+                console.error(`Error retrieving last played song: ${error}`);
+            }
+        };
+
+        fetchLastPlayedSong();
+    }, [userId, setCurrentSong, setAudioState]);
     
     // Progress percentage
     const progress = duration ? (currentTime / duration) * 100 : 0;
@@ -66,7 +102,7 @@ const AudioPlayer: React.FC<UserSessionProps> = ({ userId, username }) => {
     }, [userId]); 
     
     useEffect(() => {
-        if (currentSong) {
+        if (currentSong && currentSong.id) {
             updateListeningHistory(currentSong);
         }
     }, [currentSong, updateListeningHistory]);

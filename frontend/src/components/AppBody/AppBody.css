@@ -3,11 +3,11 @@
 .app-body {
     display: flex;
     flex: 1;
-    margin-left: 14.5%;
-    margin-right: 14.5%;
+    margin-left: 14.5vw;
+    margin-right: 14.5vw;
     padding: 0px 20px 20px 20px;
     min-height: 100vh;
-    height: 84.5%;
+    height: 84.5vh;
     background-color: #181818;
     font-family: 'Montserrat', sans-serif;
 }

@@ -23,13 +23,18 @@ class UserRepository {
         return db.executeQuery(connection, query, [userId])
     }
 
-    static async getUsersLastPlayedSong(connection, userId) {
-        const query = `
-            SELECT * FROM listening_history
-            WHERE user_id = ?
-            ORDER BY played_at DESC
-            LIMIT 1
+    static async getUsersHistory(connection, userId, latest) {
+        let query = `
+            SELECT s.*
+            FROM listening_history lh
+            JOIN songs s ON lh.song_id = s.id
+            WHERE lh.user_id = ?
+            ORDER BY lh.played_at DESC
         `;
+
+        if (latest) {
+            query += ' LIMIT 1';
+        }
 
         return db.executeQuery(connection, query, [userId])
     }
