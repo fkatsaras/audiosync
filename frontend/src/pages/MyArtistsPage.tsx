@@ -58,7 +58,15 @@ const  MyArtistsPage: React.FC<UserSessionProps> = ({ userId, username }) => {
         fetchArtists();
     }, [userId])
 
-    console.log(artists);
+    if (loading) return (
+        <div>
+            <AppBody>
+                <Navbar userId={userId || ''} username={username || ''} />
+                    <LoadingDots />
+                <ProfileBar userId={userId || ''} username={username || ''}/>
+            </AppBody>
+        </div>
+    )
 
     return (
         <div className='my-artists-container'>

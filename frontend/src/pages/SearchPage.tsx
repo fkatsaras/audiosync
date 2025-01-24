@@ -148,6 +148,18 @@ const Search: React.FC<UserSessionProps> = ({ userId, username }) => {
         }
     };
 
+    if (loading) return (
+        <div>
+            <AppBody>
+                <Navbar userId={userId || ''} username={username || ''} />
+                    <LoadingDots />
+                <ProfileBar userId={userId || ''} username={username || ''}/>
+            </AppBody>
+        </div>
+    );
+    console.log(hasMoreArtists);
+    console.log(songResults.length);
+
     return (
         <div className='search-container'>
             <Navbar userId={userId || ''} username={username || ''}/>

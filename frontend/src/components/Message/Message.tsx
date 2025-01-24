@@ -3,7 +3,7 @@ import './Message.css'
 
 interface InfoMessageProps {
     children: React.ReactNode;
-    className: 'info-message' | 'success-message' | 'error-message';
+    className?: 'info-message' | 'success-message' | 'error-message' | string;
 }
 
 const Message: React.FC<InfoMessageProps> = ({ children, className}) => {

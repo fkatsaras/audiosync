@@ -45,14 +45,14 @@ const AudioPlayer: React.FC<UserSessionProps> = ({ userId, username }) => {
                     }
 
                     const data = await response.json();
-                    const lastPlayedSong = data.body[0];
+                    const lastPlayedSong = data.body[0];    // Song is returned in an array
 
                     if (!lastPlayedSong) {
                         console.warn('No song found in history.');
                         return;
                     }
 
-                    setAudioState(prev => ({ ...prev, currentSong: lastPlayedSong }));
+                    // setAudioState(prev => ({ ...prev, currentSong: lastPlayedSong }));
                     setCurrentSong(lastPlayedSong);
 
             } catch (error) {
@@ -130,20 +130,23 @@ const AudioPlayer: React.FC<UserSessionProps> = ({ userId, username }) => {
                     <p>{currentSong? <Link to={`/artists/${currentSong.artist_id}`}>{currentSong.artist}</Link> : "Now Playing Artist"}</p>
                 </div>
             </div>
-            <div className="playback">
-                <PlayButton isPlaying={isPlaying} onToggle={togglePlayPause} />
-                <span>{formatTime(currentTime)} / {formatTime(duration)}</span>
-                <input
-                    type="range"
-                    min="0"
-                    max={duration || 0}
-                    step="0.1"
-                    value={currentTime}
-                    onChange={(e) => setSeek(Number(e.target.value))}
-                    style={{
-                        background: `linear-gradient(to right, #ffffff ${progress}%, #2a2a2a ${progress}%)`
-                    }}
-                />
+            <div className="playback-container">
+                <div className="current-time">{formatTime(currentTime)}</div>
+                <div className="playback">
+                    <PlayButton isPlaying={isPlaying} onToggle={togglePlayPause} />
+                    <input
+                        type="range"
+                        min="0"
+                        max={duration || 0}
+                        step="0.1"
+                        value={currentTime}
+                        onChange={(e) => setSeek(Number(e.target.value))}
+                        style={{
+                            background: `linear-gradient(to right, #ffffff ${progress}%, #2a2a2a ${progress}%)`
+                        }}
+                    />
+                </div>
+                <div className="duration">{formatTime(duration)}</div>
             </div>
             <div className="controls">
                 <div className="volume-icon" onClick={toggleMute}>

@@ -15,8 +15,8 @@ button:visited {
 .default-button {
     background-color: #2a2a2a; 
     color: #f1f1f1;
-    border: none; 
     border-radius: 50px;
+    border: none;
     padding: 10px 20px;
     cursor: pointer; 
     transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
@@ -36,7 +36,6 @@ button:visited {
 .default-button.inactive {
     background-color: transparent;
     color: #6a1b9a; /* Dark purple text when inactive */
-    border: 2px solid #6a1b9a; /* Dark purple border */
 }
 
 /* Hover effect for inactive buttons */

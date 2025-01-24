@@ -87,7 +87,15 @@ const PlaylistPage: React.FC<UserSessionProps> = ({ userId, username }) => {
         updatePlaylist();
     };
 
-    if (loading) return <LoadingDots />;
+    if (loading) return (
+        <div>
+            <AppBody>
+                <Navbar userId={userId || ''} username={username || ''} />
+                    <LoadingDots />
+                <ProfileBar userId={userId || ''} username={username || ''}/>
+            </AppBody>
+        </div>
+    );
     if (error) return <div>{error}</div>;
 
     return (

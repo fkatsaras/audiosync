@@ -9,6 +9,7 @@ import Navbar from "../components/Navbar/Navbar";
 import FollowButton from "../components/Buttons/FollowButton";
 import Message from "../components/Message/Message";
 import ProfileBar from "../components/ProfileBar/ProfileBar";
+import App from "../App";
 
 interface UserSessionProps {
     userId?: string;
@@ -76,7 +77,15 @@ const ArtistPage: React.FC<UserSessionProps> = ({ userId, username }) => {
         }
     };
 
-    if (loading) return <LoadingDots />;
+    if (loading) return (
+        <div>
+            <AppBody>
+                <Navbar userId={userId || ''} username={username || ''} />
+                    <LoadingDots />
+                <ProfileBar userId={userId || ''} username={username || ''}/>
+            </AppBody>
+        </div>
+    );
     if (error) return <div>{error}</div>;
 
     return (

@@ -22,6 +22,7 @@ const SongPage: React.FC<UserSessionProps> = ({ userId, username  }) => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [message, setMessage] = useState<string | null>(null);
+    const [likeMessage, setLikeMessage] = useState<string | null>(null);
 
     // State for the Audio Player
     // const [currentSong, setCurrentSong] = useState<AudioPlayerContextProps['currentSong'] | null>(null);
@@ -74,17 +75,27 @@ const SongPage: React.FC<UserSessionProps> = ({ userId, username  }) => {
                 ...prevSong!,
                 liked: data.body.liked  // Update the songs liked status
             }));
-            setMessage('Song added to Liked Songs');
+            setLikeMessage(data.body.liked ? 'Song Liked!' : "");
+
+            setTimeout(() => {
+                setLikeMessage(null);
+            },6000);
         } else {
             const errorData = await response.json();
             setMessage(errorData.message);
         }
     };
 
-    if (loading) return <LoadingDots />;
+    if (loading) return (
+        <div>
+            <AppBody>
+                <Navbar userId={userId || ''} username={username || ''} />
+                    <LoadingDots />
+                <ProfileBar userId={userId || ''} username={username || ''}/>
+            </AppBody>
+        </div>
+    );
     if (error) return <div>{error}</div>;
-
-    // console.log({ currentSong, isPlaying, audioRef });
 
 
     return (
@@ -95,7 +106,10 @@ const SongPage: React.FC<UserSessionProps> = ({ userId, username  }) => {
                     { song ? (
                         <div className="song-info">
                             <h1>{song.title}</h1>
-                            <LikeButton isLiked={song.liked} onToggle={handleLikeToggle}/>
+                            <div className="like-button-container">
+                                <LikeButton isLiked={song.liked} onToggle={handleLikeToggle}/>
+                                {likeMessage && <Message className={`like-info-message ${likeMessage ? 'fade-in' : 'fade-out'}`}>{likeMessage}</Message>}
+                            </div>
                             <p>Artist: <Link to={`/artists/${song.artist_id}`}>{song.artist}</Link></p>
                             <p>Album: {song.album}</p>
                             <div className="song-image-container">

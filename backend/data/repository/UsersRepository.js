@@ -25,9 +25,10 @@ class UserRepository {
 
     static async getUsersHistory(connection, userId, latest) {
         let query = `
-            SELECT s.*
+            SELECT s.*, a.name as artist
             FROM listening_history lh
             JOIN songs s ON lh.song_id = s.id
+            JOIN artists a ON s.artist_id = a.id 
             WHERE lh.user_id = ?
             ORDER BY lh.played_at DESC
         `;

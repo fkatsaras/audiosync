@@ -128,6 +128,16 @@ const MyPlaylistsPage: React.FC<UserSessionProps> = ({ userId, username }) => {
         }
     }
 
+    if (loading) return (
+        <div>
+            <AppBody>
+                <Navbar userId={userId || ''} username={username || ''} />
+                    <LoadingDots />
+                <ProfileBar userId={userId || ''} username={username || ''}/>
+            </AppBody>
+        </div>
+    )
+
     return (
         <div className='playlists-container'>
             <Navbar userId={userId || ''} username={username || ''}/>

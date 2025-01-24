@@ -453,7 +453,7 @@ exports.get_user_followed_artists = async function (userId) {
  * latest: Request Query Parameter to check if we want the latest song or the full history 
  * returns Object | List<Object>
  */
-// TODO THis has a deficiency: In order to return all the song history
+// TODO This has a deficiency: In order to return all the song history
 // TODO each song has to be processed to get the audio URL
 // TODO So we fetch all the song details ONLY in the case of the now playing song
 exports.get_user_history = async function (userId, latest = false) {

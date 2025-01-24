@@ -84,7 +84,15 @@ const Home: React.FC<UserSessionProps> = ({ userId, username }) => {
 
   console.log(links); // Dummy !TODO! Change what will be returned from the backend
 
-  if (loading) return <LoadingDots />;
+  if (loading) return (
+    <div>
+        <AppBody>
+            <Navbar userId={userId || ''} username={username || ''} />
+                <LoadingDots />
+            <ProfileBar userId={userId || ''} username={username || ''}/>
+        </AppBody>
+    </div>
+  )
   if (error) return <Message className='error-message'>{error}</Message>;
 
   return (
