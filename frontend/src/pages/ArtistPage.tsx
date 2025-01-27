@@ -22,6 +22,8 @@ const ArtistPage: React.FC<UserSessionProps> = ({ userId, username }) => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [message, setMessage] = useState<string | null>(null);
+    // State for managing rendering / loading of the components
+    const [loadedItems, setLoadedItems] = useState<{ [key: string] : boolean }>({});
 
     useEffect(() => {
         // Fetch the artists details from the backend
@@ -36,6 +38,14 @@ const ArtistPage: React.FC<UserSessionProps> = ({ userId, username }) => {
                 if (response.ok) {
                     const data = await response.json();
                     setArtist(data.body);
+                    // Set all artists songs as loaded
+                    setLoadedItems((prev) => {
+                        const newLoadedItems = data.body.songs.reduce((acc : { [key: string] : boolean }, song: any) => {
+                            acc[song.id] = true;
+                            return acc;
+                        }, {});
+                        return { ...prev, ...newLoadedItems };
+                    });
                 } else {
                     setError('Artist not found');
                 }
@@ -120,7 +130,8 @@ const ArtistPage: React.FC<UserSessionProps> = ({ userId, username }) => {
                                             subtitle={String(song.duration)} // Duration as subtitle
                                             linkPath="/songs" // Path to song page
                                             altText={`${song.title} cover`}
-                                            className="song-result" // Use the song class for styling
+                                            className={`song-result ${loadedItems[song.id] ? 'loaded' : ''}`}
+                                            isLoading={loading}
                                         />
                                     ))}
                                 </ul>

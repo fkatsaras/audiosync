@@ -24,9 +24,7 @@ const SongPage: React.FC<UserSessionProps> = ({ userId, username  }) => {
     const [message, setMessage] = useState<string | null>(null);
     const [likeMessage, setLikeMessage] = useState<string | null>(null);
 
-    // State for the Audio Player
-    // const [currentSong, setCurrentSong] = useState<AudioPlayerContextProps['currentSong'] | null>(null);
-    // const { currentSong, audioRef, isPlaying } = useAudioPlayer();
+    // Use the AudioPlayer through its hook 
     const { setCurrentSong, togglePlayPause, isPlaying } = useAudioPlayer();
 
     useEffect(() => {

@@ -143,7 +143,8 @@ const PlaylistPage: React.FC<UserSessionProps> = ({ userId, username }) => {
                                                                     subtitle={`${song.artist}`}
                                                                     linkPath={`/songs`}
                                                                     altText={`${song.title} cover`}
-                                                                    className="song-result"     
+                                                                    className="song-result" 
+                                                                    isLoading={loading}    
                                                                 />
                                                             </li>
                                                         )}

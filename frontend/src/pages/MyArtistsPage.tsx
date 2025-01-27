@@ -23,6 +23,18 @@ const  MyArtistsPage: React.FC<UserSessionProps> = ({ userId, username }) => {
     const [artists, setArtists] = useState<Artist[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string>('');
+    // State for managing rendering / loading of the components
+        const [loadedItems, setLoadedItems] = useState<{ [key: string] : boolean }>({});
+    
+        useEffect(() => {
+            // Mark all loaded artists and songs as "loaded" after fetch
+            setTimeout(() => {
+                setLoadedItems((prev) => ({
+                    ...prev,
+                    ...artists.reduce((acc, artist) => ({ ...acc, [artist.id]: true }), {}),
+                }));
+            }, 100);  // Small delay for smoothness
+        }, [artists]);
     
 
     useEffect(() => {
@@ -86,7 +98,8 @@ const  MyArtistsPage: React.FC<UserSessionProps> = ({ userId, username }) => {
                                     subtitle=''
                                     linkPath={`/artists`}
                                     altText='Artist Profile Picture'
-                                    className='artist-result'
+                                    className={`artist-result ${loadedItems[artist.id] ? 'loaded' : ''}`}
+                                    isLoading={loading}
                                 />
                             </li>
                         ))

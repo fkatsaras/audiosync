@@ -16,6 +16,18 @@
     
 }
 
+/* Styles for loading the containers */
+.result-container {
+    opacity: 0;
+    transform: translateY(10px);
+    transition: opacity 0.4s ease-in-out, transform 0.4s ease-in-out;
+}
+
+.result-container.loaded {
+    opacity: 1;
+    transform: translateY(0);
+}
+
 .result-title {
     color: white;
     margin: 0;
@@ -82,4 +94,40 @@ li {
 /* Show the options container on hover */
 .result-container:hover .three-dots-button {
     opacity: 1;
+}
+
+/* Placeholder styles */
+.placeholder-image {
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(90deg, #3a3a3a 25%, #505050 50%, #3a3a3a 75%);
+    border-radius: 5px;
+    animation: wave 2s infinite linear;
+}
+
+.placeholder-title,
+.placeholder-subtitle {
+    height: 15px;
+    border-radius: 5px;
+    background: linear-gradient(90deg, #3a3a3a 25%, #505050 50%, #3a3a3a 75%);
+    animation: wave 2s infinite linear;
+}
+
+.placeholder-title {
+    width: 150px;
+    margin-left: 15px;
+}
+
+.placeholder-subtitle {
+    width: 100px;
+    margin-left: 15px;
+}
+
+@keyframes wave {
+    0% {
+        background-position: -150px;
+    }
+    100% {
+        background-position: 150px;
+    }
 }

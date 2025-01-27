@@ -36,6 +36,18 @@ const MyPlaylistsPage: React.FC<UserSessionProps> = ({ userId, username }) => {
     const [isDeletePopUpOpen, setIsDeletePopUpOpen] = useState<boolean>(false);
     const [playlistToDelete, setPlaylistToDelete] = useState<number | null>(null);
     // const [hasMorePlaylists, setHasMorePlaylists] = useState<boolean>(true);      // Tracks if there are more playlists !TODO! Implement a show more button here as well
+    // State for managing rendering / loading of the components
+    const [loadedItems, setLoadedItems] = useState<{ [key: string] : boolean }>({});
+
+    useEffect(() => {
+        // Mark all loaded artists and songs as "loaded" after fetch
+        setTimeout(() => {
+            setLoadedItems((prev) => ({
+                ...prev,
+                ...playlists.reduce((acc, playlist) => ({ ...acc, [playlist.id]: true }), {}),
+            }));
+        }, 100);  // Small delay for smoothness
+    }, [playlists]);
 
 
     useEffect(() => {
@@ -167,7 +179,8 @@ const MyPlaylistsPage: React.FC<UserSessionProps> = ({ userId, username }) => {
                                     }
                                     linkPath={`/${userId}/playlists`}
                                     altText='Playlist cover'
-                                    className='playlist-result'
+                                    className={`playlist-result ${loadedItems[playlist.id] ? 'loaded' : ''}`}
+                                    isLoading={loading}
                                     optionsComponent={ !playlist.isLikedSongs &&    // User cant edit their Liked Songs Playlist
                                         <Options 
                                             onOptionSelect={(value) => 

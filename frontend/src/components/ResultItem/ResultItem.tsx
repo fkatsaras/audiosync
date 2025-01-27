@@ -11,6 +11,7 @@ interface ResultItemProps {
     altText: string;
     className?: string;
     optionsComponent?: React.ReactNode   // Pass optional options button
+    isLoading: boolean
 }
 
 const ResultItem: React.FC<ResultItemProps> = ({ 
@@ -21,8 +22,21 @@ const ResultItem: React.FC<ResultItemProps> = ({
     linkPath,
     altText,
     className,
-    optionsComponent
+    optionsComponent,
+    isLoading=false,
 }) => {
+
+    if (isLoading) {
+        return (
+            <div className={`result-container ${className}`}>
+                <div className='result-content'>
+                    <div className='placeholder-image' />
+                    <div className='placeholder-title' />
+                    <div className='placeholder-subtitle' />
+                </div>
+            </div>
+        );
+    }
 
     return (     
         <Link to={`${linkPath}/${id}`} className={`result-container ${className}`}>

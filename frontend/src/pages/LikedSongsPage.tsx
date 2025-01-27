@@ -21,6 +21,8 @@ const LikedSongsPlaylist: React.FC<UserSessionProps> = ({ userId, username }) =>
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [playlistId, setPlaylistId] = useState<number | null>(null);
+    const [loadedItems, setLoadedItems] = useState<{ [key: string]: boolean }>({});
+    
 
     useEffect(() => {
         const fetchPlaylist = async () => {
@@ -35,6 +37,15 @@ const LikedSongsPlaylist: React.FC<UserSessionProps> = ({ userId, username }) =>
                     const data = await response.json();
                     setPlaylist(data.body);
                     setPlaylistId(data.body.id); // Set playlistId from response
+
+                    // Set all songs as "loaded"
+                    setLoadedItems((prev) => {
+                        const newLoadedItems = data.body.songs.reduce((acc: { [key: string]: boolean }, song: any) => {
+                            acc[song.id] = true; // Mark song as loaded
+                            return acc;
+                        }, {});
+                        return { ...prev, ...newLoadedItems };
+                    });
                 } else {
                     setError('Playlist not found');
                 }
@@ -137,7 +148,8 @@ const LikedSongsPlaylist: React.FC<UserSessionProps> = ({ userId, username }) =>
                                                                     subtitle={`${song.artist}`}
                                                                     linkPath={`/songs`}
                                                                     altText={`${song.title} cover`}
-                                                                    className="song-result"     
+                                                                    className={`song-result ${loadedItems[song.id] ? 'loaded' : ''}`}
+                                                                    isLoading={loading}     
                                                                 />
                                                             </li>
                                                         )}
