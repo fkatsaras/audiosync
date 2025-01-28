@@ -6,13 +6,12 @@ import { useAudioPlayer } from "../../hooks/useAudioPlayer";
 import defaultSongCover from '../../assets/images/song_default_cover.svg';
 import { Link } from "react-router-dom";
 import { Song } from "../../types/data";
+import { useUser } from "../../context/UserContext";
 
-interface UserSessionProps {
-    userId?: string;
-    username?: string;
-}
 
-const AudioPlayer: React.FC<UserSessionProps> = ({ userId, username }) => {
+const AudioPlayer: React.FC = () => {
+
+    const user = useUser();
     const {
         currentSong,
         setCurrentSong,
@@ -34,7 +33,7 @@ const AudioPlayer: React.FC<UserSessionProps> = ({ userId, username }) => {
         const fetchLastPlayedSong = async () => {
             try {
                     // Fetch last played song from API 
-                    const response = await fetch(`/api/v1/users/${userId}/history?latest=true`, {
+                    const response = await fetch(`/api/v1/users/${user?.userId}/history?latest=true`, {
                         headers: {
                             'Authorization': `Bearer ${localStorage.getItem('token')}`,
                         },
@@ -61,7 +60,7 @@ const AudioPlayer: React.FC<UserSessionProps> = ({ userId, username }) => {
         };
 
         fetchLastPlayedSong();
-    }, [userId, setCurrentSong, setAudioState]);
+    }, [user?.userId, setCurrentSong, setAudioState]);
     
     // Progress percentage
     const progress = duration ? (currentTime / duration) * 100 : 0;
@@ -84,14 +83,14 @@ const AudioPlayer: React.FC<UserSessionProps> = ({ userId, username }) => {
     const updateListeningHistory = useCallback(async (currentSong: Song) => {
         try {
             const playedAt = new Date().toISOString().slice(0, 19).replace('T', ' '); // Format: 'YYYY-MM-DD HH:MM:SS'
-            await fetch(`/api/v1/users/${userId}/history`, {
+            await fetch(`/api/v1/users/${user?.userId}/history`, {
                 method: 'POST',
                 headers: {
                     Authorization: `Bearer ${localStorage.getItem('token')}`,
                     'Content-type': 'application/json'
                 },
                 body: JSON.stringify({
-                    user_id: userId,
+                    user_id: user?.userId,
                     song_id: currentSong?.id,
                     played_at: playedAt
                 })
@@ -99,7 +98,7 @@ const AudioPlayer: React.FC<UserSessionProps> = ({ userId, username }) => {
         } catch (error) {
             console.error('Failed to update history.');
         }
-    }, [userId]); 
+    }, [user?.userId]); 
     
     useEffect(() => {
         if (currentSong && currentSong.id) {

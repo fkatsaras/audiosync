@@ -1,7 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { Playlist } from '../types/data';
-import Navbar from '../components/Navbar/Navbar';
-import AppBody from '../components/AppBody/AppBody';
 import LoadingDots from '../components/LoadingDots/LoadingDots';
 import Message from '../components/Message/Message';
 import ResultItem from '../components/ResultItem/ResultItem';
@@ -12,12 +10,8 @@ import PopUp from '../components/PopUp/PopUp';
 import Input from '../components/Input/Input';
 import Options from '../components/Buttons/Options';
 import '../styles/MyPlaylistsPage.css';
-import ProfileBar from '../components/ProfileBar/ProfileBar';
+import { useUser } from '../context/UserContext';
 
-interface UserSessionProps {
-    userId?: string;
-    username?: string;
-}
 /**
  * MyPlaylistsPage component allows users to view their playlists.
  * It fetches the playlists from the backend and displays them.
@@ -26,7 +20,8 @@ interface UserSessionProps {
  * @returns {JSX.Element} The MyPlaylistsPage component UI.
  */
 
-const MyPlaylistsPage: React.FC<UserSessionProps> = ({ userId, username }) => {
+const MyPlaylistsPage: React.FC = () => {
+    const user = useUser();
 
     const [playlists, setPlaylists] = useState<Playlist[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
@@ -54,7 +49,7 @@ const MyPlaylistsPage: React.FC<UserSessionProps> = ({ userId, username }) => {
         const fetchPlaylists = async () => {
             setLoading(true);
             try {
-                const response = await fetch(`/api/v1/users/${userId}/my-playlists`, {
+                const response = await fetch(`/api/v1/users/${user?.userId}/my-playlists`, {
                     method: 'GET',
                     headers: {
                         'Authorization' : `Bearer ${localStorage.getItem('token')}`,
@@ -81,7 +76,7 @@ const MyPlaylistsPage: React.FC<UserSessionProps> = ({ userId, username }) => {
         };
 
         fetchPlaylists();
-    }, [userId]);
+    }, [user?.userId]);
 
     const handleCreatePlaylist = async () => {
         if (!newPlaylistName.trim()) {
@@ -90,7 +85,7 @@ const MyPlaylistsPage: React.FC<UserSessionProps> = ({ userId, username }) => {
         }
 
         try {
-            const response = await fetch(`/api/v1/users/${userId}/my-playlists`, {
+            const response = await fetch(`/api/v1/users/${user?.userId}/my-playlists`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -121,7 +116,7 @@ const MyPlaylistsPage: React.FC<UserSessionProps> = ({ userId, username }) => {
         if (!playlistToDelete) return;
 
         try {
-            const response = await fetch(`/api/v1/users/${userId}/my-playlists?playlistId=${playlistToDelete}`, {
+            const response = await fetch(`/api/v1/users/${user?.userId}/my-playlists?playlistId=${playlistToDelete}`, {
                 method: 'DELETE',
                 headers: {
                     'Authorization' : `Bearer ${localStorage.getItem('token')}`,
@@ -140,20 +135,10 @@ const MyPlaylistsPage: React.FC<UserSessionProps> = ({ userId, username }) => {
         }
     }
 
-    if (loading) return (
-        <div>
-            <AppBody>
-                <Navbar userId={userId || ''} username={username || ''} />
-                    <LoadingDots />
-                <ProfileBar userId={userId || ''} username={username || ''}/>
-            </AppBody>
-        </div>
-    )
+    if (loading) return <LoadingDots />;
 
     return (
         <div className='playlists-container'>
-            <Navbar userId={userId || ''} username={username || ''}/>
-            <AppBody>
                 <h1>Your Playlists</h1>
                 <div className='buttons-container'>
                     <Button 
@@ -177,7 +162,7 @@ const MyPlaylistsPage: React.FC<UserSessionProps> = ({ userId, username }) => {
                                             ? `${playlist.song_ids.length} songs`
                                             : 'No songs added'
                                     }
-                                    linkPath={`/${userId}/playlists`}
+                                    linkPath={`/${user?.userId}/playlists`}
                                     altText='Playlist cover'
                                     className={`playlist-result ${loadedItems[playlist.id] ? 'loaded' : ''}`}
                                     isLoading={loading}
@@ -198,9 +183,6 @@ const MyPlaylistsPage: React.FC<UserSessionProps> = ({ userId, username }) => {
                         !loading && <Message className='info-message'>No playlists found.</Message>
                     )}
                 </ul>
-            </AppBody>
-            <ProfileBar userId={userId || ''} username={username || ''}/>
-
             {isPopUpOpen && (
                 <PopUp
                     title='Create New Playlist'

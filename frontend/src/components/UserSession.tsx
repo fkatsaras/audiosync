@@ -2,67 +2,48 @@ import React, { ReactNode, useEffect, useState } from 'react';
 import { Navigate } from 'react-router-dom';
 import LoadingDots from './LoadingDots/LoadingDots';
 import { jwtDecode, JwtPayload } from 'jwt-decode';
-
-interface UserSessionProps {
-  children: ReactNode;
-}
+import { UserProvider } from '../context/UserContext';
 
 interface User {
   userId: string;
   username: string;
 }
 
-interface ChildProps {
-  userId: string;
-  username: string;
+interface UserSessionProps {
   children?: ReactNode;
 }
 
 const UserSession: React.FC<UserSessionProps> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
-
+  const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem("token");
     if (!token) {
       setLoading(false);
       return;
     }
 
     const checkTokenValidity = () => {
-      const token = localStorage.getItem('token');
-
-      if(!token) {
-        return <Navigate to="/login" />
-      }
-
       try {
         const decodedToken = jwtDecode<JwtPayload>(token);
-
-        // Check if token is expired
         if (decodedToken.exp && decodedToken.exp * 1000 < Date.now()) {
-          localStorage.removeItem('token')
-          alert('Your session has expired. Please log in again.');
-          return <Navigate to="/login" />
+          localStorage.removeItem("token");
+          alert("Your session has expired. Please log in again.");
         }
       } catch (err) {
-        console.error('Error decoding token:', err);  // Handle unexpected errors
-        localStorage.removeItem('token');
-        return <Navigate to="/login" /> 
+        console.error("Error decoding token:", err);
+        localStorage.removeItem("token");
       }
     };
 
-    // Fetch user data if token is valid
     const fetchUserData = async () => {
-
       checkTokenValidity();
 
-
       try {
-        const response = await fetch('/api/v1/users/check-login', {
+        const response = await fetch("/api/v1/users/check-login", {
           headers: {
-            'Authorization' : `Bearer ${token}`
+            Authorization: `Bearer ${token}`,
           },
         });
 
@@ -70,40 +51,23 @@ const UserSession: React.FC<UserSessionProps> = ({ children }) => {
           const data = await response.json();
           setUser({ userId: data.body.user_id, username: data.body.username });
         } else {
-          localStorage.removeItem('token'); // Remove invalid token
+          localStorage.removeItem("token");
         }
       } catch (error) {
         console.error("Error fetching user data:", error);
-        localStorage.removeItem('token');
+        localStorage.removeItem("token");
       } finally {
         setLoading(false);
       }
     };
 
-
     fetchUserData();
   }, []);
 
-  if (loading) return <LoadingDots/>
-  if (!user) return <Navigate to="/login" />
+  if (loading) return <LoadingDots />;
+  if (!user) return <Navigate to="/login" />;
 
-  // // Pass the user data down to children via React Context or props
-  // return React.cloneElement(children as React.ReactElement, { userId: user.userId, username: user.username });
-  // Recursively pass down props to children
-  const addUserPropsToChildren = (children: ReactNode): ReactNode => {
-    return React.Children.map(children, (child) => {
-      if (!React.isValidElement(child)) return child;
-
-      // Explicitly type the cloned element
-      return React.cloneElement(child as React.ReactElement<ChildProps>, {
-        userId: user.userId,
-        username: user.username,
-        children: addUserPropsToChildren(child.props.children),
-      });
-    });
-  };
-
-  return <>{addUserPropsToChildren(children)}</>;
-}
+  return <UserProvider user={user}>{children}</UserProvider>;
+};
 
 export default UserSession;

@@ -1,20 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { Song, Artist } from '../types/data';
-import Navbar from '../components/Navbar/Navbar';
 import '../styles/SearchPage.css'
-import AppBody from '../components/AppBody/AppBody';
 import LoadingDots from '../components/LoadingDots/LoadingDots';
 import Button from '../components/Buttons/Button';
 import Input from '../components/Input/Input';
 import Message from '../components/Message/Message';
 import ResultItem from '../components/ResultItem/ResultItem';
-import ProfileBar from '../components/ProfileBar/ProfileBar';
 
-interface UserSessionProps {
-    userId?: string;
-    username?: string;
-  }
-  
 
 /**
  * Search component allows users to search for artists and songs by entering a query.
@@ -23,7 +15,7 @@ interface UserSessionProps {
  * @component
  * @returns {JSX.Element} The Search component UI.
  */
-const Search: React.FC<UserSessionProps> = ({ userId, username }) => {
+const Search: React.FC = () => {
     const [query, setQuery] = useState<string>('');
     const [searchType, setSearchType] = useState<string>('');
     const [artistResults, setArtistResults] = useState<Artist[]>([]);
@@ -175,8 +167,6 @@ const Search: React.FC<UserSessionProps> = ({ userId, username }) => {
 
     return (
         <div className='search-container'>
-            <Navbar userId={userId || ''} username={username || ''}/>
-            <AppBody>
                 <h1>Search</h1>
                 <Input
                     id=''
@@ -259,8 +249,6 @@ const Search: React.FC<UserSessionProps> = ({ userId, username }) => {
                 {hasSearched && !topResult && artistResults.length === 0 && songResults.length === 0 && !loadingResults && (
                 <Message className='info-message'>No results found</Message>
                 )}
-            </AppBody>
-            <ProfileBar userId={userId || ''} username={username || ''}/>
         </div>
     );
 };

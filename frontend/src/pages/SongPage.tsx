@@ -1,22 +1,17 @@
 import React , { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { Song } from "../types/data";
-import AppBody from "../components/AppBody/AppBody";
 import Message from "../components/Message/Message";
 import LoadingDots from "../components/LoadingDots/LoadingDots";
-import Navbar from "../components/Navbar/Navbar";
 import LikeButton from "../components/Buttons/LikeButton";
 import '../styles/SongPage.css'
-import ProfileBar from "../components/ProfileBar/ProfileBar";
 import { useAudioPlayer } from "../hooks/useAudioPlayer";
 import PlayButton from "../components/Buttons/PlayButton";
+import { useUser } from "../context/UserContext";
 
-interface UserSessionProps {
-    userId?: string;
-    username?: string;
-}
 
-const SongPage: React.FC<UserSessionProps> = ({ userId, username  }) => {
+const SongPage: React.FC = () => {
+    const user = useUser();
     const { songId } = useParams<{ songId: string }>(); // Get song ID from URL parameters
     const [song, setSong] = useState<Song | null>(null);
     const [loading, setLoading] = useState(true);
@@ -57,7 +52,7 @@ const SongPage: React.FC<UserSessionProps> = ({ userId, username  }) => {
         if (!song) return;
 
         const action = song.liked ? 'DELETE' : 'POST';
-        const endpoint = `/api/v1/users/${userId}/liked-songs?songId=${songId}`;
+        const endpoint = `/api/v1/users/${user?.userId}/liked-songs?songId=${songId}`;
 
         const response = await fetch(endpoint, {
             method: action,
@@ -84,67 +79,53 @@ const SongPage: React.FC<UserSessionProps> = ({ userId, username  }) => {
         }
     };
 
-    if (loading) return (
-        <div>
-            <AppBody>
-                <Navbar userId={userId || ''} username={username || ''} />
-                    <LoadingDots />
-                <ProfileBar userId={userId || ''} username={username || ''}/>
-            </AppBody>
-        </div>
-    );
+    if (loading) return <LoadingDots />;
     if (error) return <div>{error}</div>;
 
 
     return (
-        <div>
-            <AppBody>
-                <Navbar userId={userId || ''} username={username || ''} />
-                <div className="song-container">
-                    { song ? (
-                        <div className="song-info">
-                            <h1>{song.title}</h1>
-                            <div className="like-button-container">
-                                <LikeButton isLiked={song.liked} onToggle={handleLikeToggle}/>
-                                {likeMessage && <Message className={`like-info-message ${likeMessage ? 'fade-in' : 'fade-out'}`}>{likeMessage}</Message>}
-                            </div>
-                            <p>Artist: <Link to={`/artists/${song.artist_id}`}>{song.artist}</Link></p>
-                            <p>Album: {song.album}</p>
-                            <div className="song-image-container">
-                                <img src={song.cover} alt={`${song.title} cover`} className="song-cover"/>
-                                <PlayButton className="image-button" isPlaying={false} onToggle={() => {    // Override isPlaying to fix icon
-                                    if (song) {
-                                        setCurrentSong({
-                                            id: song.id,
-                                            title: song.title,
-                                            artist: song.artist,
-                                            artist_id: song.artist_id,
-                                            audio_url: song.audio_url,
-                                            album: song.album,
-                                            duration: song.duration,
-                                            cover: song.cover,
-                                            liked: song.liked,
-                                            playlists: song.playlists,
-                                            is_playing: true
-                                        });
-                                        togglePlayPause();
-                                       }
-                                    }}
-                                />
-                            </div>
-                            {/* Additional song info here*/}
-                            {/*
-                             Display unfollow/follow/error message here
-                             !TODO! Add timeout logic so that the follow message isnt permanent
-                             */}
-                            {message && <Message className="info-message">{message}</Message>}
-                        </div>
-                    ) : (
-                        <Message className="info-message">Song not found.</Message>
-                    )}
+        <div className="song-container">
+            { song ? (
+                <div className="song-info">
+                    <h1>{song.title}</h1>
+                    <div className="like-button-container">
+                        <LikeButton isLiked={song.liked} onToggle={handleLikeToggle}/>
+                        {likeMessage && <Message className={`like-info-message ${likeMessage ? 'fade-in' : 'fade-out'}`}>{likeMessage}</Message>}
+                    </div>
+                    <p>Artist: <Link to={`/artists/${song.artist_id}`}>{song.artist}</Link></p>
+                    <p>Album: {song.album}</p>
+                    <div className="song-image-container">
+                        <img src={song.cover} alt={`${song.title} cover`} className="song-cover"/>
+                        <PlayButton className="image-button" isPlaying={false} onToggle={() => {    // Override isPlaying to fix icon
+                            if (song) {
+                                setCurrentSong({
+                                    id: song.id,
+                                    title: song.title,
+                                    artist: song.artist,
+                                    artist_id: song.artist_id,
+                                    audio_url: song.audio_url,
+                                    album: song.album,
+                                    duration: song.duration,
+                                    cover: song.cover,
+                                    liked: song.liked,
+                                    playlists: song.playlists,
+                                    is_playing: true
+                                });
+                                togglePlayPause();
+                               }
+                            }}
+                        />
+                    </div>
+                    {/* Additional song info here*/}
+                    {/*
+                     Display unfollow/follow/error message here
+                     !TODO! Add timeout logic so that the follow message isnt permanent
+                     */}
+                    {message && <Message className="info-message">{message}</Message>}
                 </div>
-            </AppBody>
-            <ProfileBar userId={userId || ''} username={username || ''}/>
+            ) : (
+                <Message className="info-message">Song not found.</Message>
+            )}
         </div>
     )
 }

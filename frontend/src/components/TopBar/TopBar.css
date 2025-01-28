@@ -1,19 +1,8 @@
-/* ProfileBar.css */
-.profile-bar {
-    font-family: 'Montserrat', sans-serif;
-    width: 13.2%;
-    height: 84.5%;
-    background-color: #121212;
-    padding: 20px;
-    position: fixed;
-    right: 0;
-    top: 10px;
-    border-radius: 16px;
+.top-bar {
     display: flex;
-    flex-direction: column;
-    flex-wrap: wrap;
+    flex-direction: row;
     justify-content: space-between;
-    box-shadow: none;
+    padding: 10px;
 }
 
 .profile-button {

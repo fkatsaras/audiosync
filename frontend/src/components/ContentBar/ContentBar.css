@@ -1,0 +1,14 @@
+.content-bar {
+    font-family: 'Montserrat', sans-serif;
+    height: 80vh;
+    background-color: #121212;
+    padding: 20px;
+    border-radius: 16px 0 0 16px;
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    box-shadow: none;
+    min-width: 10vw;
+    max-width: 30vw;
+}

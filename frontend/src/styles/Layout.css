@@ -1,0 +1,26 @@
+.app {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+}
+
+.app-view {
+    display: flex;
+    flex-direction: row;
+    height: 83vh;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+/* Resizing styles  */
+
+.resizer {
+    width: 5px; /* Width of the resizable gap */
+    cursor: col-resize; 
+    position: relative;
+    z-index: 10;
+}
+
+.resizer:hover {
+    background-color: #333; /* Divider color */
+}
