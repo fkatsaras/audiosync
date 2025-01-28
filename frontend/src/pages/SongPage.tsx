@@ -86,8 +86,9 @@ const SongPage: React.FC = () => {
     return (
         <div className="song-container">
             { song ? (
+            <div>
+                <h1 className="header">{song.title}</h1>
                 <div className="song-info">
-                    <h1>{song.title}</h1>
                     <div className="like-button-container">
                         <LikeButton isLiked={song.liked} onToggle={handleLikeToggle}/>
                         {likeMessage && <Message className={`like-info-message ${likeMessage ? 'fade-in' : 'fade-out'}`}>{likeMessage}</Message>}
@@ -123,6 +124,7 @@ const SongPage: React.FC = () => {
                      */}
                     {message && <Message className="info-message">{message}</Message>}
                 </div>
+            </div>
             ) : (
                 <Message className="info-message">Song not found.</Message>
             )}

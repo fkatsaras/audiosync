@@ -139,7 +139,7 @@ const MyPlaylistsPage: React.FC = () => {
 
     return (
         <div className='playlists-container'>
-                <h1>Your Playlists</h1>
+                <h1 className='header'>Your Playlists</h1>
                 <div className='buttons-container'>
                     <Button 
                         className=''

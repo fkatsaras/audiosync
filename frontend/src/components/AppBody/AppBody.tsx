@@ -36,7 +36,7 @@ const AppBody: React.FC<AppBodyProps> = ({ children }) => {
     }, []);
 
     return (
-        <div className='app-body' ref={appBodyRef}>
+        <div className="app-body">
             {children}
         </div>
     );

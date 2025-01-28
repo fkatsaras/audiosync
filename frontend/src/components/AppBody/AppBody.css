@@ -9,6 +9,7 @@
     overflow-y: auto;
     width: 100%;
     padding: 20px;
+    padding-top: 0;
 }
 
 /* Target Webkit browsers */
@@ -45,16 +46,24 @@ h1 {
     margin-bottom: 20px;
 }
 
+h1.header {
+    position: sticky;
+    top: 0;
+    background-color: #121212;
+    z-index: 100;
+    font-size: 2rem;
+    height: 80px;
+    display: flex; 
+    align-items: center;
+    padding: 0 20px;
+    color: #ffffff;
+}
+
 h2 {
     color: #ffffff;
     font-size: 1.5rem;
     margin-bottom: 20px;
 }
-
-/* p, 
-p a {
-    color: #ffffff;
-} */
 
 p a:visited,
 p:visited {

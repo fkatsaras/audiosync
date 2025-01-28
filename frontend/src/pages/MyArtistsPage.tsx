@@ -70,7 +70,7 @@ const  MyArtistsPage: React.FC = () => {
 
     return (
         <div>
-            <h1>Your Artists</h1>
+            <h1 className='header'>Your Artists</h1>
             {loading && <LoadingDots />}
             {error && <Message className='error-message'>{error}</Message>}
             <ul>

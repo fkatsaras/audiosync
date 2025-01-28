@@ -110,8 +110,8 @@ const PlaylistPage: React.FC = () => {
         <div className="playlist-container">
             {playlist && (
                 <div className="playlist-content-container">
+                    <h1 className="header">{playlist.title}</h1>
                     <div className="playlist-info">
-                        <h1>{playlist.title}</h1>
                         <img
                             src={playlist.isLikedSongs? likedSongsCover : playlist.cover? playlist.cover : defaultPlaylistCover}
                             alt={`${playlist.title} cover`}

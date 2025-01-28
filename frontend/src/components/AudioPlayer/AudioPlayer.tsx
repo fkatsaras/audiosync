@@ -1,7 +1,8 @@
 import React, { useCallback, useEffect, useState } from "react";
 import PlayButton from "../Buttons/PlayButton";
 import './AudioPlayer.css';
-import { FaVolumeMute, FaVolumeUp } from "react-icons/fa";
+import { BiVolumeFull, BiVolumeLow, BiVolumeMute } from 'react-icons/bi';
+import { LiaMicrophoneAltSolid } from "react-icons/lia";
 import { useAudioPlayer } from "../../hooks/useAudioPlayer";
 import defaultSongCover from '../../assets/images/song_default_cover.svg';
 import { Link } from "react-router-dom";
@@ -105,6 +106,16 @@ const AudioPlayer: React.FC = () => {
             updateListeningHistory(currentSong);
         }
     }, [currentSong, updateListeningHistory]);
+
+    const getVolumeIcon = () => {
+        if (isMuted || volume === 0) {
+            return <BiVolumeMute />;
+        } else if (volume < 0.5) {
+            return <BiVolumeLow />;
+        } else {
+            return <BiVolumeFull />;
+        }
+    }
    
     return (
         <div className="audio-player">
@@ -148,8 +159,11 @@ const AudioPlayer: React.FC = () => {
                 <div className="duration">{formatTime(duration)}</div>
             </div>
             <div className="controls">
+                <div className="lyrics-button">
+                    <LiaMicrophoneAltSolid />
+                </div>
                 <div className="volume-icon" onClick={toggleMute}>
-                    {isMuted ? <FaVolumeMute /> : <FaVolumeUp />}
+                    {getVolumeIcon()}
                 </div>
                 <input
                     type="range"

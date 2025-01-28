@@ -1,13 +1,12 @@
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700&display=swap');
 
 .common-input {
-    width: 100%; /* Full width of the parent container */
+    width: 100%; 
     max-width: 500px; 
-    padding: 10px 15px; /* Add more horizontal padding */
-    margin-bottom: 20px; /* Space between inputs */
+    padding: 10px 15px;
     border: none;
     border-radius: 25px; 
-    background-color: #2a2a2a; /* Match the background theme */
+    background-color: #2a2a2a;
     font-family: 'Montserrat', sans-serif; 
     font-size: 1rem; 
     color: #f1f1f1; 
@@ -20,12 +19,12 @@
 .common-input:focus {
     outline: none;
     border-color: #ffffff;
-    background-color: #2a2a2a;
+    background-color: #4a4a4a ;
 }
 
 
 .common-input.rectangular {
-    border-radius: 6px; /* Slightly rounded corners */
+    border-radius: 6px; 
 }
 
 /* Retain the hover and focus effects for consistency */

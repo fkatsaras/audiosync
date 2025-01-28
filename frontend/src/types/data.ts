@@ -21,6 +21,7 @@ export interface Song {
     audio_url: string;
     album: string;
     duration: number;
+    lyrics?: string;
     cover: string;
     liked: boolean;
     playlists: string[];

@@ -95,8 +95,8 @@ const LikedSongsPlaylist: React.FC = () => {
         <div className="liked-songs-playlist-container">
             {playlist && (
                 <div className="liked-songs-playlist-content-container">
+                    <h1 className="header">{playlist.title}</h1>
                     <div className="liked-songs-playlist-info">
-                        <h1>{playlist.title}</h1>
                         <img
                             src={playlist.cover ? playlist.cover : likedSongsCover}
                             alt={`Liked Songs cover`}

@@ -6,6 +6,7 @@ import { AiFillHome } from 'react-icons/ai';
 import DropDown from '../DropDown/DropDown';
 import defaultPfp from '../../assets/images/default_profile_picture.svg'
 import { useUser } from '../../context/UserContext';
+import Input from '../Input/Input';
 
 
 const TopBar: React.FC = () => {
@@ -13,8 +14,26 @@ const TopBar: React.FC = () => {
     const user = useUser();
 
     const [dropdownVisible, setDropdownVisible] = useState(false);
-    const dropdownRef = useRef<HTMLDivElement>(null); // Ref for detecting clicks outside
+    const dropdownRef = useRef<HTMLUListElement>(null); // Ref for detecting clicks outside
     const navigate = useNavigate();
+
+    /**
+     *  Search 
+     * 
+     */
+    const [searchType, setSearchType] = useState<'artists' | 'songs'>('artists');
+    const [query, setQuery] = useState<string>('');
+
+    const handleSearchSubmit = (searchType: 'artists' | 'songs') => {
+        if (query.trim()) {
+            navigate(`/search?q=${query}&type=${searchType}`);
+        }
+    };
+
+    /**
+     * Profile buttons
+     *   
+     */ 
     
     const toggleDropdown = () => {
       setDropdownVisible((prevState) => !prevState);
@@ -72,6 +91,36 @@ const TopBar: React.FC = () => {
                         <AiFillHome size={24} />
                     </Link>
                 </Button>   {/* TODO: Integrate the link component inside the button component */}
+                <div className='search-controls'>
+                    <Input
+                        id=''
+                        type='text'
+                        value={query}
+                        onChange={(e) => setQuery(e.target.value)}
+                        placeholder='Search for artists, songs...'
+                        className='search-input'
+                    />
+                    <div className="search-buttons">
+                        <Button
+                            className='search-button'
+                            onClick={() => {
+                                setSearchType('artists');
+                                handleSearchSubmit('artists');
+                            }}
+                        >
+                            Artists
+                        </Button>
+                        <Button
+                            className='search-button'
+                            onClick={() => {
+                                setSearchType('songs');
+                                handleSearchSubmit('songs');
+                            }}
+                        >
+                            Songs
+                        </Button>
+                    </div>
+                </div>
                 <div className="profile-button" onClick={toggleDropdown}>
                   <Button className="profile-btn">
                     <img
@@ -83,6 +132,7 @@ const TopBar: React.FC = () => {
                 </div>
                 {dropdownVisible && (
                   <DropDown
+                    ref={dropdownRef}
                     options={dropdownOptions}
                     onOptionSelect={handleDropdownSelect}
                     className="profile-dropdown"

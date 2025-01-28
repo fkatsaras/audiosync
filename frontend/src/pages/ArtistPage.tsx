@@ -90,7 +90,7 @@ const ArtistPage: React.FC = () => {
             {artist && (
                 <div className="artist-content-container">
                     <div className="artist-info">
-                        <h1>{artist.name}</h1>
+                        <h1 className="header">{artist.name}</h1>
                         <FollowButton isFollowing={artist.is_followed} onToggle={handleFollowToggle}/>
                         <p>Followers: {artist.followers}</p>
                         <img

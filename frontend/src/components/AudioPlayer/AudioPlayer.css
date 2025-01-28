@@ -114,6 +114,7 @@ img.now-playing-song-image {
     justify-content: center;
     gap: 1vw;
     width: 20vw;
+    align-items: center;
 }
 
 .controls input[type="range"] {
@@ -139,6 +140,12 @@ img.now-playing-song-image {
 
 .volume-icon {
     cursor: pointer;
+    font-size: 24px;
+}
+
+.lyrics-button {
+    cursor: pointer;
+    font-size: 24px;
 }
 
 .visualizer {

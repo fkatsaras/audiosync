@@ -1,21 +1,3 @@
-.search-buttons-container {
-    display: flex;
-    gap: 10px;  /* Space out buttons */
-    margin-bottom: 10px;
-}
-
-/* CUSTOM STYLING FOR SEARCH INPUT*/
-.search-input { 
-    width: 500px;   /* Override Fixed width */
-    max-width: 100%;
-}
-
-.search-input:focus {
-    outline: none;
-    border-color: #6a1b9a;
-    background-color: #181818;
-}
-
 .top-result {
     border: 3px solid #6a1b9a; 
     background-color: #282828; 

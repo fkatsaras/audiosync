@@ -6,6 +6,7 @@ import Button from '../components/Buttons/Button';
 import Input from '../components/Input/Input';
 import Message from '../components/Message/Message';
 import ResultItem from '../components/ResultItem/ResultItem';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 
 /**
@@ -16,8 +17,24 @@ import ResultItem from '../components/ResultItem/ResultItem';
  * @returns {JSX.Element} The Search component UI.
  */
 const Search: React.FC = () => {
+    const location = useLocation();
     const [query, setQuery] = useState<string>('');
     const [searchType, setSearchType] = useState<string>('');
+
+    useEffect(() => {
+        const params = new URLSearchParams(location.search);
+        const searchQuery = params.get('q') || '';
+        const type = (params.get('type') as 'artists' | 'songs') || 'artists';
+
+        setQuery(searchQuery);
+        setSearchType(type);
+        if (searchQuery) {
+            // You can call your fetchResults function here based on searchType
+            handleSearch(type);
+        }
+    }, [location]);
+
+
     const [artistResults, setArtistResults] = useState<Artist[]>([]);
     const [songResults, setSongResults] = useState<Song[]>([]);
     const [artistOffset, setArtistOffset] = useState<number>(0);
@@ -155,31 +172,10 @@ const Search: React.FC = () => {
         }
     };
 
-    // if (loadingPage) return (
-    //     <div>
-    //         <AppBody>
-    //             <Navbar userId={userId || ''} username={username || ''} />
-    //                 <LoadingDots />
-    //             <ProfileBar userId={userId || ''} username={username || ''}/>
-    //         </AppBody>
-    //     </div>
-    // );
 
     return (
         <div className='search-container'>
-                <h1>Search</h1>
-                <Input
-                    id=''
-                    type='text'
-                    value={query}
-                    onChange={(e) => setQuery(e.target.value)}
-                    placeholder='Search for artists, songs...'
-                    className='search-input'
-                />
-                <div className='search-buttons-container'>  {/* TODO : create a universal Buttons Container div for global styling */}
-                    <Button onClick={() => handleSearch('artists')} className='search-button'>Artists</Button>
-                    <Button onClick={() => handleSearch('songs')} className='search-button'>Songs</Button>
-                </div>
+                <h1 className='header'>Search</h1>
 
                 {/* Top result */}
                 {topResult && (

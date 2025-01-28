@@ -14,7 +14,6 @@ const Navbar: React.FC<NavBarProps> = ({ style }) => {
         liked_songs: `/${user?.userId}/liked-songs`,
         recommended: `/${user?.userId}/recommended`,
         my_artists: `/${user?.userId}/my-artists`,
-        search: '/search',
         my_playlists: `/${user?.userId}/my-playlists` // Dynamically insert userId here
     };
 
@@ -40,11 +39,6 @@ const Navbar: React.FC<NavBarProps> = ({ style }) => {
                     {links?.my_playlists && (
                         <li className="navbar-item">
                             <Link to={links.my_playlists}>Your Playlists</Link>
-                        </li>
-                    )}
-                    {links?.search && (
-                        <li className="navbar-item">
-                            <Link to={links.search}>Search</Link>
                         </li>
                     )}
                 </ul>

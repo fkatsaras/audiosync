@@ -3,7 +3,33 @@
     flex-direction: row;
     justify-content: space-between;
     padding: 10px;
+    position: relative;
 }
+
+.search-controls {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    gap: 10px;
+    align-items: center;
+}
+
+.search-input { 
+    width: 500px;   /* Override Fixed width */
+    max-width: 100%;
+}
+
+.search-input:focus {
+    outline: none;
+    background-color: #4a4a4a;
+}
+
+.search-buttons-container {
+    display: flex;
+    gap: 10px;  /* Space out buttons */
+    margin-bottom: 10px;
+}
+
 
 .profile-button {
     width: 50px;
@@ -33,12 +59,13 @@
 /* Dropdown styles */
 .profile-dropdown {
     background-color: #1e1e1e;
-    position: absolute;
+    position: relative;
     top: 70px; /* Adjust to appear below the button */
     right: 0;
-    z-index: 999; /* On top of other elements */
+    z-index: 1000; /* On top of other elements */
     font-size: 14px;
     color: #f1f1f1;
+    z-index: 100;
 }
 
 .profile-dropdown .option {
