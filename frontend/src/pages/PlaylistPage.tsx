@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { Playlist } from "../types/data";
+import { Playlist, Song } from "../types/data";
 import '../styles/PlaylistPage.css';
 import AppBody from "../components/AppBody/AppBody";
 import ResultItem from "../components/ResultItem/ResultItem";
@@ -11,6 +11,7 @@ import likedSongsCover from '../assets/images/liked_songs_cover.svg';
 import Navbar from "../components/Navbar/Navbar";
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import ProfileBar from "../components/ProfileBar/ProfileBar";
+import { useAudioPlayer } from "../hooks/useAudioPlayer";
 
 interface UserSessionProps {
     userId?: string;
@@ -22,6 +23,8 @@ const PlaylistPage: React.FC<UserSessionProps> = ({ userId, username }) => {
     const [playlist, setPlaylist] = useState<Playlist | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+
+    const { setCurrentSong, togglePlayPause, isPlaying, currentSong } = useAudioPlayer();
 
     useEffect(() => {
         const fetchPlaylist = async () => {
@@ -85,6 +88,23 @@ const PlaylistPage: React.FC<UserSessionProps> = ({ userId, username }) => {
         };
 
         updatePlaylist();
+    };
+
+    const handlePlaySong = (song: Song) => {
+        setCurrentSong({
+            id: song.id,
+            title: song.title,
+            artist: song.artist,
+            artist_id: song.artist_id,
+            audio_url: song.audio_url,
+            album: song.album,
+            duration: song.duration,
+            cover: song.cover,
+            liked: song.liked,
+            playlists: song.playlists,
+            is_playing: true
+        });
+        togglePlayPause();
     };
 
     if (loading) return (

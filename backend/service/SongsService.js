@@ -34,14 +34,15 @@ exports.get_song_by_id = async function (userId, songId) {
     if (!songData.audio_url || isExpired(songData.audio_url)) {
       console.log(`Audio URL missing or expired for song: ${songData.title}. Fetching from YouTube...`);
       const ytAudioInfo = await fetchYoutubeAudio(songData);
+      console.log(ytAudioInfo);
 
       if (ytAudioInfo) {
-        const { audioUrl, videoId } = ytAudioInfo;
+        const { audioUrl, video_id } = ytAudioInfo;
         songData.audio_url = audioUrl;
         
         await SongsRepository.updateAudioUrl(connection, songId, audioUrl);
 
-        if (videoId) await SongsRepository.updateVideoId(connection, songId, videoId);
+        if (video_id) await SongsRepository.updateVideoId(connection, songId, video_id);
       }
     }
 
