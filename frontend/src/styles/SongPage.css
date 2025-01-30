@@ -45,3 +45,22 @@
 .fade-out {
     opacity: 0;
 }
+
+/* Lyrics view */
+.lyrics-container {
+    color: white;
+    font-size: 24px;
+    font-weight: bold;
+    text-align: center;
+    line-height: 1.5;
+}
+
+.lyrics-container h3 {
+    font-size: 28px;
+    font-weight: 900;
+    margin-bottom: 10px;
+}
+
+.lyrics-button {
+    font-size: xx-large;
+}

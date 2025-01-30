@@ -8,6 +8,7 @@ interface AudioPlayerContextProps {
     currentTime: number;
     duration: number;
     volume: number;
+    lyricsAvailable: boolean;
     setCurrentSong: (song: Song) => void;
     togglePlayPause: () => void;
     setSeek: (time: number) => void;
@@ -20,6 +21,7 @@ interface AudioPlayerContextProps {
         volume: number;
     }>>;
     audioRef: React.RefObject<HTMLAudioElement>;
+    checkLyricsAvailability: (songId: number) => void;
 }
 
 export const AudioPlayerContext = createContext<AudioPlayerContextProps | undefined>(undefined);
@@ -34,6 +36,8 @@ export const AudioPlayerProvider: React.FC<{ children: React.ReactNode }> = ({ c
     });
 
     const audioRef = useRef<HTMLAudioElement>(null);
+    
+    const [lyricsAvailable, setLyricsAvailable] = useState(false);
 
     // Play/pause audio 
     const togglePlayPause = useCallback(() => {
@@ -74,6 +78,23 @@ export const AudioPlayerProvider: React.FC<{ children: React.ReactNode }> = ({ c
             duration: 0,
             isPlaying: false
         }));
+        checkLyricsAvailability(song.id);
+    }, []);
+
+    // Function to check lyrics availability
+    const checkLyricsAvailability = useCallback(async (songId: number) => {
+        try {
+            const response = await fetch(`/api/v1/songs/${songId}/lyrics`, {
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`, 
+                },
+            });
+            const lyricsData = await response.json();
+            setLyricsAvailable(lyricsData.body.lyricsAvailable);
+        } catch (error) {
+            console.error('Error checking lyrics availability:', error);
+            setLyricsAvailable(false);
+        }
     }, []);
 
     // Audio event handlers
@@ -102,6 +123,8 @@ export const AudioPlayerProvider: React.FC<{ children: React.ReactNode }> = ({ c
         <AudioPlayerContext.Provider
             value={{
                 ...audioState,
+                lyricsAvailable,
+                checkLyricsAvailability,
                 setSeek,
                 setVolume,
                 setCurrentSong,

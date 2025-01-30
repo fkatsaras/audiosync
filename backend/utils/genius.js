@@ -1,34 +1,34 @@
 const axios = require('axios');
 const cheerio = require('cheerio');
-
+const db = require('./dbUtils');
 require('dotenv').config();
 
-const GENIUS_API_URL = 'https://api.genius.com'
+const GENIUS_API_URL = 'https://api.genius.com';
 const ACCESS_TOKEN = process.env.GENIUS_ACCESS_TOKEN;
 
 /**
- * Seaarch for a song using the Genius API return its url
+ * Search for a song on Genius using the title and artist name.
  */
-const searchSong = async (query) => {
+const searchSong = async (songTitle, artistName) => {
     try {
         const response = await axios.get(`${GENIUS_API_URL}/search`, {
             headers: { Authorization: `Bearer ${ACCESS_TOKEN}` },
-            params: { q: query }
+            params: { q: `${songTitle} ${artistName}` }
         });
 
         if (response.data.response.hits.length > 0) {
-            return response.data.response.hits[0].result.url
+            return response.data.response.hits[0].result.url;
         }
 
         return null;
     } catch (error) {
-        console.error('Error fetching song: ', error.message);
+        console.error('Error searching for song: ', error.message);
         return null;
     }
 };
 
 /**
- * 'Get' lyrics from the genius page 
+ * Scrape lyrics from a Genius song page.
  */
 const getLyrics = async (url) => {
     try {
@@ -38,26 +38,16 @@ const getLyrics = async (url) => {
         let lyrics = '';
         $('div[data-lyrics-container="true"]').each((i, elem) => {
             lyrics += $(elem).text().trim() + '\n';
-        })
+        });
 
         return lyrics || 'Lyrics not found';
     } catch (error) {
-        console.error('Error "fetching" lyrics: ', error.message);
+        console.error('Error scraping lyrics: ', error.message);
         return null;
     }
 };
 
-(
-    async () => {
-        const songQuery = "Livin' On A Prayer Bon Jovi";
-        const songUrl = await searchSong(songQuery);
-
-        if (songUrl) {
-            console.log('Song found! : ', songUrl);
-            const lyrics = await getLyrics(songUrl);
-            console.log('Lyrics: \n', lyrics);
-        } else {
-            console.log('Song not found');
-        }
-    }
-)();
+module.exports = {
+    searchSong,
+    getLyrics
+}

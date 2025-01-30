@@ -54,11 +54,7 @@ const Home: React.FC = () => {
 
   console.log(links); // Dummy !TODO! Change what will be returned from the backend
 
-  if (loading) return (
-    <div>
-      <LoadingDots />
-    </div>
-  )
+  if (loading) return <LoadingDots />;
   if (error) return <Message className='error-message'>{error}</Message>;
 
   return (

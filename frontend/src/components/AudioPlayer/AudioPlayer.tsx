@@ -5,7 +5,7 @@ import { BiVolumeFull, BiVolumeLow, BiVolumeMute } from 'react-icons/bi';
 import { LiaMicrophoneAltSolid } from "react-icons/lia";
 import { useAudioPlayer } from "../../hooks/useAudioPlayer";
 import defaultSongCover from '../../assets/images/song_default_cover.svg';
-import { Link } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Song } from "../../types/data";
 import { useUser } from "../../context/UserContext";
 
@@ -18,6 +18,8 @@ const AudioPlayer: React.FC = () => {
         setCurrentSong,
         isPlaying,
         togglePlayPause,
+        lyricsAvailable,
+        checkLyricsAvailability,
         currentTime,
         duration,
         volume,
@@ -28,6 +30,8 @@ const AudioPlayer: React.FC = () => {
     } = useAudioPlayer();
 
     const [isMuted, setIsMuted] = useState(false);
+    const navigate = useNavigate();
+    const location = useLocation();
 
     // Fetch last played song
     useEffect(() => {
@@ -54,7 +58,6 @@ const AudioPlayer: React.FC = () => {
 
                     // setAudioState(prev => ({ ...prev, currentSong: lastPlayedSong }));
                     setCurrentSong(lastPlayedSong);
-
             } catch (error) {
                 console.error(`Error retrieving last played song: ${error}`);
             }
@@ -116,6 +119,16 @@ const AudioPlayer: React.FC = () => {
             return <BiVolumeFull />;
         }
     }
+    // Navigation function for lyrics page
+    const toggleLyrics = useCallback((songId: number | null) => {
+        if (!currentSong) return;
+        const lyricsPath = `/songs/${songId}?view=lyrics`;
+        const songPath = `/songs/${songId}?view=song`
+        
+        console.log(`Goto : ${location.search.includes("view=lyrics") ? songPath : lyricsPath} `)
+        
+        navigate(location.search.includes("view=lyrics") ? songPath : lyricsPath);
+    }, [navigate, location, lyricsAvailable]);
    
     return (
         <div className="audio-player">
@@ -159,7 +172,14 @@ const AudioPlayer: React.FC = () => {
                 <div className="duration">{formatTime(duration)}</div>
             </div>
             <div className="controls">
-                <div className="lyrics-button">
+                <div
+                    className="lyrics-button"
+                    style={{
+                        color: lyricsAvailable ? 'white' : 'grey',  // Grey if no lyrics, white if available
+                        cursor: lyricsAvailable ? 'pointer' : 'not-allowed'
+                    }}
+                    onClick={() => { if (currentSong) toggleLyrics(currentSong.id); }}
+                >
                     <LiaMicrophoneAltSolid />
                 </div>
                 <div className="volume-icon" onClick={toggleMute}>

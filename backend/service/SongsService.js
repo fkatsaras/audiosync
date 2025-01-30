@@ -4,6 +4,7 @@ const db = require('../utils/dbUtils');
 const Song = require('../models/Song');
 const { getSongCover } = require('../utils/spotify');
 const { fetchYoutubeAudio, isExpired, extractVideoId } = require('../utils/youtubeUtils');
+const { getLyrics, searchSong } = require('../utils/genius')
 const ErrorHandler = require('../middleware/ErrorHandler');
 const SongsRepository = require('../data/repository/SongRepository');
 
@@ -76,4 +77,54 @@ exports.get_song_by_id = async function (userId, songId) {
   } finally {
     db.closeConnection(connection);
   }
-}
+};
+
+exports.get_song_lyrics = async function (songId) {
+  const connection = db.createConnection();
+
+  try {
+    // Fetch the song from the repository by its ID
+    const songResult = await SongsRepository.getSongById(connection, songId);
+
+    // Check if the song was found
+    if (songResult.length === 0) {
+      throw ErrorHandler.createError(404, `Song with ID: ${songId} not found`);
+    }
+
+    const songData = songResult[0];  // Get the first (and likely only) song object
+
+    // Update lyrics if missing
+    if (!songData.lyrics) {
+      console.log(`Lyrics missing. Fetching from genius...`);
+      const songGeniusUrl = await searchSong(songData.title, songData.artist_name);
+    
+      if (songGeniusUrl) {
+          const lyrics = await getLyrics(songGeniusUrl);
+      
+          // Check if the lyrics were successfully fetched
+          if (lyrics) {
+              console.log('Lyrics found. Updating the database...');
+              songData.lyrics = lyrics;
+              await SongsRepository.updateSongLyrics(connection, songId, lyrics);
+          } else {
+              console.error('Error scraping lyrics: Lyrics not found.');
+          }
+      } else {
+          console.error('Error fetching Genius URL.');
+      }
+    }
+
+    return {
+      message: 'Lyrics fetched successfully.',
+      body: { 
+        lyricsAvailable: true,  // TODO : This should be in another function for lazy loading
+        lyrics: songData.lyrics
+       }
+    };
+
+  } catch (error) {
+    throw ErrorHandler.handle(error);
+  } finally {
+    db.closeConnection(connection);
+  }
+};

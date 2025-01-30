@@ -48,6 +48,24 @@ class SongsRepository {
         `;
         return db.executeQuery(connection, query, [userId, songId]);
     }
+
+    static async getSongLyrics(connection, songId) {
+        const query = `
+            SELECT lyrics
+            FROM songs
+            WHERE id = ?
+        `;
+        return db.executeQuery(connection, query, [songId]);
+    }
+
+    static async updateSongLyrics(connection, songId, lyrics) {
+        const query = `
+            UPDATE songs 
+            SET lyrics = ? 
+            WHERE id = ?
+        `;
+        return db.executeQuery(connection, query, [lyrics, songId]);
+    }
 }
 
 module.exports = SongsRepository;

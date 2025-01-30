@@ -447,6 +447,30 @@ paths:
         "404":
           description: Song not found
       x-swagger-router-controller: Songs
+  /api/v1/songs/{songId}/lyrics:
+    get:
+      tags:
+      - songs
+      summary: Fetch lyrics for a song
+      description: Retrieve lyrics for a specific song.
+      operationId: get_song_lyrics
+      parameters:
+      - name: songId
+        in: path
+        description: The ID of the song to check for lyrics 
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+      responses:
+        "200":
+          description: Lyrics available
+        "404":
+          description: Lyrics not found
+        "400":
+          description: Invalid songId supplied
+      x-swagger-router-controller: Songs
   /api/v1/users/{userId}/liked-songs:
     get:
       tags:
