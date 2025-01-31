@@ -11,6 +11,17 @@ import { useUser } from "../context/UserContext";
 import { LiaMicrophoneAltSolid } from "react-icons/lia";
 
 
+interface Line {
+    time: number;
+    line: string;
+}
+
+interface Section {
+    header?: string;
+    text: Line[];
+}
+
+
 const SongPage: React.FC = () => {
     const user = useUser();
     const { songId } = useParams<{ songId: string }>(); // Get song ID from URL parameters
@@ -22,7 +33,9 @@ const SongPage: React.FC = () => {
     const [message, setMessage] = useState<string | null>(null);
     const [likeMessage, setLikeMessage] = useState<string | null>(null);
     const [viewMode, setViewMode] =useState<'song' | 'lyrics'>('song');
-    const [lyrics, setLyrics] = useState<string | null>(null);
+    const [lyrics, setLyrics] = useState<Section[] | null>(null);
+    const [currentTime, setCurrentTime] = useState(0);
+    const [highlightedLineIndex, setHighlightedLineIndex] = useState<HighlightedLineIndex | null>(null);
 
     // Use the AudioPlayer through its hook 
     const { setCurrentSong, togglePlayPause, isPlaying } = useAudioPlayer();
@@ -67,13 +80,103 @@ const SongPage: React.FC = () => {
                     const lyricsData = await response.json();
                     setLyrics(lyricsData.body.lyrics);
                 } catch {
-                    setLyrics("Lyrics not available");
+                    setLyrics([{
+                        header: "",
+                        text: [{ time: 0, line: "Lyrics not available" }],
+                    }]);
                 }
             }
         };
 
         fetchLyrics();
     }, [viewMode, songId]);
+
+    /**
+     * Lyrics view highlighting
+     * 
+     */
+    useEffect(() => {
+        if (isPlaying) {
+            const interval = setInterval(() => {
+                setCurrentTime(prevTime => prevTime + 1);
+            },1000);
+
+            return () => clearInterval(interval);
+        }
+    }, [isPlaying]);
+
+    type HighlightedLineIndex = { sectionIdx: number, lineIdx: number } | null;
+
+    useEffect(() => {
+        // Check which line should be highlighted based on the current time
+        const findHighlightedLine = () => {
+            let newHighlightedLineIndex: HighlightedLineIndex = null; // Initialize as null
+        
+            // Check if lyrics are available
+            if (!lyrics) return;  // If lyrics is null or undefined, stop execution
+    
+            // Loop through all lyrics sections and lines
+            for (let sectionIdx = 0; sectionIdx < lyrics.length; sectionIdx++) {
+                const section = lyrics[sectionIdx];
+                const sectionLines = section.text || [];
+        
+                for (let lineIdx = 0; lineIdx < sectionLines.length; lineIdx++) {
+                    const lineObj = sectionLines[lineIdx];
+                    const timestamp = lineObj.time || 0;
+                    
+                    const lastTimeInterval = timestamp - sectionLines[lineIdx - 1]?.time || 0; 
+                    // Check if currentTime is within the range of the current line
+                    const nextTimestamp = (sectionIdx === lyrics.length - 1 && lineIdx === sectionLines.length - 1)
+                            ? Infinity  // If it's the last line of the last section
+                            : (sectionLines[lineIdx + 1]?.time || timestamp + lastTimeInterval);
+        
+                    if (currentTime >= timestamp && currentTime < nextTimestamp) {
+                        newHighlightedLineIndex = { sectionIdx, lineIdx }; // Set object with section and line index
+                        break; // Stop once the current line is found
+                    }
+                }
+        
+                if (newHighlightedLineIndex) break; // Stop if the current line was found
+            }
+        
+            // Update the highlighted line index state
+            setHighlightedLineIndex(newHighlightedLineIndex);
+        };
+    
+        findHighlightedLine();
+    }, [currentTime, lyrics]); // Depend on currentTime and lyrics
+
+    const generateHighlightedLyrics = (lyrics: Section[], currentTime: number) => {
+        return lyrics.map((section, idx) => {
+            const sectionTitle = section.header || "";
+            const sectionLines = section.text || []; 
+    
+            return (
+                <div key={idx} className="lyrics-section">
+                    <h3>{sectionTitle}</h3>
+                    {sectionLines.map((lineObj, lineIdx) => {
+                        
+                        const timestamp = lineObj.time || 0;
+    
+                        const lastTimeInterval = timestamp - sectionLines[lineIdx - 1]?.time || 0;  // Calculating next time at the end of a section is tricky
+                        const nextTimestamp = (idx === lyrics.length - 1 && lineIdx === sectionLines.length - 1)
+                            ? Infinity  // If it's the last line of the last section
+                            : (sectionLines[lineIdx + 1]?.time || timestamp + lastTimeInterval); // Otherwise, calculate the next timestamp
+    
+                        // Check if the current time falls between the current and next timestamp
+                        const isCurrentLine = currentTime >= timestamp && currentTime < nextTimestamp;
+    
+                        // Render each line with optional highlighting
+                        return (
+                            <p key={lineIdx} className={isCurrentLine ? "highlighted" : ""}>
+                                {lineObj.line}
+                            </p>
+                        );
+                    })}
+                </div>
+            );
+        });
+    };
 
     const handleLikeToggle = async () => {
         if (!song) return;
@@ -126,17 +229,21 @@ const SongPage: React.FC = () => {
                 <div className="song-info">
                     <div className="like-button-container">
                         <LikeButton isLiked={song.liked} onToggle={handleLikeToggle}/>
-                        {likeMessage && <Message className={`like-info-message ${likeMessage ? 'fade-in' : 'fade-out'}`}>{likeMessage}</Message>}
                         <div
                         className="lyrics-button"
                         style={{
-                            color: lyrics ? 'white' : 'grey',  // Grey if no lyrics, white if available
-                            cursor: lyrics ? 'pointer' : 'not-allowed'
+                            color: viewMode === "lyrics" ? "#6a1b9a" : lyrics ? 'white' : 'grey',  // Grey if no lyrics, white if available
+                            cursor: lyrics ? 'pointer' : 'not-allowed',
+                            position: "relative"
                         }}
                         onClick={handleToggleView}
                         >
                             <LiaMicrophoneAltSolid />
+                            {viewMode === "lyrics" && (
+                                <span className="lyrics-indicator"></span>
+                            )}
                         </div>
+                        {likeMessage && <Message className={`like-info-message ${likeMessage ? 'fade-in' : 'fade-out'}`}>{likeMessage}</Message>}
                     </div>
                     <p>Artist: <Link to={`/artists/${song.artist_id}`}>{song.artist}</Link></p>
                     <p>Album: {song.album}</p>
@@ -165,7 +272,7 @@ const SongPage: React.FC = () => {
                             </div>
                         ) : (
                             <div className="lyrics-container">
-                                <h3>{lyrics}</h3>
+                                 {lyrics ? generateHighlightedLyrics(lyrics, currentTime) : <LoadingDots />}
                             </div>
                         )}
                     {message && <Message className="info-message">{message}</Message>}

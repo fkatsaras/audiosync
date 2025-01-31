@@ -19,6 +19,8 @@ const PlaylistPage: React.FC = () => {
     const [playlist, setPlaylist] = useState<Playlist | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const [loadedItems, setLoadedItems] = useState<{ [key: string]: boolean }>({});
+    
 
     const { setCurrentSong, togglePlayPause, isPlaying, currentSong } = useAudioPlayer();
 
@@ -36,6 +38,15 @@ const PlaylistPage: React.FC = () => {
                     setPlaylist({
                         ...playlistData.body,
                         songs: playlistData.body.songs || [], // Default to empty array if songs is null
+                    });
+
+                    // Set all songs as "loaded"
+                    setLoadedItems((prev) => {
+                        const newLoadedItems = playlistData.body.songs.reduce((acc: { [key: string]: boolean }, song: any) => {
+                            acc[song.id] = true; // Mark song as loaded
+                            return acc;
+                        }, {});
+                        return { ...prev, ...newLoadedItems };
                     });
 
                     // Check if the playlist is the "Liked Songs" playlist
@@ -148,7 +159,7 @@ const PlaylistPage: React.FC = () => {
                                                             subtitle={`${song.artist}`}
                                                             linkPath={`/songs`}
                                                             altText={`${song.title} cover`}
-                                                            className="song-result" 
+                                                            className={`song-result ${loadedItems[song.id] ? 'loaded' : ''}`} 
                                                             isLoading={loading}    
                                                         />
                                                     </li>

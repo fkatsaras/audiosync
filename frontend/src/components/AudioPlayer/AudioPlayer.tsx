@@ -32,6 +32,9 @@ const AudioPlayer: React.FC = () => {
     const [isMuted, setIsMuted] = useState(false);
     const navigate = useNavigate();
     const location = useLocation();
+    const [viewMode, setViewMode] = useState<"song" | "lyrics">(
+        location.search.includes("view=lyrics") ? "lyrics" : "song"
+    );
 
     // Fetch last played song
     useEffect(() => {
@@ -124,11 +127,11 @@ const AudioPlayer: React.FC = () => {
         if (!currentSong) return;
         const lyricsPath = `/songs/${songId}?view=lyrics`;
         const songPath = `/songs/${songId}?view=song`
-        
-        console.log(`Goto : ${location.search.includes("view=lyrics") ? songPath : lyricsPath} `)
-        
+        const newViewMode = viewMode === "lyrics" ? "song" : "lyrics";
+        setViewMode(newViewMode);
+                
         navigate(location.search.includes("view=lyrics") ? songPath : lyricsPath);
-    }, [navigate, location, lyricsAvailable]);
+    }, [navigate, viewMode, location, lyricsAvailable]);
    
     return (
         <div className="audio-player">
@@ -173,14 +176,18 @@ const AudioPlayer: React.FC = () => {
             </div>
             <div className="controls">
                 <div
-                    className="lyrics-button"
-                    style={{
-                        color: lyricsAvailable ? 'white' : 'grey',  // Grey if no lyrics, white if available
-                        cursor: lyricsAvailable ? 'pointer' : 'not-allowed'
-                    }}
-                    onClick={() => { if (currentSong) toggleLyrics(currentSong.id); }}
+                className="lyrics-button"
+                style={{
+                    color: viewMode === "lyrics" ? "#6a1b9a" : lyricsAvailable ? 'white' : 'grey',  // Grey if no lyrics, white if available
+                    cursor: lyricsAvailable ? 'pointer' : 'not-allowed',
+                    position: "relative"
+                }}
+                onClick={() => { if (currentSong) toggleLyrics(currentSong.id); }}
                 >
                     <LiaMicrophoneAltSolid />
+                    {viewMode === "lyrics" && (
+                        <span className="lyrics-indicator"></span>
+                    )}
                 </div>
                 <div className="volume-icon" onClick={toggleMute}>
                     {getVolumeIcon()}
