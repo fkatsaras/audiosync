@@ -12,6 +12,11 @@
     z-index: 1000;
 }
 
+.popup-actions {
+    display: flex;
+    justify-content: space-evenly;
+}
+
 /* Popup container */
 .popup-container {
     background-color: #121212;

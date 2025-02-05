@@ -1,36 +1,25 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import './Navbar.css';
-import Button from "../Buttons/Button";
-import { AiFillHome } from 'react-icons/ai';
+import { useUser } from "../../context/UserContext";
 
-interface UserSessionProps {
-    userId: string;
-    username: string;
-}
+interface NavBarProps {
+    style?: React.CSSProperties; // Optional style prop
+  }
 
-const Navbar: React.FC<UserSessionProps> = ({ userId, username }) => {
+const Navbar: React.FC<NavBarProps> = ({ style }) => {
 
-    // const navigate = useNavigate();
-
+    const user = useUser();
     const links = {
-        liked_songs: `/${userId}/liked-songs`,
-        recommended: `/${userId}/recommended`,
-        my_artists: `/${userId}/my-artists`,
-        search: '/search',
-        my_playlists: `/${userId}/my-playlists` // Dynamically insert userId here
+        liked_songs: `/${user?.userId}/liked-songs`,
+        recommended: `/${user?.userId}/recommended`,
+        my_artists: `/${user?.userId}/my-artists`,
+        my_playlists: `/${user?.userId}/my-playlists` // Dynamically insert userId here
     };
 
     return (
         <div>
-            <nav className="navbar">
-                <div className="top-row-buttons">
-                    <Button className="navbar-home-button">
-                        <Link to='/home'>
-                            <AiFillHome size={24} />
-                        </Link>
-                    </Button>   {/* TODO: Integrate the link component inside the button component */}
-                </div>
+            <nav className="navbar" style={style}>
                 <ul className="navbar-list">
                     {links?.liked_songs && (
                         <li className="navbar-item">
@@ -50,11 +39,6 @@ const Navbar: React.FC<UserSessionProps> = ({ userId, username }) => {
                     {links?.my_playlists && (
                         <li className="navbar-item">
                             <Link to={links.my_playlists}>Your Playlists</Link>
-                        </li>
-                    )}
-                    {links?.search && (
-                        <li className="navbar-item">
-                            <Link to={links.search}>Search</Link>
                         </li>
                     )}
                 </ul>

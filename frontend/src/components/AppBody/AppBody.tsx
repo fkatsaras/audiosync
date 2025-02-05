@@ -1,17 +1,44 @@
-import React, { ReactNode } from 'react';
+import React, { ReactNode, useEffect, useRef } from 'react';
 import './AppBody.css';
 
 interface AppBodyProps {
-    children: ReactNode;    // Children can be any renderable react node
+    children: ReactNode;
 }
 
 const AppBody: React.FC<AppBodyProps> = ({ children }) => {
+    const appBodyRef = useRef<HTMLDivElement | null>(null);
+    let timeoutId: NodeJS.Timeout;
+
+    useEffect(() => {
+        const appBody = appBodyRef.current;
+
+        const handleScroll = () => {
+            if (appBody) {
+                appBody.classList.add('scroll-visible');
+                clearTimeout(timeoutId);
+
+                timeoutId = setTimeout(() => {
+                    appBody.classList.remove('scroll-visible');
+                }, 2000);
+            }
+        };
+
+        if (appBody) {
+            appBody.addEventListener('scroll', handleScroll);
+        }
+
+        return () => {
+            if (appBody) {
+                appBody.removeEventListener('scroll', handleScroll);
+            }
+        };
+
+    }, []);
+
     return (
-    <div className='app-body'>
-        <div className='app-body-main'>
+        <div className="app-body">
             {children}
         </div>
-    </div>
     );
 };
 

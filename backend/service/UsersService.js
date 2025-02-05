@@ -3,8 +3,10 @@
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const db = require('../utils/dbUtils');
-const { fromObject } = require('../models/Song');
 const { get_playlist_by_id } = require('./PlaylistsService');
+const UserRepository = require('../data/repository/UsersRepository'); 
+const ErrorHandler = require('../middleware/ErrorHandler');
+const { get_song_by_id } = require('./SongsService');
 
 
 /**
@@ -292,12 +294,7 @@ exports.unfollow_artist = async function(artistId,userId) {
       };
     }
   } catch (error) {
-    if (error.code) throw error; // Re-throw expected errors without modification
-
-    console.log(`Unexpected: ${error}`);
-    throw {
-      message: 'Unexpected error'
-    };
+    throw ErrorHandler.handle(error);
   } finally {
     // Ensure db connection is closed at the end
     db.closeConnection(connection);
@@ -402,14 +399,115 @@ exports.get_user_playlists = async function(userId) {
     if (error.code) throw error; // Re-throw expected errors without modification
     console.error(`Unexpected: ${error}`);
     throw {
-      message: "Unexpected error"
+      message: "Unexpected error",
+      code: 500
     }
   } finally {
     db.closeConnection(connection);
   }
 };
 
+/**
+ * Get user's followed artists
+ * Retrieve the artists followed by a specific user
+ *
+ * userId Integer ID of the user whose followed artists are to be fetched
+ * returns List
+ **/
+exports.get_user_followed_artists = async function (userId) {
+  const connection = db.createConnection();
 
+  try {
+    const artistsResult = await UserRepository.getUsersFollowedArtists(connection, userId);
+
+    if (artistsResult.length === 0) {
+      throw ErrorHandler.createError(404, `No followed artists found.`);
+    }
+
+    const artists = artistsResult.map(row => ({
+      id: row.id,
+      name: row.name,
+      followers: row.followers,
+      profile_picture: row.profile_picture,
+    }));
+
+    return {
+      message: 'Followed artists retrieved successfully.',
+      body: artists
+    }
+  } 
+  catch (error) {
+    throw ErrorHandler.handle(error);
+  } 
+  finally {
+    db.closeConnection(connection);
+  }
+}
+
+
+/**
+ * Get user's history
+ * Retrieve the users history (or their last layed song)
+ * 
+ * userId Integer ID of the user whose history | last played song is to be fetched
+ * latest: Request Query Parameter to check if we want the latest song or the full history 
+ * returns Object | List<Object>
+ */
+// TODO This has a deficiency: In order to return all the song history
+// TODO each song has to be processed to get the audio URL
+// TODO So we fetch all the song details ONLY in the case of the now playing song
+exports.get_user_history = async function (userId, latest = false) {
+  const connection = db.createConnection();
+  try {
+    const history = await UserRepository.getUsersHistory(connection,userId, latest)
+    let latestSong = null;
+
+    if (!history.length) {
+      throw ErrorHandler(404, 'No listening history found.');
+    }
+
+    // In case of the latest song we get the full song data using the service function
+    if (latest) {
+      const latestSongId = history[0].id; // Extract the song_id from the latest entry
+      const { body } = await get_song_by_id(userId, latestSongId);
+      latestSong = body;
+      console.log(latestSong);
+    }
+
+    return {
+      message: latest === 'true' ? 'Last played song retrieved successfully' : 'Listening history retrieved successfully',
+      body: latest === 'true' ? latestSong : history 
+    };
+  } catch (error) {
+    ErrorHandler.handle(error);
+  } finally {
+    db.closeConnection(connection);
+  }
+}
+
+/**
+ * Add a song to the users listening history
+ * 
+ * body: Object containing song history info 
+ * userId Integer ID of the user
+ * 
+ * @returns {Promise<Object>} - Resolves with a success message if appending is successful.
+ */
+exports.add_to_user_history = async function (body, userId) {
+  const connection = db.createConnection();
+  
+  try {
+    await UserRepository.addSongToUsersHistory(connection, body);
+
+    return {
+      message: 'Song added to listening history successfully'
+    };
+  } catch (error) {
+    ErrorHandler.handle(error);
+  } finally {
+    db.closeConnection(connection);
+  }
+}
 
 /**
  * Authenticates a user and generates a JWT token if the credentials are valid.

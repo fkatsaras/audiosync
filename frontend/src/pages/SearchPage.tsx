@@ -1,20 +1,13 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Song, Artist } from '../types/data';
-import Navbar from '../components/Navbar/Navbar';
 import '../styles/SearchPage.css'
-import AppBody from '../components/AppBody/AppBody';
 import LoadingDots from '../components/LoadingDots/LoadingDots';
 import Button from '../components/Buttons/Button';
 import Input from '../components/Input/Input';
 import Message from '../components/Message/Message';
 import ResultItem from '../components/ResultItem/ResultItem';
-import ProfileBar from '../components/ProfileBar/ProfileBar';
+import { useLocation, useNavigate } from 'react-router-dom';
 
-interface UserSessionProps {
-    userId?: string;
-    username?: string;
-  }
-  
 
 /**
  * Search component allows users to search for artists and songs by entering a query.
@@ -23,17 +16,51 @@ interface UserSessionProps {
  * @component
  * @returns {JSX.Element} The Search component UI.
  */
-const Search: React.FC<UserSessionProps> = ({ userId, username }) => {
+const Search: React.FC = () => {
+    const location = useLocation();
     const [query, setQuery] = useState<string>('');
+    const [searchType, setSearchType] = useState<string>('');
+
+    useEffect(() => {
+        const params = new URLSearchParams(location.search);
+        const searchQuery = params.get('q') || '';
+        const type = (params.get('type') as 'artists' | 'songs') || 'artists';
+
+        setQuery(searchQuery);
+        setSearchType(type);
+        if (searchQuery) {
+            // You can call your fetchResults function here based on searchType
+            handleSearch(type);
+        }
+    }, [location]);
+
+
     const [artistResults, setArtistResults] = useState<Artist[]>([]);
     const [songResults, setSongResults] = useState<Song[]>([]);
     const [artistOffset, setArtistOffset] = useState<number>(0);
     const [songOffset, setSongOffset] = useState<number>(0);
-    const [loading, setLoading] = useState<boolean>(false);
+    const [topResult, setTopResult] = useState<Artist |Song | null>(null);
+    const [loadingResults, setLoadingResults] = useState<boolean>(false);
     const [error, setError] = useState<string>('');
     const [hasMoreArtists, setHasMoreArtists] = useState<boolean>(false);
     const [hasMoreSongs, setHasMoreSongs] = useState<boolean>(true);      // Tracks if there are more song results
     const [hasSearched, setHasSearched] = useState<boolean>(false);
+
+    // State for managing rendering / loading of the components
+    const [loadedItems, setLoadedItems] = useState<{ [key: string] : boolean }>({});
+
+    useEffect(() => {
+        // Mark all loaded artists and songs as "loaded" after fetch
+        setTimeout(() => {
+            setLoadedItems((prev) => ({
+                ...prev,
+                ...artistResults.reduce((acc, artist) => ({ ...acc, [artist.id]: true }), {}),
+                ...songResults.reduce((acc, song) => ({ ...acc, [song.id]: true }), {}),
+                ...(topResult ? { [topResult.id]: true } : {})  // Add top result if available
+            }));
+        }, 100);  // Small delay
+    }, [artistResults, songResults, topResult]);
+
 
     /**
     * Fetches search results from the backend API for the given type (artists or songs) and offset.
@@ -46,7 +73,7 @@ const Search: React.FC<UserSessionProps> = ({ userId, username }) => {
     * 
     */
     const fetchResults = async (type: 'artists' | 'songs', offset: number) => {
-        setLoading(true);
+        setLoadingResults(true);
         try {
             const response = await fetch(`/api/v1/search/${type}${query ? `?q=${query}&offset=${offset}&limit=5` : ''}`, {
                 headers: {
@@ -65,32 +92,39 @@ const Search: React.FC<UserSessionProps> = ({ userId, username }) => {
                 } else {
                     setHasMoreSongs(false);
                 }
-                setLoading(false);
+                setLoadingResults(false);
                 setHasSearched(true);
                 return;
             }
+
+            // Extract top result
+            const fetchedResults = type === 'artists' ? data.body.artists : data.body.songs;
+
+            if (fetchedResults.length > 0 && offset === 0) {
+                setTopResult(fetchedResults[0]);
+                fetchedResults.shift();
+            }
     
             if (type === 'artists') {
-                setArtistResults((prevResults) => [...prevResults, ...data.body.artists]);
+                setArtistResults((prevResults) => [...prevResults, ...fetchedResults]);
     
-                if (data.body.artists.length < 5) {
+                if (fetchedResults.length < 4) {
                     setHasMoreArtists(false);
                 }
             } else {
-                setSongResults((prevResults) => [...prevResults, ...data.body.songs]);
+                setSongResults((prevResults) => [...prevResults, ...fetchedResults]);
     
-                if (data.body.songs.length < 5) {
+                if (fetchedResults.length < 4) {
                     setHasMoreSongs(false);
                 }
             }
     
-            setLoading(false);
             setHasSearched(true);
         } catch (err) {
             (err instanceof Error) ? 
                 setError(err.message || 'Failed to fetch results.') : setError('An unknown error occurred.')
         } finally {
-            setLoading(false);
+            setLoadingResults(false);
         }
 
     };
@@ -106,10 +140,12 @@ const Search: React.FC<UserSessionProps> = ({ userId, username }) => {
         setError('');
         setArtistResults([]);
         setSongResults([]);
+        setTopResult(null);
         setArtistOffset(0);
         setSongOffset(0);
         setHasMoreArtists(true);
         setHasMoreSongs(true);
+        setSearchType(type);
 
         // fetch the results
         fetchResults(type, 0);
@@ -136,24 +172,30 @@ const Search: React.FC<UserSessionProps> = ({ userId, username }) => {
         }
     };
 
+
     return (
         <div className='search-container'>
-            <Navbar userId={userId || ''} username={username || ''}/>
-            <AppBody>
-                <h1>Search</h1>
-                <Input
-                    id=''
-                    type='text'
-                    value={query}
-                    onChange={(e) => setQuery(e.target.value)}
-                    placeholder='Search for artists, songs...'
-                    className='search-input'
-                />
-                <div className='search-buttons-container'>
-                    <Button onClick={() => handleSearch('artists')} className='search-button'>Artists</Button>
-                    <Button onClick={() => handleSearch('songs')} className='search-button'>Songs</Button>
-                </div>
-                <ul>
+                <h1 className='header'>Search</h1>
+
+                {/* Top result */}
+                {topResult && (
+                        <div className='top-result-container'>
+                            <h2>Top Result</h2>
+                            <ResultItem
+                                id={topResult.id}
+                                imageSrc={'cover' in topResult ? topResult.cover : topResult.profile_picture}
+                                title={'title' in topResult ? topResult.title : topResult.name}
+                                subtitle={'duration' in topResult ? String(topResult.duration) : ''}
+                                linkPath={searchType === 'songs' ? '/songs' : '/artists' }
+                                altText='Top Result'
+                                className={`top-result ${loadedItems[topResult.id] ? 'loaded' : ''}`}
+                                isLoading={loadingResults}
+                            />
+                        </div>
+                    )}
+                
+                <ul className='result-list'>
+                    
                     {/*Artists results*/}
                     {artistResults.length > 0 && artistResults.map((artist, index) => (
                         <li key={artist.id}>
@@ -164,7 +206,8 @@ const Search: React.FC<UserSessionProps> = ({ userId, username }) => {
                                 subtitle=''
                                 linkPath='/artists'
                                 altText='Artist profile'
-                                className='artist-result-image'
+                                className={`artist-result ${loadedItems[artist.id] ? 'loaded' : ''}`}
+                                isLoading={loadingResults}
                             />
                         </li>
                     ))}
@@ -179,30 +222,29 @@ const Search: React.FC<UserSessionProps> = ({ userId, username }) => {
                                 subtitle={String(song.duration)}
                                 linkPath='/songs'
                                 altText='Song cover'
-                                className='song-result-image'
+                                className={`song-result ${loadedItems[song.id] ? 'loaded' : ''}`}
+                                isLoading={loadingResults}
                             />
                         </li>
                     ))}
-                    {loading && <LoadingDots />}
+                    {loadingResults && <LoadingDots />}
                     {error && <Message className='error-message'>{error}</Message>}
 
                     {/* Show more */}
-                    {hasMoreArtists && !loading && artistResults.length > 0 && (
+                    {hasMoreArtists && !loadingResults && artistResults.length > 0 && (
                         <Button onClick={() => handleShowMore('artists')} className='show-more-button'>Show More</Button>
                     )}
 
                     {/* Show more songs */}
-                    {hasMoreSongs && !loading && songResults.length > 0 && (
+                    {hasMoreSongs && !loadingResults && songResults.length > 0 && (
                         <Button onClick={() => handleShowMore('songs')} className='show-more-button'>Show More</Button>
                     )}
                 </ul>
                 
                 {/* In case no results match the query*/}
-                {hasSearched && artistResults.length === 0 && songResults.length === 0 && !loading && (
+                {hasSearched && !topResult && artistResults.length === 0 && songResults.length === 0 && !loadingResults && (
                 <Message className='info-message'>No results found</Message>
                 )}
-            </AppBody>
-            <ProfileBar userId={userId || ''} username={username || ''}/>
         </div>
     );
 };

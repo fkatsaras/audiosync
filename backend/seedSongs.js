@@ -3,7 +3,7 @@ const db = require('./utils/dbUtils');
 const axios = require('axios');
 require('dotenv').config();
 
-process.env.NODE_ENV = 'test';
+// process.env.NODE_ENV = 'test';
 
 // Spotify API credentials 
 let accessToken = null;
@@ -37,7 +37,7 @@ async function fetchSongs(limit = 50, maxSongs = 500) {
         try {
             const response = await axios.get(`${SPOTIFY_API_URL}/search`, {
                 headers: {
-                    Authorization: `Bearer: ${accessToken}`,
+                    Authorization: `Bearer ${accessToken}`,
                 },
                 params: {
                     q: 'genre:metal',
@@ -61,7 +61,7 @@ async function fetchSongs(limit = 50, maxSongs = 500) {
                     album: track.album.name,
                     duration: Math.round(track.duration_ms / 1000),
                     cover: track.album.images[0]?.url || null,
-                    release_date: track.album.release_date || null,
+                    release_date: track.album.release_date ? track.album.release_date.slice(0, 4) : null,
                     popularity: track.popularity
                 });
             });
@@ -115,7 +115,7 @@ async function insertDatatoDB(songs) {
             }
 
             // Insert song into the database
-            await dbUtils.executeQuery(
+            await db.executeQuery(
                 connection,
                 `INSERT INTO songs (title, artist_id, album, duration, cover, release_date, audio_url, popularity, is_playing)
                  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
@@ -126,14 +126,14 @@ async function insertDatatoDB(songs) {
                     song.duration,
                     song.cover,
                     song.release_date,
-                    song.audio_url,
-                    song.popularity,
+                    null,
+                    null,
                     false, // is_playing default to false
                 ]
             );
         }
 
-        await dbUtils.commitTransaction(connection);
+        await db.commitTransaction(connection);
         console.log('Songs inserted successfully.');
     } catch (error) {
         console.log(`Sonething went wrong while inserting songs: ${error.message}`);
@@ -150,7 +150,7 @@ async function insertDatatoDB(songs) {
 
         console.log('Fetching songs...');
         const songs = await fetchSongs(50, 500);
-        if (songs.lenght > 0) {
+        if (songs.length > 0) {
             console.log('Inserting songs into the db...');
             await insertDatatoDB(songs);
         } else {

@@ -16,6 +16,18 @@
     
 }
 
+/* Styles for loading the containers */
+.result-container {
+    opacity: 0;
+    transform: translateY(10px);
+    transition: opacity 0.4s ease-in-out, transform 0.4s ease-in-out;
+}
+
+.result-container.loaded {
+    opacity: 1;
+    transform: translateY(0);
+}
+
 .result-title {
     color: white;
     margin: 0;
@@ -39,6 +51,7 @@ li {
 .result-container:hover {
     border: 2px solid #2a2a2a;    /* Highlight border n hover */
     box-shadow:  0 0 10px rgba(0, 0, 0, 0.2);   /* Shadow effect */
+    background-color: #2a2a2a;
 }
 
 .result-content {
@@ -47,16 +60,16 @@ li {
 }
 
 /* Different styling based on item type */
-.result-container:hover .playlist-result-image,
-.result-container:hover .artist-result-image,
-.result-container:hover .song-result-image {
+.result-container:hover .playlist-result,
+.result-container:hover .artist-result,
+.result-container:hover .song-result {
     box-shadow: 0 0 10px rgba(255, 255, 255, 0.5); /* Shadow effect instead of a border */
 }
 
 /* Different styling based on item type */
-.result-container .playlist-result-image,
-.result-container .artist-result-image,
-.result-container .song-result-image {
+.result-container .playlist-result,
+.result-container .artist-result,
+.result-container .song-result {
     width: 80px;
     height: 80px;
     border-radius: 50%; /* Circular image for artists */
@@ -64,8 +77,8 @@ li {
     margin-right: 10px;
 }
 
-.result-container .song-result-image,
-.result-container .playlist-result-image {
+.result-container .song-result,
+.result-container .playlist-result {
     border-radius: 5px; /* Rectangular shape for song album cover */
 }
 
@@ -81,4 +94,40 @@ li {
 /* Show the options container on hover */
 .result-container:hover .three-dots-button {
     opacity: 1;
+}
+
+/* Placeholder styles */
+.placeholder-image {
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(90deg, #3a3a3a 25%, #505050 50%, #3a3a3a 75%);
+    border-radius: 5px;
+    animation: wave 2s infinite linear;
+}
+
+.placeholder-title,
+.placeholder-subtitle {
+    height: 15px;
+    border-radius: 5px;
+    background: linear-gradient(90deg, #3a3a3a 25%, #505050 50%, #3a3a3a 75%);
+    animation: wave 2s infinite linear;
+}
+
+.placeholder-title {
+    width: 150px;
+    margin-left: 15px;
+}
+
+.placeholder-subtitle {
+    width: 100px;
+    margin-left: 15px;
+}
+
+@keyframes wave {
+    0% {
+        background-position: -150px;
+    }
+    100% {
+        background-position: 150px;
+    }
 }

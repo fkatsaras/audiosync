@@ -2,10 +2,10 @@
     width: 50px;
     height: 50px;
     border-radius: 50%;
-    background-color: #6a1b9a;
+    background-color: #ffffff;
     border: none;
     display: flex;
-    justify-content: center;
+    /* justify-content: center; */
     align-items: center;
     cursor: pointer;
     transition: background-color 0.3s ease, transform 0.1s ease;
@@ -13,17 +13,13 @@
     line-height: 0;
 }
 
-.play-button:hover {
-    background-color: #8e24aa; /* Lighter purple fill on hover */
-    box-shadow: 0 6px 8px rgba(0, 0, 0, 0.3);
-}
-
 .play-button:active {
     transform: scale(0.95); /* Bounce effect on click */
 }
 
 .play-button.playing {
-    background-color: #8e24aa; /* Lighter purple fill when playing */
+    background-color: #ffffff; /* Lighter purple fill when playing */
+    justify-content: center;
 }
 
 .play-button .icon {
@@ -31,6 +27,10 @@
     font-size: 24px; /* Icon size */
     transition: transform 0.2s ease;
     display: block;
+}
+
+.play-button .icon:hover {
+    color: #121212
 }
 
 .play-button.playing .icon {

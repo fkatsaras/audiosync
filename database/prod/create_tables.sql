@@ -53,7 +53,7 @@ CREATE TABLE IF NOT EXISTS `songs` (
   `cover` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
   `lyrics` TEXT DEFAULT NULL,
   `genre` VARCHAR(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
-  `release_date` DATE DEFAULT NULL,
+  `release_date` YEAR DEFAULT NULL,
   `play_count` INT UNSIGNED DEFAULT 0,
   `popularity` FLOAT DEFAULT 0.0,
   `is_playing` boolean NOT NULL,
@@ -112,5 +112,19 @@ CREATE TABLE IF NOT EXISTS `playlist_songs` (
   FOREIGN KEY (`song_id`) REFERENCES `songs`(`id`) ON DELETE CASCADE,
   PRIMARY KEY (`playlist_id`, `song_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- Data exported was unselected
+
+-- Dumping structure for table audiosync_db.playlist_songs
+CREATE TABLE IF NOT EXISTS `listening_history` (
+  `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `user_id` INT UNSIGNED NOT NULL,
+  `song_id` INT UNSIGNED NOT NULL,
+  `played_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON DELETE CASCADE,
+  FOREIGN KEY (`song_id`) REFERENCES `songs`(`id`) ON DELETE CASCADE
+);
+
 
 -- Data exported was unselected

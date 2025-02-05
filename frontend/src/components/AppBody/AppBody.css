@@ -1,49 +1,44 @@
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700&display=swap');
 
 .app-body {
-    display: flex;
-    flex: 1;
-    margin-left: 14.5%;
-    margin-right: 14.5%;
-    padding: 0px 20px 20px 20px;
-    min-height: 100vh;
-    height: 84.5%;
-    background-color: #181818;
-    font-family: 'Montserrat', sans-serif;
-}
-
-.app-body-main {
     background-color: #121212;
-    flex: 1 1;
+    font-family: 'Montserrat', sans-serif;
     border-radius: 16px;
-    padding: 20px;
-    margin: 10px auto;
-    height: 84.5vh;
-    width: calc(100% - 40px);
     display: flex;
     flex-direction: column;
     overflow-y: auto;
+    width: 100%;
+    padding: 30px;
+    padding-top: 0;
 }
 
 /* Target Webkit browsers */
-.app-body-main::-webkit-scrollbar {
+.app-body::-webkit-scrollbar {
+    visibility: hidden;
+    transition: opacity 0.5s ease-in-out;
+}
+
+/* Visible scrollbar styles */
+.app-body.scroll-visible::-webkit-scrollbar {
+    visibility: visible;
     width: 10px;
 }
 
-.app-body-main::-webkit-scrollbar-track {
-    background: #2e2e2e;
-    border-radius: 10px;
-} 
+.app-body::-webkit-scrollbar-thumb {
+    opacity: 0; /* Start invisible */
+    transition: background 0.5s ease, opacity 0.5s ease-in-out;
+}
 
-.app-body-main::-webkit-scrollbar-thumb {
+.app-body.scroll-visible::-webkit-scrollbar-thumb {
     background: #555;
     border-radius: 10px;
+    opacity: 1;
+    
 }
 
-.app-body-main::-webkit-scrollbar-thumb:hover {
+.app-body.scroll-visible::-webkit-scrollbar-thumb:hover {
     background: #888;
 }
-
 
 h1 {
     color: #ffffff;
@@ -51,16 +46,23 @@ h1 {
     margin-bottom: 20px;
 }
 
+h1.header {
+    position: sticky;
+    top: 0;
+    background-color: #121212;
+    z-index: 100;
+    font-size: 2rem;
+    height: 80px;
+    display: flex; 
+    align-items: center;
+    color: #ffffff;
+}
+
 h2 {
     color: #ffffff;
     font-size: 1.5rem;
     margin-bottom: 20px;
 }
-
-/* p, 
-p a {
-    color: #ffffff;
-} */
 
 p a:visited,
 p:visited {
