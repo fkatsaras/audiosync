@@ -92,7 +92,7 @@ const SongPage: React.FC = () => {
     }, [viewMode, songId]);
 
     /**
-     * Lyrics view highlighting
+     * Lyrics view 
      * 
      */
     useEffect(() => {
@@ -105,8 +105,13 @@ const SongPage: React.FC = () => {
         }
     }, [isPlaying]);
 
+    
     type HighlightedLineIndex = { sectionIdx: number, lineIdx: number } | null;
 
+    /**
+     *  For managing state regarding highlighting of lyrics
+     * 
+     */
     useEffect(() => {
         // Check which line should be highlighted based on the current time
         const findHighlightedLine = () => {
@@ -167,8 +172,9 @@ const SongPage: React.FC = () => {
                         const isCurrentLine = currentTime >= timestamp && currentTime < nextTimestamp;
     
                         // Render each line with optional highlighting
+                        // TODO : We have to find an accurrate enough timestamp method for the lyrics; Then add "highlighted" to the first expression
                         return (
-                            <p key={lineIdx} className={isCurrentLine ? "highlighted" : ""}>
+                            <p key={lineIdx} className={isCurrentLine ? "" : ""}>
                                 {lineObj.line}
                             </p>
                         );

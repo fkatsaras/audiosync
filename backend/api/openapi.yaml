@@ -57,6 +57,61 @@ paths:
           description: Internal server error.
       x-openapi-router-controller: app.controllers.home_controller
       x-swagger-router-controller: Home
+  /api/v1/search/all:
+    get:
+      tags:
+      - search
+      summary: Search for artists and songs
+      description: Retrieve search results for both artists and songs based on query.
+      operationId: search_all_get
+      parameters:
+        - name: q
+          in: query
+          description: Search query string for artists and songs. The query will be used to search for partial matches in artist names and song titles.
+          required: false
+          style: form
+          explode: true
+          schema:
+            type: string
+        - name: limit
+          in: query
+          description: The number of results to return per category (artists and songs). Default is 5.
+          required: false
+          schema:
+            type: integer
+            default: 5
+        - name: offset
+          in: query
+          description: The number of results to skip per category. Default is 0.
+          required: false
+          schema:
+            type: integer
+            default: 0
+      security:
+        - BearerAuth: []
+      responses:
+        "200":
+          description: Search results retrieved successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  artists:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Artist'
+                  songs:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Song'
+        "400":
+          description: Bad request. This happens when the search query is empty or invalid.
+        "404":
+          description: No results found matching the search query.
+        "500":
+          description: Server error. There was an issue processing the request or connecting to the database.
+      x-swagger-router-controller: Search
   /api/v1/search/artists:
     get:
       tags:

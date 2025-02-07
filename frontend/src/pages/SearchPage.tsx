@@ -28,11 +28,10 @@ const Search: React.FC = () => {
 
         setQuery(searchQuery);
         setSearchType(type);
-        if (searchQuery) {
-            // You can call your fetchResults function here based on searchType
+        if (searchQuery) {  
             handleSearch(type);
         }
-    }, [location]);
+    }, [query, searchType, location]);
 
 
     const [artistResults, setArtistResults] = useState<Artist[]>([]);

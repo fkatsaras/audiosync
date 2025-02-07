@@ -66,6 +66,15 @@ class SongsRepository {
         `;
         return db.executeQuery(connection, query, [lyrics, songId]);
     }
+
+    static async updateSongCover(connection, songId, cover) {
+        const query = `
+        UPDATE songs
+        SET cover = ? 
+        WHERE id = ?
+        `
+        return db.executeQuery(connection, [cover, songId]);
+    }
 }
 
 module.exports = SongsRepository;

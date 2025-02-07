@@ -14,80 +14,84 @@ const cleanSongTitle = (title) => {
               .trim();                  // Trim extra spaces
 };
 
-// // TODO : Implement something more consistent than this
-// function appendLyricsTimeStamps(formattedLyrics, totalDuration) {
-//   // Flatten the lyrics into a single array of lines
-//   const allLines = formattedLyrics.flatMap(section => {
-//       const lines = section.text.split('\n').filter(line => line.trim() !== '');
-//       return lines;
-//   });
+// TODO : Implement something more consistent than this
+// TODO: THIS IS DEPRECATED; To be removed (too inaccurate)
+function appendLyricsTimeStamps(formattedLyrics, totalDuration) {
+  // Flatten the lyrics into a single array of lines
+  const allLines = formattedLyrics.flatMap(section => {
+      const lines = section.text.split('\n').filter(line => line.trim() !== '');
+      return lines;
+  });
 
-//   // Calculate the time for each line based on the total song duration
-//   const timePerLine = totalDuration / allLines.length;
+  // Calculate the time for each line based on the total song duration
+  const timePerLine = totalDuration / allLines.length;
 
-//   // Map each line to its respective timestamp
-//   let timeElapsed = 0;
-//   const timeStampedLyrics = formattedLyrics.map((section) => {
-//       const { header, text } = section;
+  // Map each line to its respective timestamp
+  let timeElapsed = 0;
+  const timeStampedLyrics = formattedLyrics.map((section) => {
+      const { header, text } = section;
       
-//       // Split the text into lines
-//       const lines = text.split('\n').filter(line => line.trim() !== '');
+      // Split the text into lines
+      const lines = text.split('\n').filter(line => line.trim() !== '');
       
-//       // Map lines to their respective timestamps based on the total song duration
-//       const timeStampedText = lines.map((line) => {
-//           const time = timeElapsed.toFixed(2); // Get the current timestamp
-//           timeElapsed += timePerLine; // Increase the time for the next line
-//           return { time, line };
-//       });
+      // Map lines to their respective timestamps based on the total song duration
+      const timeStampedText = lines.map((line) => {
+          const time = timeElapsed.toFixed(2); // Get the current timestamp
+          timeElapsed += timePerLine; // Increase the time for the next line
+          return { time, line };
+      });
 
-//       return { header, text: timeStampedText };
-//   });
+      return { header, text: timeStampedText };
+  });
 
-//   return timeStampedLyrics;
-// }
+  return timeStampedLyrics;
+}
 
-// /**
-//      *  Lyrics
-//      * 
-//      */
-// const formatLyrics = (lyrics) => {
+/**
+  *  Lyrics
+  * 
+  */
+const formatLyrics = (lyrics) => {
 
-//   const formatSectionText = (text) => {
-//       return  text.replace(/([a-z])([A-Z])/g, '$1\n$2');
-//   };
+  const formatSectionText = (text) => {
+    return text
+          .replace(/([a-z])([A-Z])/g, '$1\n\n$2')   // Rule 1: Lowercase followed by uppercase
+          .replace(/([\)'"])([A-Z])/g, '$1\n\n$2')  // Rule 2: ), ' or " followed by uppercase
+          .replace(/([A-Z])\(/g, '$1\t$2');          // Rule 3: Any letter followed by (
+  };
 
-//   const regex = /\[([^\]]+)\](.*?)(?=\[|\s*$)/g;
-//   const sections = [];
-//   let match;
+  const regex = /\[([^\]]+)\](.*?)(?=\[|\s*$)/g;
+  const sections = [];
+  let match;
 
-//   /**
-//    * Each call to exec() advances the search position.
-//    * When a match is found, exec() updates the position 
-//    * in the string to the next character after the match,
-//    * so it won’t check the same part of the string repeatedly
-//    * 
-//    */
+  /**
+   * Each call to exec() advances the search position.
+   * When a match is found, exec() updates the position 
+   * in the string to the next character after the match,
+   * so it won’t check the same part of the string repeatedly
+   * 
+   */
 
-//   while ((match = regex.exec(lyrics)) !== null) {
-//       const header = match[1].trim();
-//       let text = match[2].trim();
+  while ((match = regex.exec(lyrics)) !== null) {
+      const header = match[1].trim();
+      let text = match[2].trim();
 
-//       text = formatSectionText(text);
+      text = formatSectionText(text);
 
-//       sections.push({ header, text })
-//   }
+      sections.push({ header, text })
+  }
 
-//   const formatted = sections.map((section, idx) => {
-//       return (
-//           {
-//             header: section.header,
-//             text: section.text
-//           }
-//       )
-//   })
+  const formatted = sections.map((section, idx) => {
+      return (
+          {
+            header: section.header,
+            text: section.text
+          }
+      )
+  })
 
-//   return formatted;
-// }
+  return formatted;
+}
 
 
 

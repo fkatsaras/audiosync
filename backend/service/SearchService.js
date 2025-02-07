@@ -2,6 +2,91 @@
 
 const db = require('../utils/dbUtils');
 const spotify = require('../utils/spotify');
+const SearchRepository = require('../data/repository/SearchRepository');
+const SongsRepository = require('../data/repository/SongRepository');
+
+/**
+ *  Utility function sanitize a users search query string of whitespaces etc...
+ */
+function sanitizeQuery (query) {
+  return `%${query.trim().replace(/\s+/g, ' ').toLowerCase()}%`; // Replace multiple spaces with a single space | Wildcard match
+}
+/**
+ *  Utility function to check if every artist in a list has their profile picture set
+ */
+async function fetchProfilePictures(artists) {
+  // Separate artists with/without pfps
+  const artistsWithoutPfps = artists.filter(artist => !artist.profile_picture);
+
+  if (artistsWithoutPfps.length === 0) return artists;
+
+  const artistNames = artistsWithoutPfps.map(artist => artist.name);
+  // Fetch missing pfps from Spotify
+  const pfps = await Promise.all(
+    artistNames.map(async (artist) => {
+      try {
+        const pfpUrl = await spotify.getArtistProfilePicture(artist);
+        return { artist, pfpUrl };
+      } catch (error) {
+        console.error(`Failed to fetch pfp for artist: ${artist}`, error);
+        return { artist, profile_picture: null };
+      }
+    })
+  );
+
+  const pfpMap = {};
+  pfps.forEach(({ artist, pfpUrl }) => {
+    pfpMap[artist.toLowerCase()] = pfpUrl;
+  });
+
+  artistsWithoutPfps.forEach(artist => {
+    const pfpUrl = pfpMap[artist.name.toLowerCase()] || null;
+    artist.profile_picture = pfpUrl;
+  });
+
+  return artists;
+}
+
+/**
+ *  Utility function to check if every song in a list has its cover url set
+ */
+async function fetchMissingCovers(connection, songs) {
+  const songsWithoutCovers = songs.filter(song => !song.cover);
+
+  // If there are songs in the DB without a cover image URL
+  if (songsWithoutCovers.length === 0) return songs;
+   
+  const missingAlbums = songsWithoutCovers.map(song => song.album);
+  // Fetch missing covers
+  const albumCovers = await Promise.all(
+    missingAlbums.map(async (albumName) => {
+      try {
+        const coverUrl = await spotify.getSongCover(albumName); // Cal the spotify API to get song cover
+        return { albumName, coverUrl }; 
+      } catch (error) {
+        console.error(`Failed to fetch cover for album: ${albumName}`, error);
+        return { albumName, coverUrl: null };  
+      }
+    })
+  );
+  // Create a mapping of album names to their respective cover URLs
+  const albumCoverMap = {};
+  albumCovers.forEach(({ albumName, coverUrl }) => {
+    albumCoverMap[albumName.toLowerCase()] = coverUrl;
+  });
+  // Update DB with fetched covers
+  await Promise.all(
+    songsWithoutCovers.map(async song => {
+      const coverUrl = albumCoverMap[song.album.toLowerCase()] || null;
+      if (coverUrl) {
+        await SongsRepository.updateCover(connection, song.id, coverUrl);
+      }
+      song.cover = coverUrl;  // Add cover to song object
+    })
+  );
+
+  return songsWithoutCovers;
+}
 
 
 /**
@@ -12,6 +97,8 @@ const spotify = require('../utils/spotify');
  * returns inline_response_200_1
  **/
 exports.search_artists_get = async function(userId, userQuery, limit, offset) {
+  const connection = db.createConnection();
+
   try {
     if (!userQuery || !userQuery.trim()) {
       throw {
@@ -26,21 +113,11 @@ exports.search_artists_get = async function(userId, userQuery, limit, offset) {
         },
         code: 400,
       };
-    }
-    // Clean up the user query
-    userQuery = userQuery.trim();
-    userQuery = userQuery.replace(/\s+/g,' ');  // Replace multiple spaces with a single space
-    const escapedQ = `%${userQuery.toLowerCase()}%`;  // Wildcard match
-    // SQL query
-    const searchQuery = `
-      SELECT id, name
-      FROM artists
-      WHERE LOWER(name) LIKE ?
-      LIMIT ? OFFSET ?
-    `;
-    // Execute query 
-    const connection = db.createConnection();
-    const results = await db.executeQuery(connection, searchQuery, [escapedQ, limit, offset]);
+    }  
+    const sanitizedQuery = sanitizeQuery(userQuery);
+
+    const results = await SearchRepository.searchArtists(connection, sanitizedQuery, limit, offset);
+
     if (results.length === 0) {
       throw {
         message: `No artists found for given query.`,
@@ -55,38 +132,11 @@ exports.search_artists_get = async function(userId, userQuery, limit, offset) {
         code: 404, 
       };
     }
-    // Separate artists with/without pfps
-    // Separate songs with and witout covers
+
     const artistsWithPfps = results.filter(artist => artist.profile_picture);
     const artistsWithoutPfps = results.filter(artist => !artist.profile_picture);
-    console.log(artistsWithoutPfps);
-    // If there are artists without profile picture image URLs in the DB
-    if (artistsWithoutPfps.length > 0) {
-      const artistNames = artistsWithoutPfps.map(artist => artist.name);
-      // Fetch missing pfps
-      const pfps = await Promise.all(
-        artistNames.map(async (artist) => {
-          try {
-            const pfpUrl = await spotify.getArtistProfilePicture(artist);
-            return { artist, pfpUrl };
-          } catch (error) {
-            console.error(`Failed to fetch pfp for artist: ${artist}`, error);
-            return { artist, profile_picture: null }
-          }
-        })
-      );
-      // Create a map between artist name and their pfp urls
-      const pfpMap = {};
-      pfps.forEach(({ artist, pfpUrl }) => {
-        pfpMap[artist.toLowerCase()] = pfpUrl;
-      });
-      artistsWithoutPfps.forEach(artist => {
-        const pfpUrl = pfpMap[artist.name.toLowerCase()] || null;
-        artist.profile_picture = pfpUrl;
-      });
-    }
-    // Combine artists with/without pfpfs
-    const artists = [...artistsWithPfps, ...artistsWithoutPfps];
+    const artists = await fetchProfilePictures([...artistsWithPfps, ...artistsWithoutPfps]);
+
     return {
       message: `Artists successfully found by user ${userId}`,
       body:{
@@ -106,117 +156,76 @@ exports.search_artists_get = async function(userId, userQuery, limit, offset) {
       message: 'Unexpected',
       code: 500,
     };
+  } finally {
+    db.closeConnection(connection);
   }
 };
 
+/**
+ * Search for songs
+ * Retrieve search results for songs based on query.
+ *
+ * q String Search query string for songs. The query will be used to search for partial matches in song titles.
+ * returns inline_response_200_1
+ **/
 exports.search_songs_get = async function(userId, userQuery, limit, offset) {
-   try {
-     if (!userQuery || !userQuery.trim()) {
-       throw{
-         message: 'Search query is empty.',
-         code: 400,
-       };
-     }
+  const connection = db.createConnection();
+  try {
+    if (!userQuery || !userQuery.trim()) {
+      throw{
+        message: 'Search query is empty.',
+        code: 400,
+      };
+    }
 
-     // Clean up the user query
-     userQuery = userQuery.trim();
-     userQuery = userQuery.replace(/\s+/g,' ');  // Replace multiple spaces with a single space
-     const escapedQ = `%${userQuery.toLowerCase()}%`;  // Wildcard match
+    const query = sanitizeQuery(userQuery);
 
-     // SQL query
-     const searchQuery = `
-       SELECT *
-       FROM songs
-       WHERE LOWER(title) LIKE ?
-       LIMIT ? OFFSET ?
-     `;
+    // Execute query 
+    const results = await SearchRepository.searchSongs(connection, query, limit, offset);
 
-     // Execute query 
-     const connection = db.createConnection();
-     const results = await db.executeQuery(connection, searchQuery, [escapedQ, limit, offset]);
+    if (results.length === 0) {
+      throw {
+        message: `No songs found for given query.`,
+        code: 404, 
+      };
+    }
 
-     if (results.length === 0) {
-       throw {
-         message: `No songs found for given query.`,
-         code: 404, 
-       };
-     }
+    // Separate songs with and witout covers
+    const songsWithCovers = results.filter(song => song.cover);
+    const songsWithoutCovers = await fetchMissingCovers(connection, results);
+    // Combine results
+    const allSongs = [...songsWithCovers, ...songsWithoutCovers];
 
-     // Separate songs with and witout covers
-     const songsWithCovers = results.filter(song => song.cover);
-     const songsWithoutCovers = results.filter(song => !song.cover);
+    return {
+      message: `Songs successfully found by user ${userId}`,
+      body:{
+          songs: allSongs.map(song => ({
+            id: song.id,
+            title: song.title,
+            duration: song.duration,
+            cover: song.cover,
+          })),
+          pagination: {
+            limit,
+            offset,
+            count: allSongs.length,
+          },
+        }
+    };
 
-     // If there are songs in the DB without a cover image URL
-     if (songsWithoutCovers.length > 0) {
-       const missingAlbums = songsWithoutCovers.map(song => song.album);
+  } catch (error) {
+    console.error('Error in searching songs:', error.message);
+    if (error.code) throw error; // Re-throw expected errors without modification
 
-       // Fetch missing covers
-       const albumCovers = await Promise.all(
-         missingAlbums.map(async (albumName) => {
-           try {
-             const coverUrl = await spotify.getSongCover(albumName); // Cal the spotify API to get song cover
-             return { albumName, coverUrl }; 
-           } catch (error) {
-             console.error(`Failed to fetch cover for album: ${albumName}`, error);
-             return { albumName, coverUrl: null };  
-           }
-         })
-       );
-
-       // Create a mapping of album names to their respective cover URLs
-       const albumCoverMap = {};
-       albumCovers.forEach(({ albumName, coverUrl }) => {
-         albumCoverMap[albumName.toLowerCase()] = coverUrl;
-       });
+    throw {
+      message: 'Unexpected',
+      code: 500,
+    };
+  } finally {
+    db.closeConnection(connection);
+  }
+};
 
 
-       // Update DB with fetched covers
-       await Promise.all(
-         songsWithoutCovers.map(async song => {
-           const coverUrl = albumCoverMap[song.album.toLowerCase()] || null;
-
-           if (coverUrl) {
-             const updateQuery = `
-               UPDATE songs SET cover = ? WHERE id = ?
-             `;
-
-             await db.executeQuery(connection, updateQuery, [coverUrl, song.id]);
-           }
-
-           song.cover = coverUrl;  // Add cover to song object
-         })
-       );
-     }
-
-     // Combine results
-     const allSongs = [...songsWithCovers, ...songsWithoutCovers];
-
-     return {
-       message: `Songs successfully found by user ${userId}`,
-       body:{
-           songs: allSongs.map(song => ({
-             id: song.id,
-             title: song.title,
-             duration: song.duration,
-             cover: song.cover,
-           })),
-           pagination: {
-             limit,
-             offset,
-             count: allSongs.length,
-           },
-         }
-     };
-
-   } catch (error) {
-     console.error('Error in searching songs:', error.message);
-     if (error.code) throw error; // Re-throw expected errors without modification
-
-     throw {
-       message: 'Unexpected',
-       code: 500,
-     };
-   }
- };
 
 
