@@ -10,8 +10,9 @@
 .register-form {
     display: flex;
     flex-direction: column;
-    width: 100%; /* Ensure form takes the container's width */
-    align-items: center;
+    align-items: left;
+    height: 60vh;
+    gap: 10px;
 }
 
 h1 {
