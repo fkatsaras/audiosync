@@ -21,13 +21,11 @@ function Register() {
     const handleRegister = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
 
-        // Check if passwords match
         if (password !== confirmPassword) {
             setErrorMessage('Passwords do not match');
             return;
         }
 
-        // Validate required fields
         if (!username || !password || !email) {
             setErrorMessage('Missing required fields for registration');
             return;
@@ -48,7 +46,6 @@ function Register() {
                 }),
             });
             
-            // Store the API response from the backend
             const data = await response.json();
 
             if (!response.ok) {
@@ -132,7 +129,7 @@ function Register() {
                             required
                             placeholder="" 
                         />
-                        <Button type="submit">Register</Button>
+                        <Button type="submit" className="register-button">Register</Button>
                     </form>
                 </div>
                 <p>Already have an account? <Link to="/login">Login here</Link></p>
