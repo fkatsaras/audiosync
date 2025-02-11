@@ -6,7 +6,7 @@
     position: relative;
 }
 
-.search-controls {
+.search-input-wrapper, .search-controls {
     display: flex;
     flex-direction: row;
     justify-content: space-around;
@@ -17,6 +17,16 @@
 .search-input { 
     width: 500px;   /* Override Fixed width */
     max-width: 100%;
+    padding-left: 40px; /* Make space for the icon*/
+}
+
+.search-icon {
+    color: #ffffff;
+    font-weight: bold;
+    font-size: 30px;
+    left: 10px;
+    top: 50%;
+    transform: translate(47px, 3px);
 }
 
 .search-input:focus {

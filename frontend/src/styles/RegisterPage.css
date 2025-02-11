@@ -12,7 +12,7 @@
     display: flex;
     flex-direction: column;
     align-items: left;
-    height: 80vh;
+    height: 60vh;
     gap: 10px;
 }
 
@@ -34,4 +34,11 @@ p {
 .register-button {
     margin-top: 20px;
     width: 100px;
+    padding-inline-start: var(--secondary-spacing-tighter, 12px);
+    padding-inline-end: var(--secondary-spacing-tighter, 12px);
+    padding-block-start: var(--secondary-spacing-tighter, 12px);
+    padding-block-end: var(--secondary-spacing-tighter, 12px);
+    min-block-size: var(--secondary-control-size-base, 48px);
+    border-radius: var(--secondary-spacing-radius-base, 50px);
+    background-color: var(--primary-color);
 }

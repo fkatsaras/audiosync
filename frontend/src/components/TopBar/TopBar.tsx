@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import './TopBar.css';
 import Button from '../Buttons/Button';
 import { AiFillHome } from 'react-icons/ai';
+import { HiSearch } from 'react-icons/hi';
 import DropDown from '../DropDown/DropDown';
 import defaultPfp from '../../assets/images/default_profile_picture.svg'
 import { useUser } from '../../context/UserContext';
@@ -92,14 +93,17 @@ const TopBar: React.FC = () => {
                     </Link>
                 </Button>   {/* TODO: Integrate the link component inside the button component */}
                 <div className='search-controls'>
-                    <Input
-                        id=''
-                        type='text'
-                        value={query}
-                        onChange={(e) => setQuery(e.target.value)}
-                        placeholder='Search for artists, songs...'
-                        className='search-input'
-                    />
+                    <div className='search-input-wrapper'>
+                      <div className='search-icon'><HiSearch /></div>
+                      <Input
+                          id=''
+                          type='text'
+                          value={query}
+                          onChange={(e) => setQuery(e.target.value)}
+                          placeholder='Search for artists, songs...'
+                          className='search-input'
+                      />
+                    </div>
                     <div className="search-buttons">
                         <Button
                             className='search-button'
