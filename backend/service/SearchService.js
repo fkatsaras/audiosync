@@ -225,7 +225,3 @@ exports.search_songs_get = async function(userId, userQuery, limit, offset) {
     db.closeConnection(connection);
   }
 };
-
-
-
-

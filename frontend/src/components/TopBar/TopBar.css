@@ -18,15 +18,17 @@
     width: 500px;   /* Override Fixed width */
     max-width: 100%;
     padding-left: 40px; /* Make space for the icon*/
+    border-radius: 25px;
 }
 
 .search-icon {
-    color: #ffffff;
+    color: #888;
     font-weight: bold;
     font-size: 30px;
     left: 10px;
     top: 50%;
     transform: translate(47px, 3px);
+    transition: color 0.3s ease-in-out;
 }
 
 .search-input:focus {
@@ -34,10 +36,9 @@
     background-color: #4a4a4a;
 }
 
-.search-buttons-container {
-    display: flex;
-    gap: 10px;  /* Space out buttons */
-    margin-bottom: 10px;
+/* Change icon color when input is focused */
+.search-input-wrapper:focus-within .search-icon {
+    color: #ffffff;
 }
 
 

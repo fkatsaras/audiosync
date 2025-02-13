@@ -22,12 +22,14 @@ const TopBar: React.FC = () => {
      *  Search 
      * 
      */
-    const [searchType, setSearchType] = useState<'artists' | 'songs'>('artists');
     const [query, setQuery] = useState<string>('');
 
-    const handleSearchSubmit = (searchType: 'artists' | 'songs') => {
+    useEffect(() => {},[query])
+
+    const handleSearchSubmit = () => {
+
         if (query.trim()) {
-            navigate(`/search?q=${query}&type=${searchType}`);
+            navigate(`/search?q=${encodeURIComponent(query)}&type=${encodeURIComponent('all')}`);
         }
     };
 
@@ -100,29 +102,10 @@ const TopBar: React.FC = () => {
                           type='text'
                           value={query}
                           onChange={(e) => setQuery(e.target.value)}
+                          onEnter={handleSearchSubmit}
                           placeholder='Search for artists, songs...'
                           className='search-input'
                       />
-                    </div>
-                    <div className="search-buttons">
-                        <Button
-                            className='search-button'
-                            onClick={() => {
-                                setSearchType('artists');
-                                handleSearchSubmit('artists');
-                            }}
-                        >
-                            Artists
-                        </Button>
-                        <Button
-                            className='search-button'
-                            onClick={() => {
-                                setSearchType('songs');
-                                handleSearchSubmit('songs');
-                            }}
-                        >
-                            Songs
-                        </Button>
                     </div>
                 </div>
                 <div className="profile-button" onClick={toggleDropdown}>

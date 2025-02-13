@@ -11,6 +11,7 @@ const SongsRepository = require('../data/repository/SongRepository');
 const cleanSongTitle = (title) => {
   return title.replace(/\(.*?\)/g, '')  // Remove anything in parentheses
               .replace(/\[.*?\]/g, '')  // Remove anything in brackets
+              .replace(/-.*$/, '')      // Remove everything after a dash
               .trim();                  // Trim extra spaces
 };
 
@@ -183,6 +184,7 @@ exports.get_song_lyrics = async function (songId) {
     // Update lyrics if missing
     if (!songData.lyrics) {
       console.log(`Lyrics missing. Fetching from genius...`);
+      console.log(cleanSongTitle(songData.title), songData.artist_name);
       const songGeniusUrl = await searchSong(cleanSongTitle(songData.title), songData.artist_name);
     
       if (songGeniusUrl) {
