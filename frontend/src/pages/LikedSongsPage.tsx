@@ -95,16 +95,15 @@ const LikedSongsPlaylist: React.FC = () => {
         <div className="liked-songs-playlist-container">
             {playlist && (
                 <div className="liked-songs-playlist-content-container">
-                    <h1 className="header">{playlist.title}</h1>
                     <div className="liked-songs-playlist-info">
                         <img
                             src={playlist.cover ? playlist.cover : likedSongsCover}
                             alt={`Liked Songs cover`}
-                            className="liked-songs-playlist-cover"
+                            className="liked-songs-playlist-img"
                         />
+                        <h1 className="header">Liked Songs</h1>
                     </div>
                     <div className="liked-songs-playlist-songs">
-                        <h2>Songs</h2>
                         {playlist.songs && playlist.songs.length > 0 ? (
                             <DragDropContext onDragEnd={handleDragEnd}>
                             <Droppable 

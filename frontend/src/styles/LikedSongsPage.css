@@ -2,12 +2,19 @@
     background-color: #121212;
     border-radius: 8px;
     padding: 10px;
+    display: flex;
+    flex-direction: row;
+    gap: 20px;
 }
 
-.liked-songs-playlist-cover {
-    width: 100%; /* Make it responsive to parent container */
-    max-width: 400px; /* Limit the width to 400px for better aesthetics */
+.liked-songs-playlist-img {
+    width: 100%; 
+    max-width: 200px; 
     height: auto; /* Maintain aspect ratio */
-    border-radius: 8px; /* Add border radius for a modern look */
+    border-radius: 8px;
     object-fit: cover;
+}
+
+h1.header {
+    font-size: 5rem;
 }
