@@ -162,7 +162,7 @@ const MyPlaylistsPage: React.FC = () => {
                                             ? `${playlist.song_ids.length} songs`
                                             : 'No songs added'
                                     }
-                                    linkPath={`/${user?.userId}/playlists`}
+                                    linkPath={playlist.isLikedSongs? `/${user?.userId}/liked-songs` : `/${user?.userId}/playlists`}
                                     altText='Playlist cover'
                                     className={`playlist-result ${loadedItems[playlist.id] ? 'loaded' : ''}`}
                                     isLoading={loading}
