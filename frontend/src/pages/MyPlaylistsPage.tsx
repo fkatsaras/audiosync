@@ -162,7 +162,7 @@ const MyPlaylistsPage: React.FC = () => {
                                             ? `${playlist.song_ids.length} songs`
                                             : 'No songs added'
                                     }
-                                    linkPath={playlist.isLikedSongs? `/${user?.userId}/liked-songs` : `/${user?.userId}/playlists`}
+                                    linkPath={playlist.isLikedSongs? `/${user?.userId}/liked-songs` : `/${user?.userId}/playlists/${playlist.id}`}
                                     altText='Playlist cover'
                                     className={`playlist-result ${loadedItems[playlist.id] ? 'loaded' : ''}`}
                                     isLoading={loading}
@@ -173,7 +173,7 @@ const MyPlaylistsPage: React.FC = () => {
                                                     ? confirmDeletePlalist(playlist.id)
                                                     : console.log(`${value} option pressed`)                                                
                                             }
-                                            onClose={() => console.log('Options popup closed')}
+                                            onClose={() => console.log('TODO Options popup closed')}
                                         />
                                     }
                                 />

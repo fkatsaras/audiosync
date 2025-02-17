@@ -39,7 +39,7 @@ const ResultItem: React.FC<ResultItemProps> = ({
     }
 
     return (     
-        <Link to={`${linkPath}/${id}`} className={`result-container ${className}`}>
+        <Link to={`${linkPath}`} className={`result-container ${className}`}>
         <div className='result-content'>
             {imageSrc && (
                 <img 

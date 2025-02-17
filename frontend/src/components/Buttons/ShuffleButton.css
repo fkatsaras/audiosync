@@ -1,0 +1,23 @@
+.shuffle-button {
+    width: 60px;
+    height: 60px;
+    z-index: 2;
+    background: transparent; /* Optional: If you want no background */
+    border: none; /* Optional: If you don't want the default button border */
+    cursor: pointer; /* Optional: Changes cursor on hover */
+}
+
+.shuffle-button svg {
+    color: #ffffff; /* This applies to the SVG icon */
+    width: 100%;
+    height: 100%;
+}
+
+.shuffle-button:hover svg {
+    transform: scale(1.1);
+}
+
+.shuffle-button.clicked svg {
+    transform: scale(1); /* Scale back to 1 after click */
+    transition: transform 0.2s ease; /* Smooth transition for the reset */
+}

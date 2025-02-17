@@ -151,7 +151,7 @@ const Search: React.FC = () => {
                                 imageSrc={'cover' in topResult ? topResult.cover : topResult.profile_picture}
                                 title={'title' in topResult ? topResult.title : topResult.name}
                                 subtitle={'duration' in topResult ? String(topResult.duration) : ''}
-                                linkPath={'duration' in topResult ? '/songs' : '/artists' }
+                                linkPath={'duration' in topResult ? `/songs/${topResult.id}` : `/artists/${topResult.id}` }
                                 altText='Top Result'
                                 className={`top-result ${loadedResults[topResult.id] ? 'loaded' : ''}`}
                                 isLoading={loading}
@@ -168,7 +168,7 @@ const Search: React.FC = () => {
                                                 imageSrc={artist.profile_picture}
                                                 title={artist.name}
                                                 subtitle=''
-                                                linkPath='/artists'
+                                                linkPath={`/artists/${artist.id}`}
                                                 altText='Artist profile'
                                                 className={`artist-result ${loadedResults[artist.id] ? 'loaded' : ''}`}
                                                 isLoading={loading}
@@ -188,7 +188,7 @@ const Search: React.FC = () => {
                                                 imageSrc={song.cover}
                                                 title={song.title}
                                                 subtitle={String(song.duration)}
-                                                linkPath='/songs'
+                                                linkPath={`/songs/${song.id}`}
                                                 altText='Song cover'
                                                 className={`song-result ${loadedResults[song.id] ? 'loaded' : ''}`}
                                                 isLoading={loading}
@@ -213,7 +213,7 @@ const Search: React.FC = () => {
                                             imageSrc={song.cover}
                                             title={song.title}
                                             subtitle={String(song.duration)}
-                                            linkPath='/songs'
+                                            linkPath={`/songs/${song.id}`}
                                             altText='Song cover'
                                             className={`song-result ${loadedResults[song.id] ? 'loaded' : ''}`}
                                             isLoading={loading}
@@ -238,7 +238,7 @@ const Search: React.FC = () => {
                                             imageSrc={artist.profile_picture}
                                             title={artist.name}
                                             subtitle=''
-                                            linkPath='/artists'
+                                            linkPath={`/artists/${artist.id}`}
                                             altText='Artist profile'
                                             className={`artist-result ${loadedResults[artist.id] ? 'loaded' : ''}`}
                                             isLoading={loading}

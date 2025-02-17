@@ -6,10 +6,12 @@ import LoadingDots from "../components/LoadingDots/LoadingDots";
 import likedSongsCover from '../assets/images/liked_songs_cover.svg';
 import defaultSongCover from '../assets/images/song_default_cover.svg';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
+import ShuffleButton from "../components/Buttons/ShuffleButton";
 import extractGradientColors from "../utils/extractGradientColors";
 import '../styles/LikedSongsPage.css';
 import { useUser } from "../context/UserContext";
 import PlayButton from "../components/Buttons/PlayButton";
+import lerpRGB from "../utils/colorInterpolation";
 
 
 const LikedSongsPlaylist: React.FC = () => {
@@ -127,7 +129,8 @@ const LikedSongsPlaylist: React.FC = () => {
                     </div>
                     <div className="liked-songs-playlist-songs">
                         <div className="liked-songs-playlist-controls">
-                            <PlayButton isPlaying={false} onToggle={() => console.log('TODO')}/>
+                            <PlayButton isPlaying={false} onToggle={() => console.log('TODO play playlist')} />
+                            <ShuffleButton className="shuffle-button" onClick={() => console.log('TODO shuffle')} />
                         </div>
                         {playlist.songs && playlist.songs.length > 0 ? (
                             <DragDropContext onDragEnd={handleDragEnd}>
