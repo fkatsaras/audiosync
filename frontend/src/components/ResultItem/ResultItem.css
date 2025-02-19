@@ -5,7 +5,6 @@
     border-radius: 8px;
     padding: 10px;
     min-height: 5vh;
-    margin: 10px 0;
     transition: border 0.1s ease; /* Smooth transition for border */
     justify-content: flex-start;
     align-items: center; /* vertically center its contents */
@@ -26,6 +25,17 @@
 .result-container.loaded {
     opacity: 1;
     transform: translateY(0);
+}
+
+/* Result item text information */
+.text-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.text-info p {
+    padding: 0;
+    margin: 0;
 }
 
 .result-title {
@@ -57,8 +67,10 @@ li {
 
 .result-content {
     display: flex;
-    align-items: center;
+    flex-direction: row;
+    width: 100%;
 }
+
 
 /* Different styling based on item type */
 .result-container:hover .playlist-result,

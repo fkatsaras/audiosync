@@ -133,18 +133,28 @@ exports.search_artists_get = async function(userId, userQuery, limit, offset) {
       };
     }
 
-    const artistsWithPfps = results.filter(artist => artist.profile_picture);
-    const artistsWithoutPfps = results.filter(artist => !artist.profile_picture);
-    const artists = await fetchProfilePictures([...artistsWithPfps, ...artistsWithoutPfps]);
+    // Fetch missing pfps
+    const artistsWithoutPfp = results.filter(artist => artist.needs_pfp);
+    if (artistsWithoutPfp.length > 0) {
+      const artistsWithMissingPfp = await fetchProfilePictures(artistsWithoutPfp);
+
+      // Merge results
+      results.forEach(artist => {
+        if (artist.needs_pfp) {
+          const pfp = artistsWithMissingPfp.find(missing => missing.id === artist.id);
+          artist.profile_picture = pfp ? pfp.profile_picture : null;
+        }
+      });
+    }
 
     return {
       message: `Artists successfully found by user ${userId}`,
       body:{
-          artists,
+          artists: results,
           pagination: {
             limit,
             offset,
-            count: artists.length,
+            count: results.length,
           },
         }
     };
@@ -190,25 +200,34 @@ exports.search_songs_get = async function(userId, userQuery, limit, offset) {
       };
     }
 
-    // Separate songs with and witout covers
-    const songsWithCovers = results.filter(song => song.cover);
-    const songsWithoutCovers = await fetchMissingCovers(connection, results);
-    // Combine results
-    const allSongs = [...songsWithCovers, ...songsWithoutCovers];
+    // Fetch missing covers
+    const songsWithoutCover = results.filter(song => song.needs_cover);
+    if (songsWithoutCover.length > 0) {
+      const songsWithMissingCovers = await fetchMissingCovers(connection, songsWithoutCover);
+
+      // Merge results
+      results.forEach(song => {
+        if (song.needs_cover) {
+          const cover = songsWithMissingCovers.find(missing => missing.albumName === song.album);
+          song.cover = cover ? cover.coverUrl : null;
+        }
+      });
+    }
 
     return {
       message: `Songs successfully found by user ${userId}`,
       body:{
-          songs: allSongs.map(song => ({
+          songs: results.map(song => ({
             id: song.id,
             title: song.title,
+            artist: song.artist_name,
             duration: song.duration,
             cover: song.cover,
           })),
           pagination: {
             limit,
             offset,
-            count: allSongs.length,
+            count: results.length,
           },
         }
     };

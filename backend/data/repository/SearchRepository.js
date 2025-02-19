@@ -23,7 +23,8 @@ class SearchRepository {
     // }
     static async searchArtists(connection, artistQuery, limit, offset) {
         const dbQuery = `
-            SELECT id, name
+            SELECT id, name,
+                CASE WHEN profile_picture IS NULL THEN 1 ELSE 0 END AS needs_pfp
             FROM artists
             WHERE LOWER(name) LIKE ?
             LIMIT ? OFFSET ?
@@ -33,8 +34,11 @@ class SearchRepository {
 
     static async searchSongs(connection, songQuery, limit, offset) {
         const dbQuery = `
-            SELECT *
+            SELECT *, 
+                CASE WHEN cover IS NULL THEN 1 ELSE 0 END AS needs_cover,
+                artists.name as artist_name
             FROM songs
+            JOIN artists ON artists.id = songs.artist_id
             WHERE LOWER(title) LIKE ?
             LIMIT ? OFFSET ?
         `;

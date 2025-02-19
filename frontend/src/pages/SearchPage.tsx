@@ -6,6 +6,8 @@ import Button from '../components/Buttons/Button';
 import Message from '../components/Message/Message';
 import ResultItem from '../components/ResultItem/ResultItem';
 import { useLocation } from 'react-router-dom';
+import ArtistResultItem from '../components/ResultItem/ArtistResultItem';
+import SongResultItem from '../components/ResultItem/SongResultItem';
 
 
 const Search: React.FC = () => {
@@ -67,8 +69,10 @@ const Search: React.FC = () => {
 
         if (type === 'all') {
             setFilter('all');
-            fetchResults('artists', 0, 5);
-            fetchResults('songs', 0, 5);
+            Promise.all([
+                fetchResults('artists', 0, 5),
+                fetchResults('songs', 0, 5)
+            ]);
         } else {
             setFilter(type);
             fetchResults(type, 0, 15);
@@ -163,14 +167,9 @@ const Search: React.FC = () => {
                                 <ul className='artist-result-list'>
                                     {results.artists.length > 0 && results.artists.map((artist, index) => (
                                         <li key={artist.id}>
-                                            <ResultItem 
-                                                id={artist.id}
-                                                imageSrc={artist.profile_picture}
-                                                title={artist.name}
-                                                subtitle=''
-                                                linkPath={`/artists/${artist.id}`}
-                                                altText='Artist profile'
+                                            <ArtistResultItem
                                                 className={`artist-result ${loadedResults[artist.id] ? 'loaded' : ''}`}
+                                                artist={artist}
                                                 isLoading={loading}
                                             />
                                         </li>
@@ -183,13 +182,8 @@ const Search: React.FC = () => {
                                 <ul className='song-result-list'>
                                     {results.songs.length > 0 && results.songs.map((song, index) => (
                                         <li key={song.id}>
-                                            <ResultItem 
-                                                id={song.id}
-                                                imageSrc={song.cover}
-                                                title={song.title}
-                                                subtitle={String(song.duration)}
-                                                linkPath={`/songs/${song.id}`}
-                                                altText='Song cover'
+                                            <SongResultItem
+                                                song={song}
                                                 className={`song-result ${loadedResults[song.id] ? 'loaded' : ''}`}
                                                 isLoading={loading}
                                             />
@@ -208,13 +202,8 @@ const Search: React.FC = () => {
                             <ul className='song-result-list'>
                                 {results.songs.length > 0 && results.songs.map((song, index) => (
                                     <li key={song.id}>
-                                        <ResultItem 
-                                            id={song.id}
-                                            imageSrc={song.cover}
-                                            title={song.title}
-                                            subtitle={String(song.duration)}
-                                            linkPath={`/songs/${song.id}`}
-                                            altText='Song cover'
+                                        <SongResultItem
+                                            song={song}
                                             className={`song-result ${loadedResults[song.id] ? 'loaded' : ''}`}
                                             isLoading={loading}
                                         />
@@ -233,14 +222,9 @@ const Search: React.FC = () => {
                             <ul className='artist-result-list'>
                                 {results.artists.length > 0 && results.artists.map((artist, index) => (
                                     <li key={artist.id}>
-                                        <ResultItem 
-                                            id={artist.id}
-                                            imageSrc={artist.profile_picture}
-                                            title={artist.name}
-                                            subtitle=''
-                                            linkPath={`/artists/${artist.id}`}
-                                            altText='Artist profile'
+                                        <ArtistResultItem
                                             className={`artist-result ${loadedResults[artist.id] ? 'loaded' : ''}`}
+                                            artist={artist}
                                             isLoading={loading}
                                         />
                                     </li>
