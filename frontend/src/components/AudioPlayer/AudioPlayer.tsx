@@ -4,7 +4,6 @@ import './AudioPlayer.css';
 import { BiVolumeFull, BiVolumeLow, BiVolumeMute } from 'react-icons/bi';
 import { LiaMicrophoneAltSolid } from "react-icons/lia";
 import { useAudioPlayer } from "../../hooks/useAudioPlayer";
-import defaultSongCover from '../../assets/images/song_default_cover.svg';
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Song } from "../../types/data";
 import { useUser } from "../../context/UserContext";
@@ -144,11 +143,15 @@ const AudioPlayer: React.FC = () => {
         <div className="audio-player">
             <div className="audio-info">
                 <div className="now-playing-song-image-container">
-                    <img
-                        src={currentSong? currentSong.cover : defaultSongCover}
-                        alt={`${currentSong? currentSong.title : "Now Playing Song"} cover`}
+                    {currentSong ? (
+                        <img
+                        src={currentSong.cover}
+                        alt={currentSong.title}
                         className="now-playing-song-image"
                     />
+                    ) : (
+                        <div className="now-playing-song-image-placeholder"></div>
+                    )}
                 </div>
                 <div className="now-playing-info">
                     {/* Visualizer bars */}
