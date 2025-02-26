@@ -8,36 +8,22 @@
  * returns ApiResponse
  **/
 exports.checkLogin = function(req) {
-  return new Promise(function(resolve, reject) {
-    console.log(req.session.user);
-    if (req.session && req.session.user.id) {
-      const user_id = req.session.user.id;
-      const username = req.session.user.username;
+  return new Promise((resolve, reject) => {
+    const { user } = req.session || {};
 
-
-      if (!username) {
-        // Reject if the username is missing from the session
-        console.log(username);
-        reject({
-          message: 'Username not found in session.',
-          code: 500,
-        });
-      } else {
-        // Resolve with user data if logged in
-        resolve({
-          message: `User ${username} is logged in.`,
-          body: {
-            'user_id': user_id,
-            'username': username,
-          },
-        });
-      }
-    } else {
-      // Reject if the user is not logged in
-      reject({
-        message: 'User is not logged in.',
-        code: 401,
-      });
+    if (!user || !user.id || !user.username) {
+      const message = user ? 'Username not found in session.' : 'User is not logged in';
+      const code = user ? 500 : 401;
+      console.log(user ? user.username : message);
+      return reject({ message, code });
     }
-  });
-};
+
+    resolve({
+      message: `User ${user.username} is logged in.`,
+      body: {
+        user_id: user.id,
+        username: user.username,
+      }
+    })
+  })
+}
