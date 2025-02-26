@@ -10,6 +10,7 @@
     width: 100%;
     margin: 0 auto;
     max-width: 500px;
+    gap: 10px;
 }
 
 h1 {
@@ -21,19 +22,30 @@ h1 {
 label {
     color: #ffffff;
     margin-bottom: 5px;
+    font-size: var(--primary-text-size-small,small);
+    font-weight: 700;
 }
 
 p {
+    font-weight: 700;
     color: #f1f1f1;
 }
 
-form {
+.login-form {
     display: flex;
     flex-direction: column;
-    height: 15vh;
+    align-items: center;
+    gap: 10px;
 }
 
 .login-button {
     margin-top: 20px;
     width: 100px;
+    padding-inline-start: var(--secondary-spacing-tighter, 12px);
+    padding-inline-end: var(--secondary-spacing-tighter, 12px);
+    padding-block-start: var(--secondary-spacing-tighter, 12px);
+    padding-block-end: var(--secondary-spacing-tighter, 12px);
+    min-block-size: var(--secondary-control-size-base, 48px);
+    border-radius: var(--secondary-spacing-radius-base, 50px);
+    background-color: var(--primary-color);
 }

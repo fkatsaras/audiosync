@@ -52,28 +52,30 @@ function Login() {
     return (
         <Default>
             <div className="login-container">
-                <h1>Welcome to AudioSync</h1>
-                <form id="loginForm" onSubmit={handleLogin}>
-                    <label htmlFor="username">Username:</label>
-                    <Input 
-                      id="username"
-                      placeholder=""
-                      type="text"  
-                      value={username} 
-                      onChange={(e) => setUsername(e.target.value)} 
-                      required 
-                    />
-                    <label htmlFor="password">Password:</label>
-                    <Input 
-                      id="password"
-                      type="password" 
-                      placeholder="" 
-                      value={password} 
-                      onChange={(e) => setPassword(e.target.value)} 
-                      required 
-                    />
-                    <Button type="submit" className="login-button">Login</Button>
-                </form>
+                <div className="login-form">
+                    <h1>Welcome to AudioSync</h1>
+                    <form id="loginForm" onSubmit={handleLogin}>
+                        <label htmlFor="username">Username:</label>
+                        <Input 
+                          id="username"
+                          placeholder=""
+                          type="text"  
+                          value={username} 
+                          onChange={(e) => setUsername(e.target.value)} 
+                          required 
+                        />
+                        <label htmlFor="password">Password:</label>
+                        <Input 
+                          id="password"
+                          type="password" 
+                          placeholder="" 
+                          value={password} 
+                          onChange={(e) => setPassword(e.target.value)} 
+                          required 
+                        />
+                        <Button type="submit" className="login-button">Login</Button>
+                    </form>
+                </div>
                 <p>Don't have an account? <Link to="/register">Register here</Link></p>
                 {errorMessage && <Message className="error-message">{errorMessage}</Message>}
             </div>

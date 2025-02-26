@@ -5,13 +5,15 @@
     width: 100vw;
     justify-content: center;
     height: 100vh;
+    gap: 10px;
 }
 
 .register-form {
     display: flex;
     flex-direction: column;
-    width: 100%; /* Ensure form takes the container's width */
-    align-items: center;
+    align-items: left;
+    height: 60vh;
+    gap: 10px;
 }
 
 h1 {
@@ -27,4 +29,16 @@ label {
 
 p {
     color: #f1f1f1;
+}
+
+.register-button {
+    margin-top: 20px;
+    width: 100px;
+    padding-inline-start: var(--secondary-spacing-tighter, 12px);
+    padding-inline-end: var(--secondary-spacing-tighter, 12px);
+    padding-block-start: var(--secondary-spacing-tighter, 12px);
+    padding-block-end: var(--secondary-spacing-tighter, 12px);
+    min-block-size: var(--secondary-control-size-base, 48px);
+    border-radius: var(--secondary-spacing-radius-base, 50px);
+    background-color: var(--primary-color);
 }

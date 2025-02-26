@@ -3,16 +3,37 @@ require('dotenv').config();
 
 function createConnection() {
     
-    const isTest = process.env.NODE_ENV === 'test' // Check if the environment is test
-    const dbName = isTest ? process.env.TEST_DB_NAME : process.env.DB_NAME;
+    const environment = process.env.NODE_ENV || 'development';
+    let dbConfig;
 
-    const connection = mysql.createConnection({
-        host: process.env.DB_HOST,
-        user: process.env.DB_USER,
-        password: process.env.DB_PASSWORD,
-        database: dbName,
-        port: process.env.DB_PORT
-    });
+    if (environment == 'test') {
+        dbConfig = {
+            host: process.env.TEST_DB_HOST,
+            user: process.env.TEST_DB_USER,
+            password: process.env.TEST_DB_PASSWORD,
+            database: process.env.TEST_DB_NAME,
+            port: process.env.TEST_DB_PORT || 3306,
+        }
+    } else if (environment == 'production') {
+        dbConfig = {
+            host: process.env.PROD_DB_HOST,
+            user: process.env.PROD_DB_USER,
+            password: process.env.PROD_DB_PASSWORD,
+            database: process.env.PROD_DB_NAME,
+            port: process.env.PROD_DB_PORT || 3306,
+        }
+    } else {
+        dbConfig = {
+            host: process.env.DEV_DB_HOST,
+            user: process.env.DEV_DB_USER,
+            password: process.env.DEV_DB_PASSWORD,
+            database: process.env.DEV_DB_NAME,
+            port: process.env.DEV_DB_PORT || 3306,
+        }
+    }
+
+    // Create the database connection
+    const connection = mysql.createConnection(dbConfig);
 
     connection.connect((err) => {
         if (err) {

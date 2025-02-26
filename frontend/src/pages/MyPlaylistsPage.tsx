@@ -2,15 +2,13 @@ import React, { useEffect, useState } from 'react';
 import { Playlist } from '../types/data';
 import LoadingDots from '../components/LoadingDots/LoadingDots';
 import Message from '../components/Message/Message';
-import ResultItem from '../components/ResultItem/ResultItem';
 import Button from '../components/Buttons/Button';
-import defaultCover from '../assets/images/playlist_default_cover.svg';
-import likedSongsCover from '../assets/images/liked_songs_cover.svg';
 import PopUp from '../components/PopUp/PopUp';
 import Input from '../components/Input/Input';
 import Options from '../components/Buttons/Options';
 import '../styles/MyPlaylistsPage.css';
 import { useUser } from '../context/UserContext';
+import PlaylistResultItem from '../components/ResultItem/PlaylistResultItem';
 
 /**
  * MyPlaylistsPage component allows users to view their playlists.
@@ -153,19 +151,10 @@ const MyPlaylistsPage: React.FC = () => {
                     {playlists.length > 0 ? (
                         playlists.map((playlist) => (
                             <li key={playlist.id}>
-                                <ResultItem
-                                    id={playlist.id}
-                                    imageSrc={playlist.isLikedSongs? likedSongsCover : playlist.cover? playlist.cover : defaultCover}
-                                    title={playlist.title}
-                                    subtitle={
-                                        playlist.song_ids && playlist.song_ids.length > 0
-                                            ? `${playlist.song_ids.length} songs`
-                                            : 'No songs added'
-                                    }
-                                    linkPath={`/${user?.userId}/playlists`}
-                                    altText='Playlist cover'
+                                <PlaylistResultItem
                                     className={`playlist-result ${loadedItems[playlist.id] ? 'loaded' : ''}`}
-                                    isLoading={loading}
+                                    playlist={playlist}
+                                    isLoading={loading}                                    
                                     optionsComponent={ !playlist.isLikedSongs &&    // User cant edit their Liked Songs Playlist
                                         <Options 
                                             onOptionSelect={(value) => 
@@ -173,7 +162,7 @@ const MyPlaylistsPage: React.FC = () => {
                                                     ? confirmDeletePlalist(playlist.id)
                                                     : console.log(`${value} option pressed`)                                                
                                             }
-                                            onClose={() => console.log('Options popup closed')}
+                                            onClose={() => console.log('TODO Options popup closed')}
                                         />
                                     }
                                 />

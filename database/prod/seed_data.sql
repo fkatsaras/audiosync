@@ -13,7 +13,7 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 
-USE `se2_audiosync_db`;
+USE `byq8k2pc8zerxxbrtwut`;
 
 -- Dumping data for table audiosync_db.songs
 /*!40000 ALTER TABLE `songs` DISABLE KEYS */;

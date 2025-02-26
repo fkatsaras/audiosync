@@ -1,6 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700&display=swap');
 
-.common-input {
+/* .common-input {
     width: 100%; 
     max-width: 500px; 
     padding: 10px 15px;
@@ -10,16 +10,37 @@
     font-family: 'Montserrat', sans-serif; 
     font-size: 1rem; 
     color: #f1f1f1; 
-    box-sizing: border-box; /* Include padding in width */
+    box-sizing: border-box;
     transition: background-color 0.3s ease, border-color 0.3s ease;
     display: block; 
     margin-right: auto; 
-}
+} */
+ .common-input {
+    border: 0px;
+    display: block;
+    transition: box-shadow 100ms ease-in-out, color 100ms ease-in-out;
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+    margin-block: 0px;
+    border-radius: var(--secondary-spacing-radius-base, 4px);
+    padding-inline-start: var(--secondary-spacing-tighter, 12px);
+    padding-inline-end: var(--secondary-spacing-tighter, 12px);
+    padding-block-start: var(--secondary-spacing-tighter, 12px);
+    padding-block-end: var(--secondary-spacing-tighter, 12px);
+    min-block-size: var(--secondary-control-size-base, 48px);
+    background-color: var(--background-base, #2a2a2a);
+    box-shadow: inset 0 0 0 1px var(--primary-subdued, #818181);
+    color: var(--text-base, #f1f1f1);
+    font-family: 'Montserrat', sans-serif;
+    font-size: medium;
+    font-weight: bold;
+    
+ }
 
 .common-input:focus {
     outline: none;
-    border-color: #ffffff;
-    background-color: #4a4a4a ;
+    background-color: #3a3a3a ;
+    box-shadow: inset 0 0 0 1.5px var(--primary-base, #ffffff);
 }
 
 

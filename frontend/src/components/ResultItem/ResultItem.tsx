@@ -10,8 +10,9 @@ interface ResultItemProps {
     linkPath: string;
     altText: string;
     className?: string;
-    optionsComponent?: React.ReactNode   // Pass optional options button
-    isLoading: boolean
+    optionsComponent?: React.ReactNode;   // Pass optional options button
+    isLoading: boolean;
+    textInfoChildren?: React.ReactNode
 }
 
 const ResultItem: React.FC<ResultItemProps> = ({ 
@@ -24,6 +25,7 @@ const ResultItem: React.FC<ResultItemProps> = ({
     className,
     optionsComponent,
     isLoading=false,
+    textInfoChildren,
 }) => {
 
     if (isLoading) {
@@ -39,7 +41,7 @@ const ResultItem: React.FC<ResultItemProps> = ({
     }
 
     return (     
-        <Link to={`${linkPath}/${id}`} className={`result-container ${className}`}>
+        <Link to={`${linkPath}`} className={`result-container ${className}`}>
         <div className='result-content'>
             {imageSrc && (
                 <img 
@@ -48,8 +50,15 @@ const ResultItem: React.FC<ResultItemProps> = ({
                     className={className}
                 />
             )}
-            <h3 className='result-title'>{title}</h3>
-            {subtitle && <p className='result-subtitle'>{subtitle}</p>}
+            <div className='text-content'>
+                <div className='text-info-1'>
+                    <h3 className='result-title'>{title}</h3>
+                    {subtitle && <p className='result-subtitle'>{subtitle}</p>}
+                </div>
+                <div className='text-info-2'>   {/* Add Component specific children TODO : make this more modular */}
+                    {textInfoChildren}
+                </div>
+            </div>          
         </div>
         {optionsComponent &&
             <div

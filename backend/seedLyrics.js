@@ -49,7 +49,7 @@ const getLyrics = async (url) => {
 
 (
     async () => {
-        const songQuery = "Livin' On A Prayer Bon Jovi";
+        const songQuery = "Wasted Years Iron Maiden";
         const songUrl = await searchSong(songQuery);
 
         if (songUrl) {

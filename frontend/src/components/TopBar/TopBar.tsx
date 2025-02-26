@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import './TopBar.css';
 import Button from '../Buttons/Button';
 import { AiFillHome } from 'react-icons/ai';
+import { HiSearch } from 'react-icons/hi';
 import DropDown from '../DropDown/DropDown';
 import defaultPfp from '../../assets/images/default_profile_picture.svg'
 import { useUser } from '../../context/UserContext';
@@ -21,12 +22,14 @@ const TopBar: React.FC = () => {
      *  Search 
      * 
      */
-    const [searchType, setSearchType] = useState<'artists' | 'songs'>('artists');
     const [query, setQuery] = useState<string>('');
 
-    const handleSearchSubmit = (searchType: 'artists' | 'songs') => {
+    useEffect(() => {},[query])
+
+    const handleSearchSubmit = () => {
+
         if (query.trim()) {
-            navigate(`/search?q=${query}&type=${searchType}`);
+            navigate(`/search?q=${encodeURIComponent(query)}&type=${encodeURIComponent('all')}`);
         }
     };
 
@@ -92,33 +95,17 @@ const TopBar: React.FC = () => {
                     </Link>
                 </Button>   {/* TODO: Integrate the link component inside the button component */}
                 <div className='search-controls'>
-                    <Input
-                        id=''
-                        type='text'
-                        value={query}
-                        onChange={(e) => setQuery(e.target.value)}
-                        placeholder='Search for artists, songs...'
-                        className='search-input'
-                    />
-                    <div className="search-buttons">
-                        <Button
-                            className='search-button'
-                            onClick={() => {
-                                setSearchType('artists');
-                                handleSearchSubmit('artists');
-                            }}
-                        >
-                            Artists
-                        </Button>
-                        <Button
-                            className='search-button'
-                            onClick={() => {
-                                setSearchType('songs');
-                                handleSearchSubmit('songs');
-                            }}
-                        >
-                            Songs
-                        </Button>
+                    <div className='search-input-wrapper'>
+                      <div className='search-icon'><HiSearch /></div>
+                      <Input
+                          id=''
+                          type='text'
+                          value={query}
+                          onChange={(e) => setQuery(e.target.value)}
+                          onEnter={handleSearchSubmit}
+                          placeholder='Search for artists, songs...'
+                          className='search-input'
+                      />
                     </div>
                 </div>
                 <div className="profile-button" onClick={toggleDropdown}>

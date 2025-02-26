@@ -1,0 +1,16 @@
+.result-subtitle {
+    margin: 0;
+}
+
+.text-content {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+}
+
+.result-content {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+}
+

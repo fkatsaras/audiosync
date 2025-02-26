@@ -1,184 +1,153 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Song, Artist } from '../types/data';
 import '../styles/SearchPage.css'
 import LoadingDots from '../components/LoadingDots/LoadingDots';
 import Button from '../components/Buttons/Button';
-import Input from '../components/Input/Input';
 import Message from '../components/Message/Message';
 import ResultItem from '../components/ResultItem/ResultItem';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
+import ArtistResultItem from '../components/ResultItem/ArtistResultItem';
+import SongResultItem from '../components/ResultItem/SongResultItem';
 
 
-/**
- * Search component allows users to search for artists and songs by entering a query.
- * It fetches the search results from the backend and displays them, with options to load more results.
- * 
- * @component
- * @returns {JSX.Element} The Search component UI.
- */
 const Search: React.FC = () => {
     const location = useLocation();
     const [query, setQuery] = useState<string>('');
-    const [searchType, setSearchType] = useState<string>('');
-
-    useEffect(() => {
-        const params = new URLSearchParams(location.search);
-        const searchQuery = params.get('q') || '';
-        const type = (params.get('type') as 'artists' | 'songs') || 'artists';
-
-        setQuery(searchQuery);
-        setSearchType(type);
-        if (searchQuery) {
-            // You can call your fetchResults function here based on searchType
-            handleSearch(type);
-        }
-    }, [location]);
-
-
-    const [artistResults, setArtistResults] = useState<Artist[]>([]);
-    const [songResults, setSongResults] = useState<Song[]>([]);
-    const [artistOffset, setArtistOffset] = useState<number>(0);
-    const [songOffset, setSongOffset] = useState<number>(0);
-    const [topResult, setTopResult] = useState<Artist |Song | null>(null);
-    const [loadingResults, setLoadingResults] = useState<boolean>(false);
+    const [filter, setFilter] = useState<'artists' | 'songs' | 'all'>('all');
+    const [searching, setSearching] = useState<boolean>(false);
+    const [results, setResults] = useState<{ artists: Artist[], songs: Song[] }>({ artists: [], songs: [] });
+    const [offsets, setOffsets] = useState<{ artists: number, songs: number }>({ artists: 0, songs: 0 });
+    const [topResult, setTopResult] = useState<Artist | Song | null>(null);
+    const [loading, setLoading] = useState<boolean>(false);
     const [error, setError] = useState<string>('');
-    const [hasMoreArtists, setHasMoreArtists] = useState<boolean>(false);
-    const [hasMoreSongs, setHasMoreSongs] = useState<boolean>(true);      // Tracks if there are more song results
+    const [hasMore, setHasMore] = useState<{ artists: boolean, songs: boolean }>({ artists: false, songs: false });
     const [hasSearched, setHasSearched] = useState<boolean>(false);
-
-    // State for managing rendering / loading of the components
-    const [loadedItems, setLoadedItems] = useState<{ [key: string] : boolean }>({});
-
-    useEffect(() => {
-        // Mark all loaded artists and songs as "loaded" after fetch
-        setTimeout(() => {
-            setLoadedItems((prev) => ({
-                ...prev,
-                ...artistResults.reduce((acc, artist) => ({ ...acc, [artist.id]: true }), {}),
-                ...songResults.reduce((acc, song) => ({ ...acc, [song.id]: true }), {}),
-                ...(topResult ? { [topResult.id]: true } : {})  // Add top result if available
-            }));
-        }, 100);  // Small delay
-    }, [artistResults, songResults, topResult]);
+    const [loadedResults, setLoadedResults] = useState<{ [key: string] : boolean }>({});
 
 
-    /**
-    * Fetches search results from the backend API for the given type (artists or songs) and offset.
-    * 
-    * @async
-    * @function fetchResults
-    * @param {'artists' | 'songs'} type - The type of results to fetch (artists or songs).
-    * @param {number} offset - The number of results to skip, for pagination purposes.
-    * @returns {Promise<void>} Updates the state with fetched results and handles loading/error states.
-    * 
-    */
-    const fetchResults = async (type: 'artists' | 'songs', offset: number) => {
-        setLoadingResults(true);
+    const fetchResults = useCallback(async (type: 'artists' | 'songs', offset: number, limit: number) => {
+        setLoading(true);
         try {
-            const response = await fetch(`/api/v1/search/${type}${query ? `?q=${query}&offset=${offset}&limit=5` : ''}`, {
-                headers: {
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`
-                }
+            const response = await fetch(`/api/v1/search/${type}?q=${query}&offset=${offset}&limit=${limit}`, {
+                headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` },
             });
-    
-            const data = await response.json();
 
+            const data = await response.json();
             if (!response.ok) throw new Error(data.message || 'Error fetching results');
 
-            // Check if data.body is null
-            if (!data.body) {
-                if (type === 'artists') {
-                    setHasMoreArtists(false);
-                } else {
-                    setHasMoreSongs(false);
-                }
-                setLoadingResults(false);
-                setHasSearched(true);
+            if (!data.body || data.body[type].length === 0) {
+                setHasMore(prev => ({ ...prev, [type]: false }));
                 return;
             }
 
-            // Extract top result
-            const fetchedResults = type === 'artists' ? data.body.artists : data.body.songs;
+            const fetchedResults = data.body[type];
+            if (offset === 0) {
+                setTopResult(fetchedResults.shift() || null);   // TODO: need to be set not just for artists
+            }
 
-            if (fetchedResults.length > 0 && offset === 0) {
-                setTopResult(fetchedResults[0]);
-                fetchedResults.shift();
-            }
-    
-            if (type === 'artists') {
-                setArtistResults((prevResults) => [...prevResults, ...fetchedResults]);
-    
-                if (fetchedResults.length < 4) {
-                    setHasMoreArtists(false);
-                }
-            } else {
-                setSongResults((prevResults) => [...prevResults, ...fetchedResults]);
-    
-                if (fetchedResults.length < 4) {
-                    setHasMoreSongs(false);
-                }
-            }
-    
-            setHasSearched(true);
-        } catch (err) {
-            (err instanceof Error) ? 
-                setError(err.message || 'Failed to fetch results.') : setError('An unknown error occurred.')
+            setResults(prev => ({ ...prev, [type]: [...prev[type], ...fetchedResults] }));  // Append the fetched results into the existing results
+            setHasMore(prev => ({ ...prev, [type]: fetchedResults.length >= limit }));
+        } catch (error: any) {
+            setError(error.message || 'Failed to fetch results');
         } finally {
-            setLoadingResults(false);
+            setLoading(false);
+            setHasSearched(true);
         }
-
-    };
-
+    },[query]);
 
     /**
-    * Handles search button clicks by clearing previous results and fetching new results.
-    * 
-    * @function handleSearch
-    * @param {'artists' | 'songs'} type - The type of results to search for (artists or songs).
-    */
-    const handleSearch = (type: 'artists' | 'songs') => {
+     * Main entry point of searching
+     * 
+     */
+    const handleSearch = (type: 'artists' | 'songs' | 'all') => {
+        setSearching(true);
         setError('');
-        setArtistResults([]);
-        setSongResults([]);
+        setResults({ artists: [], songs: [] });
         setTopResult(null);
-        setArtistOffset(0);
-        setSongOffset(0);
-        setHasMoreArtists(true);
-        setHasMoreSongs(true);
-        setSearchType(type);
+        setOffsets({ artists: 0, songs: 0 });
+        setHasMore({ artists: true, songs: true });
 
-        // fetch the results
-        fetchResults(type, 0);
-    };
-
-    /**
-    * Fetches more results when the user clicks "Show More" for either artists or songs.
-    * 
-    * @function handleShowMore
-    * @param {'artists' | 'songs'} type - The type of results to fetch more of (artists or songs).
-    */
-    const handleShowMore = (type: 'artists' | 'songs') => {
-        if (type === 'artists') {
-            const newOffset = artistOffset + 5;
-            setArtistOffset(newOffset);
-
-            // Send another request to fetch more results 
-            fetchResults('artists', newOffset);
+        if (type === 'all') {
+            setFilter('all');
+            Promise.all([
+                fetchResults('artists', 0, 5),
+                fetchResults('songs', 0, 5)
+            ]);
         } else {
-            const newOffset = songOffset + 5;
-            setSongOffset(newOffset);
-
-            fetchResults('songs', newOffset);
+            setFilter(type);
+            fetchResults(type, 0, 15);
         }
+        setSearching(false);
     };
 
+    const handleShowMore = (type: 'artists' | 'songs') => {
+        setOffsets(prev => {
+            const newOffset = prev[type] + 5;
+            fetchResults(type, newOffset, 15);
+            return { ...prev, [type]: newOffset }
+        })
+    }
+    // Navigation re render
+    useEffect(() => {
+        const params = new URLSearchParams(location.search);
+        const searchQuery = params.get('q') || '';
+        setQuery(searchQuery);
+
+    }, [location.search])
+
+    // Query setup re render
+    useEffect(() => {
+        if (query) {
+            handleSearch('all');
+        }
+    }, [query]);
+
+    // Mark results as loaded after fetch
+    useEffect(() => {
+        setTimeout(() => {
+            setLoadedResults((prev) => ({
+                ...prev,
+                ...results.songs.reduce((acc, song) => ({ ...acc, [song.id]: true }), {}),
+                ...results.artists.reduce((acc, artist) => ({ ...acc, [artist.id]: true }), {}),
+                ...(topResult ? { [topResult.id]: true } : {})
+            }));
+        }, 100);    // Small delay
+    }, [results, topResult]);
+    
 
     return (
         <div className='search-container'>
                 <h1 className='header'>Search</h1>
+                <div className="filter-buttons-container">
+                    <Button
+                        className='filter-button'
+                        onClick={() => {
+                            handleSearch('all')
+                        }}
+                    >
+                        All
+                    </Button>
+                    <Button
+                        className='filter-button'
+                        onClick={() => {
+                            handleSearch('artists')
+                        }}
+                    >
+                        Artists
+                    </Button>
+                    <Button
+                        className='filter-button'
+                        onClick={() => {
+                            handleSearch('songs');
+                        }}
+                    >
+                        Songs
+                    </Button>
+                </div>
 
-                {/* Top result */}
-                {topResult && (
+                {/* Search all view */}
+                {filter === 'all' && topResult && (
+                    <div className='search-all-view'>
                         <div className='top-result-container'>
                             <h2>Top Result</h2>
                             <ResultItem
@@ -186,68 +155,96 @@ const Search: React.FC = () => {
                                 imageSrc={'cover' in topResult ? topResult.cover : topResult.profile_picture}
                                 title={'title' in topResult ? topResult.title : topResult.name}
                                 subtitle={'duration' in topResult ? String(topResult.duration) : ''}
-                                linkPath={searchType === 'songs' ? '/songs' : '/artists' }
+                                linkPath={'duration' in topResult ? `/songs/${topResult.id}` : `/artists/${topResult.id}` }
                                 altText='Top Result'
-                                className={`top-result ${loadedItems[topResult.id] ? 'loaded' : ''}`}
-                                isLoading={loadingResults}
+                                className={`top-result ${loadedResults[topResult.id] ? 'loaded' : ''}`}
+                                isLoading={loading}
                             />
                         </div>
-                    )}
-                
-                <ul className='result-list'>
-                    
-                    {/*Artists results*/}
-                    {artistResults.length > 0 && artistResults.map((artist, index) => (
-                        <li key={artist.id}>
-                            <ResultItem 
-                                id={artist.id}
-                                imageSrc={artist.profile_picture}
-                                title={artist.name}
-                                subtitle=''
-                                linkPath='/artists'
-                                altText='Artist profile'
-                                className={`artist-result ${loadedItems[artist.id] ? 'loaded' : ''}`}
-                                isLoading={loadingResults}
-                            />
-                        </li>
-                    ))}
-
-                    {/* Song results*/}
-                    {songResults.length > 0 && songResults.map((song, index) => (
-                        <li key={song.id}>
-                            <ResultItem 
-                                id={song.id}
-                                imageSrc={song.cover}
-                                title={song.title}
-                                subtitle={String(song.duration)}
-                                linkPath='/songs'
-                                altText='Song cover'
-                                className={`song-result ${loadedItems[song.id] ? 'loaded' : ''}`}
-                                isLoading={loadingResults}
-                            />
-                        </li>
-                    ))}
-                    {loadingResults && <LoadingDots />}
-                    {error && <Message className='error-message'>{error}</Message>}
-
-                    {/* Show more */}
-                    {hasMoreArtists && !loadingResults && artistResults.length > 0 && (
-                        <Button onClick={() => handleShowMore('artists')} className='show-more-button'>Show More</Button>
+                        <div className='results-containers'>
+                            <div className='artist-results-container'>
+                                <h2>Artists</h2>
+                                <ul className='artist-result-list'>
+                                    {results.artists.length > 0 && results.artists.map((artist, index) => (
+                                        <li key={artist.id}>
+                                            <ArtistResultItem
+                                                className={`artist-result ${loadedResults[artist.id] ? 'loaded' : ''}`}
+                                                artist={artist}
+                                                isLoading={loading}
+                                            />
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+                               
+                            <div className='song-results-container'>
+                                <h2>Songs</h2>
+                                <ul className='song-result-list'>
+                                    {results.songs.length > 0 && results.songs.map((song, index) => (
+                                        <li key={song.id}>
+                                            <SongResultItem
+                                                song={song}
+                                                className={`song-result ${loadedResults[song.id] ? 'loaded' : ''}`}
+                                                isLoading={loading}
+                                            />
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
                     )}
 
-                    {/* Show more songs */}
-                    {hasMoreSongs && !loadingResults && songResults.length > 0 && (
-                        <Button onClick={() => handleShowMore('songs')} className='show-more-button'>Show More</Button>
-                    )}
-                </ul>
+                    {/* Search Songs View */}
+                    {filter === 'songs' &&
+                        <div className='song-results-container'>
+                            <h2>Songs</h2>
+                            <ul className='song-result-list'>
+                                {results.songs.length > 0 && results.songs.map((song, index) => (
+                                    <li key={song.id}>
+                                        <SongResultItem
+                                            song={song}
+                                            className={`song-result ${loadedResults[song.id] ? 'loaded' : ''}`}
+                                            isLoading={loading}
+                                        />
+                                    </li>
+                                ))}
+                            </ul>
+                            {hasMore.songs && !loading && results.songs.length > 0 && (
+                                <Button onClick={() => handleShowMore('songs')} className='show-more-button'>Show More</Button>
+                            )}
+                        </div>
+                    }
+                    {/* Search Artists View */}
+                    {filter === 'artists' &&
+                        <div className='artist-results-container'>
+                            <h2>Artists</h2>
+                            <ul className='artist-result-list'>
+                                {results.artists.length > 0 && results.artists.map((artist, index) => (
+                                    <li key={artist.id}>
+                                        <ArtistResultItem
+                                            className={`artist-result ${loadedResults[artist.id] ? 'loaded' : ''}`}
+                                            artist={artist}
+                                            isLoading={loading}
+                                        />
+                                    </li>
+                                ))}
+                            </ul>
+                            {hasMore.artists && !loading && results.artists.length > 0 && (
+                                <Button onClick={() => handleShowMore('artists')} className='show-more-button'>Show More</Button>
+                            )}
+                        </div>
+                    }
                 
                 {/* In case no results match the query*/}
-                {hasSearched && !topResult && artistResults.length === 0 && songResults.length === 0 && !loadingResults && (
+                {!loading && !searching && hasSearched && results.artists.length === 0 && results.songs.length === 0 && (
                 <Message className='info-message'>No results found</Message>
                 )}
+                {loading && <LoadingDots />}
+                {error && <Message className='error-message'>{error}</Message>}
         </div>
     );
-};
+}
 
 
 export default Search;

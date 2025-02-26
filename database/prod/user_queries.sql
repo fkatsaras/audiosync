@@ -12,7 +12,7 @@
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
-USE `se2_audiosync_db`;
+USE `byq8k2pc8zerxxbrtwut`;
 
 -- Creating stored procedure for registering a user
 DELIMITER //

@@ -51,6 +51,28 @@ img.now-playing-song-image {
     color: #ffffff;
 }
 
+
+/* Now playing placeholders */
+.now-playing-song-image-placeholder {
+    height: 9vh;
+    border-radius: 3px;
+    background: linear-gradient(90deg, #3a3a3a 25%, #505050 50%, #3a3a3a 75%);
+    animation: wave 2s infinite linear;
+}
+
+.now-playing-info-placeholder a {
+    text-decoration: none;
+    background: linear-gradient(90deg, #3a3a3a 25%, #505050 50%, #3a3a3a 75%);
+    animation: wave 2s infinite linear;
+}
+
+.now-playing-info-placeholder p {
+    font-size: 14px;
+    margin: 0;
+    background: linear-gradient(90deg, #3a3a3a 25%, #505050 50%, #3a3a3a 75%);
+    animation: wave 2s infinite linear;
+}
+
 .playback-container {
     flex-direction: row;
     display: flex;
