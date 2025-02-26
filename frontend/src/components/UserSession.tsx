@@ -77,7 +77,7 @@ const UserSession: React.FC<UserSessionProps> = ({ children }) => {
     const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
     const initialize = async () => {
-      await delay(500);
+      await delay(4000);
       fetchUserData();
     };
 
