@@ -159,6 +159,9 @@ module.exports.login_user = async function (req, res) {
       username: response.username,
     };
 
+    const now = new Date();
+console.log(`${now.getHours()}:${now.getMinutes()}:${now.getSeconds()}.${now.getMilliseconds()}`);
+
     // Ensure session is saved before sending response
     req.session.save(err => {
       if (err) {
