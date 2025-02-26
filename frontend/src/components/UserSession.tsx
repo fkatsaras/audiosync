@@ -66,7 +66,22 @@ const UserSession: React.FC<UserSessionProps> = ({ children }) => {
       }
     };
 
-    fetchUserData();
+    /**
+     *  RACE CONDITION: During a users first login
+     *  a race condition can happen between the 
+     *  /check-login and /login api endpoint
+     *  requests and the session can't be set by 
+     *  the time check-login accesses the requests
+     *  req.session.user  
+     */
+    const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+
+    const initialize = async () => {
+      await delay(500);
+      fetchUserData();
+    };
+
+    initialize();
   }, []);
 
   if (loading) return <LoadingDots />;
