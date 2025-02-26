@@ -179,9 +179,6 @@ module.exports.login_user = async function (req, res) {
 
 /**
  * Controller to handle user logout
- *
- * @param {Object} req - Express request object
- * @param {Object} res - Express response object
  */
 module.exports.logout_user = async function (req, res) {
   const response = await Users.logout_user(req.body);
