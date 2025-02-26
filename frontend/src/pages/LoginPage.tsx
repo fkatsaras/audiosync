@@ -6,6 +6,8 @@ import Input from "../components/Input/Input";
 import Button from "../components/Buttons/Button";
 import Message from "../components/Message/Message";
 
+const API = process.env.REACT_APP_API_URL || "http://localhost:5000/api/v1";
+
 function Login() {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
@@ -16,12 +18,13 @@ function Login() {
         event.preventDefault();
     
         try {
-            const response = await fetch('api/v1/users/login', { // Sends response to the /login route in the backend, with a JSON : {usernamee, password}
+            const response = await fetch(`${API}/users/login`, { // Sends response to the /login route in the backend, with a JSON : {usernamee, password}
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({ username, password }),
+                credentials: 'include',
             });
     
             if (!response.ok) {

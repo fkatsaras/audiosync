@@ -24,6 +24,9 @@ interface AudioPlayerContextProps {
     checkLyricsAvailability: (songId: number) => void;
 }
 
+const API = process.env.REACT_APP_API_URL || "http://localhost:5000/api/v1";
+
+
 export const AudioPlayerContext = createContext<AudioPlayerContextProps | undefined>(undefined);
 
 export const AudioPlayerProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -84,7 +87,7 @@ export const AudioPlayerProvider: React.FC<{ children: React.ReactNode }> = ({ c
     // Function to check lyrics availability
     const checkLyricsAvailability = useCallback(async (songId: number) => {
         try {
-            const response = await fetch(`/api/v1/songs/${songId}/lyrics`, {
+            const response = await fetch(`${API}/songs/${songId}/lyrics`, {
                 headers: {
                     'Authorization': `Bearer ${localStorage.getItem('token')}`, 
                 },

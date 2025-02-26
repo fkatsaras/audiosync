@@ -5,6 +5,8 @@ import LoadingDots from '../components/LoadingDots/LoadingDots';
 import ResultItem from '../components/ResultItem/ResultItem';
 import { useUser } from '../context/UserContext';
 
+const API = process.env.REACT_APP_API_URL || "http://localhost:5000/api/v1";
+
 
 /**
  * MyArtistsPage component allows users to view their followed artists.
@@ -37,7 +39,7 @@ const  MyArtistsPage: React.FC = () => {
         const fetchArtists = async () => {
             setLoading(true);
             try {
-                const response = await fetch(`/api/v1/users/${user?.userId}/artists`, {
+                const response = await fetch(`${API}/users/${user?.userId}/artists`, {
                     method: 'GET',
                     headers: {
                         'Authorization': `Bearer ${localStorage.getItem('token')}`,

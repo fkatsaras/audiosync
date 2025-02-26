@@ -9,6 +9,8 @@ import defaultPfp from '../../assets/images/default_profile_picture.svg'
 import { useUser } from '../../context/UserContext';
 import Input from '../Input/Input';
 
+const API = process.env.REACT_APP_API_URL || "http://localhost:5000/api/v1";
+
 
 const TopBar: React.FC = () => {
 
@@ -45,7 +47,7 @@ const TopBar: React.FC = () => {
     const handleLogout = async () => {
         
       try {
-        const response = await fetch('/api/v1/users/logout', {
+        const response = await fetch(`${API}/users/logout`, {
           method: 'POST',
           headers: {
             Authorization: `Bearer ${localStorage.getItem('token')}`,

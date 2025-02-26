@@ -5,6 +5,9 @@ import Button from '../components/Buttons/Button';
 import '../styles/LandingPage.css'
 import logo from '../assets/images/logo.svg';  
 
+const API = process.env.REACT_APP_API_URL || "http://localhost:5000/api/v1";
+
+
 function Landing() {
   const navigate = useNavigate();
 

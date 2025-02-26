@@ -10,6 +10,9 @@ import '../styles/MyPlaylistsPage.css';
 import { useUser } from '../context/UserContext';
 import PlaylistResultItem from '../components/ResultItem/PlaylistResultItem';
 
+const API = process.env.REACT_APP_API_URL || "http://localhost:5000/api/v1";
+
+
 /**
  * MyPlaylistsPage component allows users to view their playlists.
  * It fetches the playlists from the backend and displays them.
@@ -47,7 +50,7 @@ const MyPlaylistsPage: React.FC = () => {
         const fetchPlaylists = async () => {
             setLoading(true);
             try {
-                const response = await fetch(`/api/v1/users/${user?.userId}/my-playlists`, {
+                const response = await fetch(`${API}/users/${user?.userId}/my-playlists`, {
                     method: 'GET',
                     headers: {
                         'Authorization' : `Bearer ${localStorage.getItem('token')}`,
@@ -83,7 +86,7 @@ const MyPlaylistsPage: React.FC = () => {
         }
 
         try {
-            const response = await fetch(`/api/v1/users/${user?.userId}/my-playlists`, {
+            const response = await fetch(`${API}/users/${user?.userId}/my-playlists`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -114,7 +117,7 @@ const MyPlaylistsPage: React.FC = () => {
         if (!playlistToDelete) return;
 
         try {
-            const response = await fetch(`/api/v1/users/${user?.userId}/my-playlists?playlistId=${playlistToDelete}`, {
+            const response = await fetch(`${API}/users/${user?.userId}/my-playlists?playlistId=${playlistToDelete}`, {
                 method: 'DELETE',
                 headers: {
                     'Authorization' : `Bearer ${localStorage.getItem('token')}`,

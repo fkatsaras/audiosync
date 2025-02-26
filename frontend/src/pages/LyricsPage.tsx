@@ -6,6 +6,9 @@ interface LyricsPageProps {
     song: Song | null;
 }
 
+const API = process.env.REACT_APP_API_URL || "http://localhost:5000/api/v1";
+
+
 const LyricsPage: React.FC<LyricsPageProps> = ({ song }) => {
     if (!song || !song.lyrics) {
         return <div className='lyrics-page'>No lyrics available for this song...</div>;

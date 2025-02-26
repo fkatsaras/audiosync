@@ -8,6 +8,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Song } from "../../types/data";
 import { useUser } from "../../context/UserContext";
 
+const API = process.env.REACT_APP_API_URL || "http://localhost:5000/api/v1";
 
 const AudioPlayer: React.FC = () => {
 
@@ -39,7 +40,7 @@ const AudioPlayer: React.FC = () => {
         const fetchLastPlayedSong = async () => {
             try {
                     // Fetch last played song from API 
-                    const response = await fetch(`/api/v1/users/${user?.userId}/history?latest=true`, {
+                    const response = await fetch(`${API}/users/${user?.userId}/history?latest=true`, {
                         headers: {
                             'Authorization': `Bearer ${localStorage.getItem('token')}`,
                         },
@@ -88,7 +89,7 @@ const AudioPlayer: React.FC = () => {
     const updateListeningHistory = useCallback(async (currentSong: Song) => {
         try {
             const playedAt = new Date().toISOString().slice(0, 19).replace('T', ' '); // Format: 'YYYY-MM-DD HH:MM:SS'
-            await fetch(`/api/v1/users/${user?.userId}/history`, {
+            await fetch(`${API}/users/${user?.userId}/history`, {
                 method: 'POST',
                 headers: {
                     Authorization: `Bearer ${localStorage.getItem('token')}`,

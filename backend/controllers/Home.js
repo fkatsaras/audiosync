@@ -10,9 +10,9 @@ module.exports.home = function home(req, res, next) {
   if (!current_user) {
     return api.errorResponse(
       res,
-      'current user query parameter required.', // Error message
-      400, // HTTP status code
-      null // Response body
+      'current user query parameter required.',
+      400,
+      null
     );
   }
 
