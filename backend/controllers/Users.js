@@ -159,6 +159,14 @@ module.exports.login_user = async function (req, res) {
       username: response.username,
     };
 
+    // Ensure session is saved before sending response
+    req.session.save(err => {
+      if (err) {
+        console.error("Session save error:", err);
+        return errorResponse(res, "Failed to save session", 500);
+      }
+    })
+
     // Debug
     console.log(`User logged in: ${response.username}`);
     return successResponse(res, 'Login successful', { token: response.token });
