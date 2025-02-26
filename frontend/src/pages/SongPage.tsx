@@ -21,6 +21,7 @@ interface Section {
     text: Line[];
 }
 
+const API = process.env.REACT_APP_API_URL || "http://localhost:5000/api/v1";
 
 const SongPage: React.FC = () => {
     const user = useUser();
@@ -48,7 +49,7 @@ const SongPage: React.FC = () => {
         // Fetch the song details from the backend
         const fetchSong = async () => {
             try {
-                const response = await fetch(`/api/v1/songs/${songId}`, {
+                const response = await fetch(`${API}/songs/${songId}`, {
                     headers: {
                         'Authorization': `Bearer ${localStorage.getItem('token')}`,
                     },
@@ -74,7 +75,7 @@ const SongPage: React.FC = () => {
         const fetchLyrics = async () => {
             if (viewMode === "lyrics" && !lyrics) {
                 try {
-                    const response = await fetch(`/api/v1/songs/${songId}/lyrics`, {
+                    const response = await fetch(`${API}/songs/${songId}/lyrics`, {
                         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
                     });
                     const lyricsData = await response.json();
@@ -188,7 +189,7 @@ const SongPage: React.FC = () => {
         if (!song) return;
 
         const action = song.liked ? 'DELETE' : 'POST';
-        const endpoint = `/api/v1/users/${user?.userId}/liked-songs?songId=${songId}`;
+        const endpoint = `${API}/users/${user?.userId}/liked-songs?songId=${songId}`;
 
         const response = await fetch(endpoint, {
             method: action,

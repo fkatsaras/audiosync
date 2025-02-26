@@ -8,6 +8,8 @@ import FollowButton from "../components/Buttons/FollowButton";
 import Message from "../components/Message/Message";
 import { useUser } from "../context/UserContext";
 
+const API = process.env.REACT_APP_API_URL || "http://localhost:5000/api/v1";
+
 
 const ArtistPage: React.FC = () => {
     const user = useUser();
@@ -24,7 +26,7 @@ const ArtistPage: React.FC = () => {
         // Fetch the artists details from the backend
         const fetchArtist = async () => {
             try {
-                const response = await fetch(`/api/v1/artists/${artistId}`, {
+                const response = await fetch(`${API}/artists/${artistId}`, {
                     headers: {
                         'Authorization': `Bearer ${localStorage.getItem('token')}`,
                     },
@@ -58,7 +60,7 @@ const ArtistPage: React.FC = () => {
         if (!artist) return;
 
         const action = artist.is_followed? 'DELETE' : 'POST';
-        const endpoint = `/api/v1/users/${user?.userId}/artists?artistId=${artistId}`;
+        const endpoint = `${API}/users/${user?.userId}/artists?artistId=${artistId}`;
 
         const response = await fetch(endpoint, {
             method: action,

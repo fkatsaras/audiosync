@@ -6,6 +6,8 @@ import Button from "../components/Buttons/Button";
 import Message from "../components/Message/Message";
 import '../styles/RegisterPage.css';
 
+const API = process.env.REACT_APP_API_URL || "http://localhost:5000/api/v1";
+
 function Register() {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
@@ -32,7 +34,7 @@ function Register() {
         }
 
         try {
-            const response = await fetch('/api/v1/users/register', {
+            const response = await fetch(`${API}/users/register`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

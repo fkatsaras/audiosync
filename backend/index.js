@@ -19,11 +19,19 @@ const serverPort = process.env.PORT || 5000;
 // Initialize Express App
 const app = express();
 
+// CORS configuration
+const corsOptions = {
+    origin: ['http://localhost:3000', 'https://localhost:4000','audiosync-dcdv56uxc-fkatsaras-projects.vercel.app'],
+    credentials: true
+};
+
+app.use(cors(corsOptions));
+
 // Session configuration
 const sessionMiddleware = session({
     secret: process.env.SESSION_SECRET || 'fotis',
     resave: false, // Do not save session if unmodified
-    saveUninitialized: true, // Save new sessions even if they are empty
+    saveUninitialized: false, 
     cookie: {
         secure: false,
         httpOnly: true, // Prevents JavaScript access to cookies
@@ -32,8 +40,8 @@ const sessionMiddleware = session({
 });
 
 // Apply global middleware
-app.use(express.urlencoded({ extended: true })); // Parse URL-encoded data
 app.use(sessionMiddleware); // Session middleware
+app.use(express.urlencoded({ extended: true })); // Parse URL-encoded data
 app.use((req, res, next) => {
     const openRoutes = ['/api/v1/users/login', '/api/v1/users/register', '/api/v1/users/check-login'];
     // Skip token validation for open routes
@@ -43,15 +51,6 @@ app.use((req, res, next) => {
     // Apply token validation for all other routes
     auth.tokenRequired(req, res, next);
 });
-
-
-// CORS configuration
-const corsOptions = {
-    origin: ['http://localhost:3000', 'https://localhost:4000', 'http://frontend:3000','http://audiosync.onrender.com'],
-    credentials: true
-};
-
-app.use(cors(corsOptions));
 
 // Configure oas3Tools
 const oas3Options = {

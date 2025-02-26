@@ -9,6 +9,7 @@ import { useLocation } from 'react-router-dom';
 import ArtistResultItem from '../components/ResultItem/ArtistResultItem';
 import SongResultItem from '../components/ResultItem/SongResultItem';
 
+const API = process.env.REACT_APP_API_URL || "http://localhost:5000/api/v1";
 
 const Search: React.FC = () => {
     const location = useLocation();
@@ -28,7 +29,7 @@ const Search: React.FC = () => {
     const fetchResults = useCallback(async (type: 'artists' | 'songs', offset: number, limit: number) => {
         setLoading(true);
         try {
-            const response = await fetch(`/api/v1/search/${type}?q=${query}&offset=${offset}&limit=${limit}`, {
+            const response = await fetch(`${API}/search/${type}?q=${query}&offset=${offset}&limit=${limit}`, {
                 headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` },
             });
 

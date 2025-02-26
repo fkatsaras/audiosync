@@ -11,6 +11,8 @@ import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import { useAudioPlayer } from "../hooks/useAudioPlayer";
 import { useUser } from "../context/UserContext";
 
+const API = process.env.REACT_APP_API_URL || "http://localhost:5000/api/v1";
+
 
 const PlaylistPage: React.FC = () => {
     const user = useUser();
@@ -27,7 +29,7 @@ const PlaylistPage: React.FC = () => {
     useEffect(() => {
         const fetchPlaylist = async () => {
             try {
-                const response = await fetch(`/api/v1/users/${user?.userId}/playlists?playlistId=${playlistId}`, {
+                const response = await fetch(`${API}/users/${user?.userId}/playlists?playlistId=${playlistId}`, {
                     headers: {
                         'Authorization': `Bearer ${localStorage.getItem('token')}`
                     },
@@ -84,7 +86,7 @@ const PlaylistPage: React.FC = () => {
 
         // Send updated order to the backend
         const updatePlaylist = async () => {
-            await fetch(`/api/v1/users/${user?.userId}/playlists?playlistId=${playlistId}`, {
+            await fetch(`${API}/users/${user?.userId}/playlists?playlistId=${playlistId}`, {
                 method: 'PUT',
                 headers: {
                     'Authorization': `Bearer ${localStorage.getItem('token')}`,

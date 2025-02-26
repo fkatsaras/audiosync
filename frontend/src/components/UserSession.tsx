@@ -13,6 +13,9 @@ interface UserSessionProps {
   children?: ReactNode;
 }
 
+const API = process.env.REACT_APP_API_URL || "http://localhost:5000/api/v1";
+
+
 const UserSession: React.FC<UserSessionProps> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
@@ -41,11 +44,13 @@ const UserSession: React.FC<UserSessionProps> = ({ children }) => {
       checkTokenValidity();
 
       try {
-        const response = await fetch("/api/v1/users/check-login", {
+        const response = await fetch(`${API}/users/check-login`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
+          credentials: 'include',
         });
+
 
         if (response.ok) {
           const data = await response.json();

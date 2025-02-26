@@ -14,6 +14,7 @@ exports.checkLogin = function(req) {
       const user_id = req.session.user.id;
       const username = req.session.user.username;
 
+
       if (!username) {
         // Reject if the username is missing from the session
         console.log(username);

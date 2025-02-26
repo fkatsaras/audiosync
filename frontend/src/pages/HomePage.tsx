@@ -12,6 +12,9 @@ type Links = {
   my_playlists?: string;
 };
 
+const API = process.env.REACT_APP_API_URL || "http://localhost:5000/api/v1";
+
+
 const Home: React.FC = () => {
 
   const [links, setLinks] = useState<Links | null>(null); // Initial state as null to handle undefined case
@@ -22,7 +25,7 @@ const Home: React.FC = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch('/api/v1/home', {
+        const response = await fetch(`${API}/home`, {
           headers: {
             'Authorization': `Bearer ${localStorage.getItem('token')}`
           }
