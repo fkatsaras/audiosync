@@ -1,6 +1,6 @@
 const axios = require('axios');
 const pLimit = require('p-limit');
-const limit = pLimit(5);  // Max 5 concurrent Spotify requests to avoid overwhelming the API
+const limit = pLimit.default(5)  // Max 5 concurrent Spotify requests to avoid overwhelming the API
 
 async function getSpotifyToken() {
   try {
