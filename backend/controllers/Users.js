@@ -159,6 +159,8 @@ module.exports.login_user = async function (req, res) {
       username: response.username,
     };
 
+    console.log('Session after login:', req.session);
+
     // Debug
     console.log(`User logged in: ${response.username}`);
     // console.log(req.session);

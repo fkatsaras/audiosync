@@ -37,11 +37,11 @@ app.use(cors(corsOptions));
 const sessionMiddleware = session({
     secret: process.env.SESSION_SECRET || 'fotis',
     resave: false, // Do not save session if unmodified
-    saveUninitialized: false, 
+    saveUninitialized: true, 
     cookie: {
-        secure: process.env.NODE_ENV == 'production' ? true : false,
+        secure: process.env.NODE_ENV == 'production',
         httpOnly: true, // Prevents JavaScript access to cookies
-        maxAge: 60 * 60 * 1000 // 1 hour
+        maxAge: 60 * 60 * 1000 * 10 // 10 hours
     }
 });
 
@@ -50,6 +50,7 @@ app.use(sessionMiddleware); // Session middleware
 app.use(express.urlencoded({ extended: true })); // Parse URL-encoded data
 app.use((req, res, next) => {
     const openRoutes = ['/api/v1/users/login', '/api/v1/users/register', '/api/v1/users/check-login'];
+    console.log('Session initialized:', req.session)
     // Skip token validation for open routes
     if (openRoutes.includes(req.path)) {
         return next();
