@@ -21,7 +21,11 @@ const app = express();
 
 // CORS configuration
 const corsOptions = {
-    origin: ['http://localhost:3000', 'https://localhost:4000','https://audiosync-dcdv56uxc-fkatsaras-projects.vercel.app'],
+    origin: [
+        'http://localhost:3000',
+        'https://localhost:4000',
+        new RegExp(/^https:\/\/audiosync-[a-z0-9]+\.vercel\.app&/),
+    ],
     credentials: true
 };
 
