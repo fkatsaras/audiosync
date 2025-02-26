@@ -26,6 +26,7 @@ const corsOptions = {
         'https://localhost:4000',
         new RegExp(/^https:\/\/audiosync-[a-z0-9]+-fkatsaras-projects\.vercel\.app&/),  // For matching the hashed URL from vercel
         'https://audiosync-git-master-fkatsaras-projects.vercel.app',
+        'https://audiosync-liard.vercel.app',
     ],
     credentials: true
 };
@@ -38,7 +39,7 @@ const sessionMiddleware = session({
     resave: false, // Do not save session if unmodified
     saveUninitialized: false, 
     cookie: {
-        secure: false,
+        secure: process.env.NODE_ENV == 'production' ? true : false,
         httpOnly: true, // Prevents JavaScript access to cookies
         maxAge: 60 * 60 * 1000 // 1 hour
     }
