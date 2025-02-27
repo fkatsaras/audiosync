@@ -25,7 +25,7 @@ const corsOptions = {
     origin: [
         'http://localhost:3000',
         'https://localhost:4000',
-        new RegExp(/^https:\/\/audiosync-[a-z0-9]+-fkatsaras-projects\.vercel\.app&/),  // For matching the hashed URL from vercel
+        new RegExp(/^https:\/\/audiosync-[a-z0-9]+-fkatsaras-projects\.vercel\.app$/),  // For matching the hashed URL from vercel
         'https://audiosync-git-master-fkatsaras-projects.vercel.app',
         'https://audiosync-liard.vercel.app',
     ],
@@ -35,6 +35,7 @@ const corsOptions = {
 app.use(cors(corsOptions));
 
 app.use(express.urlencoded({ extended: true })); // Parse URL-encoded data
+app.use(express.json()); // Parse JSON data
 app.use((req, res, next) => {
     const openRoutes = ['/api/v1/users/login', '/api/v1/users/register', '/api/v1/admin/seed-songs'];
     // Skip token validation for open routes
