@@ -1,5 +1,5 @@
 const test = require('ava');
-const { createServer } = require('../../index');
+const { createServer } = require('../../server');
 const { loginRequest, likeSongRequest, unlikeSongRequest, seedSongs, clearLikedSongs, clearSongs, seedArtists, seedLikedSongs, clearArtists, seedPlaylistSongs, clearPlaylistSongs } = require('../../utils/testUtils');
 
 process.env.NODE_ENV = 'test';

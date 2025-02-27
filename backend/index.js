@@ -1,6 +1,5 @@
 'use strict';
 
-const http = require('http');
 const path = require('path');
 const oas3Tools = require('oas3-tools');
 const dotenv = require('dotenv');
@@ -79,32 +78,8 @@ app.get('/api/health', (req, res) => {
     res.status(200).json({ status: 'OK' });
 });
 
-
-/**
- * Create and return an HTTP server instance af the app
- * 
- * @param {number} port - The port to listen to.
- * @returns {Promise<http.Server>}
- *  */
-function createServer(port=serverPort) {
-    return new Promise((resolve, reject) => {
-        const server = http.createServer(app);
-
-        server.listen(port, '0.0.0.0' ,() => {
-            console.log('Your server is listening on port %d (http://localhost:%d)', port, port);
-            console.log('Swagger-ui is available on http://localhost:%d/docs', port);
-            resolve(server);
-        });
-
-        server.on('error', (err) => {
-            console.error('Error starting the server:', err);
-            reject(err);
-        });
-    });
-}
-
 // if (require.main == module) {
 //     createServer(5000);
 // }
 
-module.exports = { createServer, app };
+module.exports = app;   // Direct export for vercel

@@ -1,5 +1,5 @@
 const test = require('ava');
-const { createServer } = require('../../index');
+const { createServer } = require('../../server');
 const db = require('../../utils/dbUtils');
 const { registerRequest } = require('../../utils/testUtils');
 
