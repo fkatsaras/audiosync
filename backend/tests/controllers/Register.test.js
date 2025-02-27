@@ -1,5 +1,5 @@
 const test = require('ava');
-const index = require('../../index');
+const { createServer } = require('../../index');
 const db = require('../../utils/dbUtils');
 const { registerRequest } = require('../../utils/testUtils');
 
@@ -11,7 +11,7 @@ const PORT = 4001;
 
 test.before(async (t) => {
     t.timeout(2000); 
-    server = await index.createServer(PORT);
+    server = await createServer(PORT);
     console.log(`Mock server is running on http://localhost:${PORT}`);
 });
 

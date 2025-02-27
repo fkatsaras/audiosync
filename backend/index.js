@@ -107,5 +107,4 @@ function createServer(port=serverPort) {
 //     createServer(5000);
 // }
 
-module.exports = { createServer };
-module.exports = app;
+module.exports = { createServer, app };
