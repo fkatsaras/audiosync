@@ -159,7 +159,7 @@ const PlaylistPage: React.FC = () => {
                                                             imageSrc={song.cover ? song.cover : defaultSongCover}
                                                             title={song.title}
                                                             subtitle={`${song.artist}`}
-                                                            linkPath={`/songs`}
+                                                            linkPath={`/songs/${song.id}`}
                                                             altText={`${song.title} cover`}
                                                             className={`song-result ${loadedItems[song.id] ? 'loaded' : ''}`} 
                                                             isLoading={loading}    

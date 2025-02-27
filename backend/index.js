@@ -1,7 +1,5 @@
 'use strict';
 
-const serverless = require('serverless-http');
-
 const http = require('http');
 const path = require('path');
 const oas3Tools = require('oas3-tools');
@@ -62,6 +60,11 @@ const oas3App = oas3Tools.expressAppConfig(
 // Mount the oas3App routes into the main app
 app.use(oas3App);
 
+app.get('/api/health', (req, res) => {
+    res.status(200).json({ status: 'OK' });
+});
+
+
 /**
  * Create and return an HTTP server instance af the app
  * 
@@ -90,4 +93,4 @@ function createServer(port=serverPort) {
 // }
 
 module.exports = { createServer };
-module.exports.handler = serverless(app);
+module.exports = app;

@@ -135,3 +135,4 @@ volumes/
 # Docker logs and configuration
 *.log
 docker-compose.override.yml
+.vercel

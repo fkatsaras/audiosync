@@ -84,7 +84,7 @@ const  MyArtistsPage: React.FC = () => {
                                 imageSrc={artist.profile_picture}
                                 title={artist.name}
                                 subtitle=''
-                                linkPath={`/artists`}
+                                linkPath={`/artists/${artist.id}`}
                                 altText='Artist Profile Picture'
                                 className={`artist-result ${loadedItems[artist.id] ? 'loaded' : ''}`}
                                 isLoading={loading}
