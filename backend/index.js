@@ -38,7 +38,7 @@ app.use(cors(corsOptions));
 
 app.use(express.urlencoded({ extended: true })); // Parse URL-encoded data
 app.use((req, res, next) => {
-    const openRoutes = ['/api/v1/users/login', '/api/v1/users/register'];
+    const openRoutes = ['/api/v1/users/login', '/api/v1/users/register', '/api/v1/admin/seed-songs'];
     // Skip token validation for open routes
     if (openRoutes.includes(req.path)) {
         return next();
