@@ -1,8 +1,9 @@
 'use strict';
 
+const dotenv = require('dotenv');
 const path = require('path');
 const axios = require('axios');
-const db = require('../dbUtils');
+const db = require('../utils/dbUtils');
 // Load environment variables
 dotenv.config({ path: path.resolve(__dirname, '../.env')});
 
