@@ -1,15 +1,13 @@
 'use strict';
 
-const path = require('path');
+const serverless = require('serverless-http');
+
 const http = require('http');
+const path = require('path');
 const oas3Tools = require('oas3-tools');
 const dotenv = require('dotenv');
 const express = require('express');
-const session = require('express-session');
-const Sequelize = require('sequelize');
-const SequelizeStore = require('connect-session-sequelize')(session.Store); 
 const cors = require('cors');
-const db = require('./utils/dbUtils');
 
 const auth = require('./middleware/auth');
 
@@ -86,8 +84,9 @@ function createServer(port=serverPort) {
     });
 }
 
-if (require.main == module) {
-    createServer(5000);
-}
+// if (require.main == module) {
+//     createServer(5000);
+// }
 
 module.exports = { createServer };
+module.exports.handler = serverless(app);

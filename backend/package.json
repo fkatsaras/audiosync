@@ -34,6 +34,7 @@
     "oas3-tools": "^2.2.3",
     "p-limit": "^6.2.0",
     "sequelize": "^6.37.5",
+    "serverless-http": "^3.2.0",
     "spotify-web-api-node": "^5.0.2",
     "swagger-jsdoc": "^6.2.8",
     "swagger-parser": "^10.0.3",
