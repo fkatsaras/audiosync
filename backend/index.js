@@ -6,7 +6,10 @@ const oas3Tools = require('oas3-tools');
 const dotenv = require('dotenv');
 const express = require('express');
 const session = require('express-session');
+const Sequelize = require('sequelize');
+const SequelizeStore = require('connect-session-sequelize')(session.Store); 
 const cors = require('cors');
+const db = require('./utils/dbUtils');
 
 const auth = require('./middleware/auth');
 
@@ -33,23 +36,9 @@ const corsOptions = {
 
 app.use(cors(corsOptions));
 
-// Session configuration
-const sessionMiddleware = session({
-    secret: process.env.SESSION_SECRET || 'fotis',
-    resave: false, // Do not save session if unmodified
-    saveUninitialized: true, 
-    cookie: {
-        secure: process.env.NODE_ENV === 'production',
-        httpOnly: true, // Prevents JavaScript access to cookies
-        maxAge: 60 * 60 * 1000 * 10 // 10 hours
-    }
-});
-
-// Apply global middleware
-app.use(sessionMiddleware); // Session middleware
 app.use(express.urlencoded({ extended: true })); // Parse URL-encoded data
 app.use((req, res, next) => {
-    const openRoutes = ['/api/v1/users/login', '/api/v1/users/register', '/api/v1/users/check-login'];
+    const openRoutes = ['/api/v1/users/login', '/api/v1/users/register', '/api/v1/admin/seed-songs'];
     // Skip token validation for open routes
     if (openRoutes.includes(req.path)) {
         return next();

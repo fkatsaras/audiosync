@@ -463,7 +463,7 @@ exports.get_user_history = async function (userId, latest = false) {
     let latestSong = null;
 
     if (!history.length) {
-      throw ErrorHandler(404, 'No listening history found.');
+      throw ErrorHandler.createError(404, 'No listening history found.');
     }
 
     // In case of the latest song we get the full song data using the service function
@@ -479,7 +479,7 @@ exports.get_user_history = async function (userId, latest = false) {
       body: latest === 'true' ? latestSong : history 
     };
   } catch (error) {
-    ErrorHandler.handle(error);
+    throw ErrorHandler.handle(error);
   } finally {
     db.closeConnection(connection);
   }

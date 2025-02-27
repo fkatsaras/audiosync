@@ -11,8 +11,8 @@ exports.checkLogin = function(req) {
   return new Promise((resolve, reject) => {
     const now = new Date();
 console.log(`${now.getHours()}:${now.getMinutes()}:${now.getSeconds()}.${now.getMilliseconds()}`);
-    console.log(req.session);
-    const { user } = req.session || {};
+    console.log(req.user);
+    const user = req.user;
 
     if (!user || !user.id || !user.username) {
       const message = user ? 'Username not found in session.' : 'User is not logged in';

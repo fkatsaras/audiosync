@@ -1,8 +1,7 @@
 const mysql = require('mysql2');
 require('dotenv').config();
 
-function createConnection() {
-    
+function getDbDetails() {
     const environment = process.env.NODE_ENV || 'development';
     let dbConfig;
 
@@ -32,6 +31,12 @@ function createConnection() {
         }
     }
 
+    return dbConfig;
+}
+
+function createConnection() {
+
+    const dbConfig = getDbDetails();
     // Create the database connection
     const connection = mysql.createConnection(dbConfig);
 
@@ -190,6 +195,7 @@ function commitTransaction(connection) {
 
 // Exporting functions
 module.exports = {
+    getDbDetails,
     createConnection,
     closeConnection,
     executeQuery,

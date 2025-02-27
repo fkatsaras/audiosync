@@ -903,7 +903,8 @@ paths:
       summary: Check if a user is logged in
       description: Verify if the current session has a logged-in user
       operationId: check_login
-      security: []
+      security:
+        - BearerAuth: []
       responses:
         "200":
           description: User is logged in
@@ -1017,6 +1018,38 @@ paths:
         "500":
           description: Internal server error
       x-swagger-router-controller: Users
+  /api/v1/admin/seed-songs:
+    get:
+      tags:
+        - admin
+      summary: Seed songs from Spotify by genre
+      description: Seeds songs of a specified genre from Spotify into the database.
+      operationId: seed_songs
+      parameters:
+        - name: genre
+          in: query
+          description: The genre of songs to be seeded
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Songs seeded successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  body:
+                    type: object
+        "400":
+          description: Genre is required
+        "500":
+          description: Internal server error
+      x-swagger-router-controller: Default
+
 components:
   schemas:
     HomePageResponse:

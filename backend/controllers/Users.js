@@ -7,7 +7,7 @@ const { successResponse, errorResponse } = require('../utils/apiUtils.js');
 module.exports.like_song = async function (req, res, next) {
   try {
     const songId = req.query?.songId;
-    const userId = req.session?.user?.id;
+    const userId = req.user?.id;
 
     const { message, body: responseBody } = await Users.like_song(userId, songId);
     successResponse(res, message, responseBody);
@@ -19,7 +19,7 @@ module.exports.like_song = async function (req, res, next) {
 module.exports.unlike_song = async function (req, res, next) {
   try {
     const songId = req.query?.songId;
-    const userId = req.session?.user?.id;
+    const userId = req.user?.id;
 
     const { message, body: responseBody } = await Users.unlike_song(userId, songId);
     successResponse(res, message, responseBody);
@@ -31,7 +31,7 @@ module.exports.unlike_song = async function (req, res, next) {
 module.exports.follow_artist = async function (req, res, next) {
   try {
     const artistId = req.query?.artistId;
-    const userId = req.session?.user?.id;
+    const userId = req.user?.id;
 
     const { message, body: responseBody } = await Users.follow_artist(artistId, userId);
     successResponse(res, message, responseBody);
@@ -43,7 +43,7 @@ module.exports.follow_artist = async function (req, res, next) {
 module.exports.unfollow_artist = async function (req, res, next) {
   try {
     const artistId = req.query?.artistId;
-    const userId = req.session?.user?.id;
+    const userId = req.user?.id;
 
     const { message, body: responseBody } = await Users.unfollow_artist(artistId, userId);
     successResponse(res, message, responseBody);
@@ -54,7 +54,7 @@ module.exports.unfollow_artist = async function (req, res, next) {
 
 module.exports.create_user_playlist = async function (req, res, next, body) {
   try {
-    const userId = req.session?.user?.id;
+    const userId = req.user?.id;
 
     // Check if title is provided
     if (!body?.title?.trim()) { // Optional chaining for safer access
@@ -70,7 +70,7 @@ module.exports.create_user_playlist = async function (req, res, next, body) {
 
 module.exports.get_liked_songs = async function (req, res, next) {
   try {
-    const userId = req.session?.user?.id;
+    const userId = req.user?.id;
 
     const { message, body: responseBody } = await Users.get_liked_songs(userId);
     successResponse(res, message, responseBody);
@@ -81,7 +81,7 @@ module.exports.get_liked_songs = async function (req, res, next) {
 
 module.exports.get_user_followed_artists = async function (req, res, next) {
   try {
-    const userId = req.session.user.id;
+    const userId = req.user.id;
     const { message, body } = await Users.get_user_followed_artists(userId);
 
     successResponse(res, message, body);
@@ -93,7 +93,7 @@ module.exports.get_user_followed_artists = async function (req, res, next) {
 
 module.exports.add_to_user_history = async function (req, res, next, body) {
   try {
-    const userId = req.session.user.id
+    const userId = req.user.id
     // Check if song id is provided
     if (!body?.song_id) {
       return errorResponse(res, 'Please provide a song id to add to history', 400);
@@ -108,10 +108,11 @@ module.exports.add_to_user_history = async function (req, res, next, body) {
 
 module.exports.get_user_history = async function (req, res, next) {
   try {
-    const userId = req.session.user.id;
+    const userId = req.user.id;
 
     // Pass the latest query parameter to 
     // check if we only want the latest song or the full history
+    console.log(userId, req.query.latest);
     const { message, body } = await Users.get_user_history(userId, req.query.latest);
     
     successResponse(res, message, body);
@@ -132,7 +133,7 @@ module.exports.get_user_history = async function (req, res, next) {
 
 module.exports.get_user_playlists = async function (req, res, next) {
   try {
-    const userId = req.session.user.id;
+    const userId = req.user.id;
     const { message, body } = await Users.get_user_playlists(userId);
 
     successResponse(res, message, body);
@@ -154,21 +155,13 @@ module.exports.login_user = async function (req, res) {
     const response = await Users.login_user(username, password);
 
     // Set session for the user
-    req.session.user = {
+    req.user = {
       id: response.userId,
       username: response.username,
     };
 
     const now = new Date();
 console.log(`${now.getHours()}:${now.getMinutes()}:${now.getSeconds()}.${now.getMilliseconds()}`);
-
-    // Ensure session is saved before sending response
-    req.session.save(err => {
-      if (err) {
-        console.error("Session save error:", err);
-        return errorResponse(res, "Failed to save session", 500);
-      }
-    })
 
     // Debug
     console.log(`User logged in: ${response.username}`);
@@ -184,27 +177,19 @@ console.log(`${now.getHours()}:${now.getMinutes()}:${now.getSeconds()}.${now.get
  * Controller to handle user logout
  */
 module.exports.logout_user = async function (req, res) {
-  const response = await Users.logout_user(req.body);
   try {
-    // Destroy the session to log the user out
-    req.session.destroy((err) => {
-      if (err) {
-        return errorResponse(
-          res,
-          'Failed to log out',
-          500
-        );
+    const response = await Users.logout_user(req.body);
+    
+    // The client is responsible for removing the token
+    
+    return successResponse(
+      res,
+      'Logout successful',
+      { 
+        username: response.username,
+        message: "Token has been invalidated" 
       }
-      
-      // Clear the session cookie
-      res.clearCookie('connect.sid');
-      
-      return successResponse(
-        res,
-        'Logout successful',
-        { username: response.username }
-      );
-    });
+    );
   } catch (error) {
     console.error(`Logout failed: ${error.message}`);
     return errorResponse(

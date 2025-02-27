@@ -14,13 +14,14 @@ const tokenRequired = (req, res, next) => {
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
-    req.current_user = decoded.username; // Set username from token payload
-    // Set session for the user
-    req.session.user = {
+    
+    // Attach user info to the request
+    req.user = {
       id: decoded.user_id,
       username: decoded.username,
     };
-    next(); // Proceed to next middleware or route
+    
+    next();
   } catch (error) {
     console.log(error);
     return res.status(401).json({
@@ -29,5 +30,6 @@ const tokenRequired = (req, res, next) => {
     });
   }
 };
+
 
 module.exports = { tokenRequired };
