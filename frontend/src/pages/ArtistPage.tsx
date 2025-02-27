@@ -113,7 +113,7 @@ const ArtistPage: React.FC = () => {
                                     imageSrc={song.cover}
                                     title={song.title}
                                     subtitle={String(song.duration)} // Duration as subtitle
-                                    linkPath="/songs" // Path to song page
+                                    linkPath={`/songs/${song.id}`} // Path to song page
                                     altText={`${song.title} cover`}
                                     className={`song-result ${loadedItems[song.id] ? 'loaded' : ''}`}
                                     isLoading={loading}

@@ -1,6 +1,4 @@
 const axios = require('axios');
-const pLimit = require('p-limit');
-const limit = pLimit.default(5)  // Max 5 concurrent Spotify requests to avoid overwhelming the API
 
 async function getSpotifyToken() {
   try {
@@ -111,6 +109,11 @@ async function getSongCoverBatch(albumNames) {
   }
 
   const albumQueries = albumNames.map(name => `album:${encodeURIComponent(name)}`).join(' OR ');
+
+  // Dynamically import p-limit
+  const { default: pLimit } = await import('p-limit');
+  const limit = pLimit(5);  // Max 5 concurrent Spotify requests to avoid overwhelming the API
+
   const searchUrl = `https://api.spotify.com/v1/search?q=${albumQueries}&type=album&limit=50`;
 
   const response = await limit(() => 
