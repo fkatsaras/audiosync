@@ -903,7 +903,8 @@ paths:
       summary: Check if a user is logged in
       description: Verify if the current session has a logged-in user
       operationId: check_login
-      security: []
+      security:
+        - BearerAuth: []
       responses:
         "200":
           description: User is logged in

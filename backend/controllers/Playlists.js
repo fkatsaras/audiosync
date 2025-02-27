@@ -4,7 +4,7 @@ var Playlists = require('../service/PlaylistsService');
 const { successResponse, errorResponse } = require('../utils/apiUtils');
 
 module.exports.get_playlist_by_id = function (req, res, next) {
-  const userId = req.session.user.id;
+  const userId = req.user.id;
   const playlistId = req.query.playlistId;
   Playlists.get_playlist_by_id(userId, playlistId)
     .then(function (response) {
@@ -16,7 +16,7 @@ module.exports.get_playlist_by_id = function (req, res, next) {
 };
 
 module.exports.update_playlist_by_id = function (req, res, next, body) {
-  const userId = req.session.user.id;
+  const userId = req.user.id;
   const playlistId = req.query.playlistId;
   Playlists.update_playlist_by_id(body, userId, playlistId)
     .then(function (response) {
@@ -28,7 +28,7 @@ module.exports.update_playlist_by_id = function (req, res, next, body) {
 };
 
 module.exports.delete_playlist_by_id = function (req, res, next) {
-  const userId = req.session.user.id;
+  const userId = req.user.id;
   const playlistId = req.query.playlistId;
   Playlists.delete_playlist_by_id(userId, playlistId)
     .then(function (response) {
