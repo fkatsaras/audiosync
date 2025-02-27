@@ -76,23 +76,23 @@ jobs:
           mysql -h127.0.0.1 -uroot -proot -e "USE audiosync_test_db; SHOW TABLES;"
           npm test
 
-  deployment:
-    runs-on: ubuntu-latest
-    needs: backend-tests
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
+  # deployment:
+  #   runs-on: ubuntu-latest
+  #   needs: backend-tests
+  #   steps:
+  #     - name: Checkout repository
+  #       uses: actions/checkout@v3
 
-      # Deploy Backend
-      - name: Deploy Backend to Render
-        uses: johnbeynon/render-deploy-action@v0.0.8
-        with:
-          service-id: ${{ secrets.RENDER_BACKEND_SERVICE_ID }}
-          api-key: ${{ secrets.RENDER_API_KEY }}
+  #     # Deploy Backend
+  #     - name: Deploy Backend to Render
+  #       uses: johnbeynon/render-deploy-action@v0.0.8
+  #       with:
+  #         service-id: ${{ secrets.RENDER_BACKEND_SERVICE_ID }}
+  #         api-key: ${{ secrets.RENDER_API_KEY }}
 
-      # Deploy Frontend
-      - name: Deploy Frontend to Render
-        uses: johnbeynon/render-deploy-action@v0.0.8
-        with:
-          service-id: ${{ secrets.RENDER_FRONTEND_SERVICE_ID }}
-          api-key: ${{ secrets.RENDER_API_KEY }}
+  #     # Deploy Frontend
+  #     - name: Deploy Frontend to Render
+  #       uses: johnbeynon/render-deploy-action@v0.0.8
+  #       with:
+  #         service-id: ${{ secrets.RENDER_FRONTEND_SERVICE_ID }}
+  #         api-key: ${{ secrets.RENDER_API_KEY }}
