@@ -3,6 +3,8 @@
 const http = require('http');
 const app = require('./index');
 
+const serverPort = process.env.PORT || 5000; 
+
 /**
  * Create and return an HTTP server instance af the app
  * 
@@ -24,6 +26,10 @@ function createServer(port=serverPort) {
             reject(err);
         });
     });
+}
+
+if (require.main == module) {
+    createServer(5000);
 }
 
 module.exports = { createServer };
