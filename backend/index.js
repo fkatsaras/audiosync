@@ -19,21 +19,36 @@ const serverPort = process.env.PORT || 5000;
 const app = express();
 
 // CORS configuration
+const allowedOrigins = [
+    'http://localhost:3000',
+    'https://localhost:4000',
+    'https://audiosync-git-master-fkatsaras-projects.vercel.app',
+    'https://audiosync-liard.vercel.app'
+];
+
 const corsOptions = {
-    origin: [
-        'http://localhost:3000',
-        'https://localhost:4000',
-        new RegExp(/^https:\/\/audiosync-[a-z0-9]+-fkatsaras-projects\.vercel\.app$/),  // For matching the hashed URL from vercel
-        'https://audiosync-git-master-fkatsaras-projects.vercel.app',
-        'https://audiosync-liard.vercel.app',
-    ],
-    credentials: true
+    origin: function (origin, callback) {
+        if (!origin || allowedOrigins.includes(origin) || /^https:\/\/audiosync-[a-z0-9]+-fkatsaras-projects\.vercel\.app$/.test(origin)) {
+            callback(null, true);
+        } else {
+            callback(new Error('Not allowed by CORS'));
+        }
+    },
+    credentials: true,
+    methods: 'GET,POST,PUT,DELETE,OPTIONS',
+    allowedHeaders: 'Content-Type,Authorization'
 };
 
 app.use(cors(corsOptions));
 
-app.use(express.urlencoded({ extended: true })); // Parse URL-encoded data
-app.use(express.json()); // Parse JSON data
+// Handle preflight OPTIONS requests
+app.options('*', cors(corsOptions));
+
+// Middleware for parsing request bodies (URL encoded and JSON)
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
+
+// Auth Middleware
 app.use((req, res, next) => {
     const openRoutes = ['/api/v1/users/login', '/api/v1/users/register', '/api/v1/admin/seed-songs'];
     // Skip token validation for open routes
@@ -92,5 +107,4 @@ function createServer(port=serverPort) {
 //     createServer(5000);
 // }
 
-module.exports = { createServer };
-module.exports = app;
+module.exports = { createServer, app };

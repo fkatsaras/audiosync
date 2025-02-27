@@ -1,5 +1,5 @@
 const test = require('ava');
-const index = require('../../index');
+const { createServer } = require('../../index');
 const { loginRequest, searchRequest, seedArtists, seedSongs, clearSongs, clearArtists } = require('../../utils/testUtils');
 
 process.env.NODE_ENV = 'test';
@@ -11,7 +11,7 @@ const BASE_URL = `http://localhost:${PORT}`;
 
 test.before(async (t) => {
     t.timeout(2000);
-    server = await index.createServer(PORT);
+    server = await createServer(PORT);
     console.log(`Mock server for Search tests running on ${BASE_URL}`);
 });
 

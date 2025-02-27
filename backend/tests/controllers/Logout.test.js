@@ -1,6 +1,6 @@
 const test = require('ava');
 const got = require('got');
-const index = require('../../index');
+const { createServer } = require('../../index');
 const { loginRequest, logoutRequest } = require('../../utils/testUtils');
 
 process.env.NODE_ENV = 'test';
@@ -12,7 +12,7 @@ const BASE_URL = `http://localhost:${PORT}`;
 
 test.before(async t => {
     t.timeout(2000);
-    server = await index.createServer(PORT);
+    server = await createServer(PORT);
     console.log(`Mock server is running on ${BASE_URL}`);
 });
 
