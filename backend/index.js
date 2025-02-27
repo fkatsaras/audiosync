@@ -4,15 +4,11 @@ const path = require('path');
 const oas3Tools = require('oas3-tools');
 const dotenv = require('dotenv');
 const express = require('express');
-const cors = require('cors');
 
 const auth = require('./middleware/auth');
 
 // Load environment variables
 dotenv.config({ path: path.resolve(__dirname, './.env')});
-
-// Server configuration
-const serverPort = process.env.PORT || 5000;
 
 // Initialize Express App
 const app = express();
@@ -25,23 +21,33 @@ const allowedOrigins = [
     'https://audiosync-liard.vercel.app'
 ];
 
-const corsOptions = {
-    origin: function (origin, callback) {
-        if (!origin || allowedOrigins.includes(origin) || /^https:\/\/audiosync-[a-z0-9]+-fkatsaras-projects\.vercel\.app$/.test(origin)) {
-            callback(null, true);
-        } else {
-            callback(new Error('Not allowed by CORS'));
-        }
-    },
-    credentials: true,
-    methods: 'GET,POST,PUT,DELETE,OPTIONS',
-    allowedHeaders: 'Content-Type,Authorization'
+
+// Vercel-friendly CORS middleware
+const handleCors = (req, res, next) => {
+    const origin = req.headers.origin;
+    
+    // Allow CORS for any origin that is allowed
+    if (origin && allowedOrigins.includes(origin)) {
+        res.setHeader('Access-Control-Allow-Origin', origin);
+    } else {
+        // Optionally handle the non-allowed origins
+        res.setHeader('Access-Control-Allow-Origin', '*');
+    }
+
+    res.setHeader('Access-Control-Allow-Credentials', 'true'); // Allow credentials
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Authorization, Content-Type, X-Requested-With, Accept');
+    
+    // Handle OPTIONS request (preflight)
+    if (req.method === 'OPTIONS') {
+        return res.status(200).end();
+    }
+
+    next();
 };
 
-app.use(cors(corsOptions));
-
-// Handle preflight OPTIONS requests
-app.options('*', cors(corsOptions));
+// Apply the CORS middleware globally
+app.use(handleCors);
 
 // Middleware for parsing request bodies (URL encoded and JSON)
 app.use(express.urlencoded({ extended: true }));
@@ -74,12 +80,19 @@ const oas3App = oas3Tools.expressAppConfig(
 // Mount the oas3App routes into the main app
 app.use(oas3App);
 
+// diagnostic endpoint for CORS testing
+app.get('/api/cors-test', (req, res) => {
+    res.json({
+        message: 'CORS test successful',
+        origin: req.headers.origin || 'No origin header',
+        method: req.method,
+        path: req.path,
+        headers: req.headers
+    });
+});
+
 app.get('/api/health', (req, res) => {
     res.status(200).json({ status: 'OK' });
 });
-
-// if (require.main == module) {
-//     createServer(5000);
-// }
 
 module.exports = app;   // Direct export for vercel
