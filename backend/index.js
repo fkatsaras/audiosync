@@ -18,7 +18,9 @@ const allowedOrigins = [
     'http://localhost:3000',
     'https://localhost:4000',
     'https://audiosync-git-master-fkatsaras-projects.vercel.app',
-    'https://audiosync-liard.vercel.app'
+    'https://audiosync-liard.vercel.app',
+    'https://audiosync-backend.vercel.app',
+    'https://audiosync-backend.vercel.com'
 ];
 
 
@@ -29,9 +31,6 @@ const handleCors = (req, res, next) => {
     // Allow CORS for any origin that is allowed
     if (origin && allowedOrigins.includes(origin)) {
         res.setHeader('Access-Control-Allow-Origin', origin);
-    } else {
-        // Optionally handle the non-allowed origins
-        res.setHeader('Access-Control-Allow-Origin', '*');
     }
 
     res.setHeader('Access-Control-Allow-Credentials', 'true'); // Allow credentials
