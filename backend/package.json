@@ -9,7 +9,9 @@
     "dev": "nodemon server.js --watch .",
     "test": "c8 ava --serial",
     "vtest": "c8 ava --verbose",
-    "test-file": "c8 ava tests/controllers/$npm_config_test_file"
+    "test-file": "c8 ava tests/controllers/$npm_config_test_file",
+    "vercel-build": "node scripts/prepare-youtubedl.js"
+
   },
   "keywords": [
     "swagger"
@@ -39,7 +41,8 @@
     "swagger-parser": "^10.0.3",
     "swagger-routes-express": "^3.3.2",
     "swagger-ui-express": "^5.0.1",
-    "youtube-dl-exec": "^3.0.10"
+    "youtube-dl-exec": "^3.0.10",
+    "@vercel/nft": "^0.22.1"
   },
   "overrides": {
     "body-parser": "1.20.3"
