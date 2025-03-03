@@ -1,4 +1,5 @@
-const youtubedl = require('youtube-dl-exec');
+// const youtubedl = require('youtube-dl-exec');
+const fetch = require('node-fetch');
 
 /**
  * Fetch Youtube audio URL and video ID for a song
@@ -38,39 +39,81 @@ async function fetchYoutubeAudio(songData) {
 
 async function getYTSongVideo(songTitle, artistName, video_id) {
     try {
-        // Search by either video id or song title + artist name
-        const searchQuery = video_id ? `${video_id}` : `${artistName} ${songTitle}`.trim();
-        // Use ytsearch to retrieve a single video (not playlists)
-        const result = await youtubedl(`ytsearch:${searchQuery}`, {
-            dumpSingleJson: true,
-            noWarnings: true,
-            noCheckCertificate: true,
-            preferFreeFormats: true,
-            flatPlaylist: true // Ensures it does not fetch playlist details
-        });
-
-        if (!result || !result.entries || result.entries.length === 0) {
-            throw new Error(`No video results found for "${songTitle}"`);
+        // Build the query parameters
+        const params = new URLSearchParams();
+        if (video_id) {
+            params.append('video_id', video_id);
+        } else {
+            params.append('song_title', songTitle);
+            params.append('artist_name', artistName);
         }
-
-        // Get the first valid video result
-        const video = result.entries[0];
-        console.log(`Found video: ${video.title} (${video.url})`);
-
-        // Extract the best audio URL for the video
-        const audioDetails = await youtubedl(video.url, {
-            getUrl: true, // Directly fetch audio URL
-            format: "bestaudio" // Ensure the best available audio format
+        
+        //  Flask API (local development or deployed on Vercel)
+        const apiPort = 2000;
+        const apiUrl = process.env.NODE_ENV === 'production' ? process.env.YT_API_URL : 'http://localhost';
+        
+        console.log(`Searching for: ${video_id || `${artistName} ${songTitle}`.trim()}`);
+        
+        const response = await fetch(`${apiUrl}:${apiPort}/api/v1/get-yt-song?${params}`, {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json'
+            }
         });
-
-        console.log(`Audio URL: ${audioDetails}`);
-        return [audioDetails, video.url];
-
+        
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.error || `No video results found for "${songTitle}"`);
+        }
+        
+        const data = await response.json();
+        
+        console.log(`Found video: ${data.title} (${data.video_url})`);
+        console.log(`Audio URL: ${data.audio_url}`);
+        
+        return [data.audio_url, data.video_url];
+        
     } catch (error) {
         console.error(`Error: ${error.message}`);
         throw new Error("Failed to fetch song audio URL.");
     }
 }
+
+// async function getYTSongVideo(songTitle, artistName, video_id) {
+//     try {
+//         // Search by either video id or song title + artist name
+//         const searchQuery = video_id ? `${video_id}` : `${artistName} ${songTitle}`.trim();
+//         // Use ytsearch to retrieve a single video (not playlists)
+//         const result = await youtubedl(`ytsearch:${searchQuery}`, {
+//             dumpSingleJson: true,
+//             noWarnings: true,
+//             noCheckCertificate: true,
+//             preferFreeFormats: true,
+//             flatPlaylist: true // Ensures it does not fetch playlist details
+//         });
+
+//         if (!result || !result.entries || result.entries.length === 0) {
+//             throw new Error(`No video results found for "${songTitle}"`);
+//         }
+
+//         // Get the first valid video result
+//         const video = result.entries[0];
+//         console.log(`Found video: ${video.title} (${video.url})`);
+
+//         // Extract the best audio URL for the video
+//         const audioDetails = await youtubedl(video.url, {
+//             getUrl: true, // Directly fetch audio URL
+//             format: "bestaudio" // Ensure the best available audio format
+//         });
+
+//         console.log(`Audio URL: ${audioDetails}`);
+//         return [audioDetails, video.url];
+
+//     } catch (error) {
+//         console.error(`Error: ${error.message}`);
+//         throw new Error("Failed to fetch song audio URL.");
+//     }
+// }
 
 // Helper function to check if a video URL is expired
 function isExpired(URL) {

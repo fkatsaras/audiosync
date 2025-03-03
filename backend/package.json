@@ -9,9 +9,7 @@
     "dev": "nodemon server.js --watch .",
     "test": "c8 ava --serial",
     "vtest": "c8 ava --verbose",
-    "test-file": "c8 ava tests/controllers/$npm_config_test_file",
-    "vercel-build": "node scripts/prepare-youtubedl.js"
-
+    "test-file": "c8 ava tests/controllers/$npm_config_test_file"
   },
   "keywords": [
     "swagger"
@@ -19,6 +17,7 @@
   "license": "Unlicense",
   "private": true,
   "dependencies": {
+    "@vercel/nft": "^0.22.1",
     "axios": "^1.7.7",
     "bcrypt": "^5.1.1",
     "bcryptjs": "^2.4.3",
@@ -42,7 +41,8 @@
     "swagger-routes-express": "^3.3.2",
     "swagger-ui-express": "^5.0.1",
     "youtube-dl-exec": "^3.0.10",
-    "@vercel/nft": "^0.22.1"
+    "youtube-sr": "^4.3.11",
+    "ytdl-core": "^4.11.5"
   },
   "overrides": {
     "body-parser": "1.20.3"
@@ -55,7 +55,6 @@
     "googleapis": "^144.0.0",
     "got": "^11.8.3",
     "nodemon": "^3.1.7",
-    "sinon": "^19.0.2",
-    "ytdl-core": "^4.11.5"
+    "sinon": "^19.0.2"
   }
 }

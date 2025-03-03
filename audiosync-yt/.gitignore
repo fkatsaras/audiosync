@@ -1,0 +1,55 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environment
+venv/
+.env/
+.venv/
+
+# Environment variables
+*.env
+*.env.local
+*.env.*.local
+
+# Logs
+logs/
+*.log
+nohup.out
+
+# Database files
+instance/
+*.sqlite3
+*.db
+
+# Flask cache
+flask_session/
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints
+
+# Pytest cache
+.pytest_cache/
+
+# Coverage reports
+htmlcov/
+.coverage
+.coverage.*
+
+# MyPy type checker
+.mypy_cache/
+
+# VSCode settings
+.vscode/
+
+# MacOS and Linux
+.DS_Store
+
+
+# Environment variables
+.env
+.env.local
+
+# Vercel
+.vercel
