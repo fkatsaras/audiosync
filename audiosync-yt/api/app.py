@@ -8,7 +8,13 @@ from dotenv import load_dotenv
 load_dotenv()
 
 app = Flask(__name__)
-CORS(app)
+allowed_origins = [
+    "https://audiosync-liard.vercel.app",
+    "https://audiosync-backend.vercel.app",
+    "http://localhost:5000",  # For local development
+]
+
+CORS(app, resources={r"/*": {"origins": allowed_origins}})
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
