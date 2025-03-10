@@ -1,5 +1,8 @@
 // const youtubedl = require('youtube-dl-exec');
 const fetch = require('node-fetch');
+const dotenv = require('dotenv');
+const path = require('path');
+
 
 /**
  * Fetch Youtube audio URL and video ID for a song
@@ -39,6 +42,8 @@ async function fetchYoutubeAudio(songData) {
 
 async function getYTSongVideo(songTitle, artistName, video_id) {
     try {
+        // Load .env
+        dotenv.config({ path: path.resolve(__dirname, '../.env')});
         // Build the query parameters
         const params = new URLSearchParams();
         if (video_id) {
@@ -49,7 +54,7 @@ async function getYTSongVideo(songTitle, artistName, video_id) {
         }
         
         //  Flask API (local development or deployed on Vercel)
-        const apiPort = 2000;
+        const apiPort = process.env.NODE_ENV === 'production' ? '' : 2000;
         const apiUrl = process.env.NODE_ENV === 'production' ? process.env.YT_API_URL : 'http://localhost';
         
         console.log(`Searching for: ${video_id || `${artistName} ${songTitle}`.trim()}`);

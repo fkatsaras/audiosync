@@ -20,7 +20,7 @@ const allowedOrigins = [
     'https://audiosync-git-master-fkatsaras-projects.vercel.app',
     'https://audiosync-liard.vercel.app',
     'https://audiosync-backend.vercel.app',
-    'https://audiosync-backend.vercel.com'
+    'https://audiosync-backend.vercel.com',
 ];
 
 
