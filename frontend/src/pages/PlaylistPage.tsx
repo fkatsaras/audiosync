@@ -10,6 +10,7 @@ import likedSongsCover from '../assets/images/liked_songs_cover.svg';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import { useAudioPlayer } from "../hooks/useAudioPlayer";
 import { useUser } from "../context/UserContext";
+import extractGradientColors from "../utils/extractGradientColors";
 
 const API = process.env.REACT_APP_API_URL || "http://localhost:5000/api/v1";
 
@@ -25,6 +26,28 @@ const PlaylistPage: React.FC = () => {
     
 
     const { setCurrentSong, togglePlayPause, isPlaying, currentSong } = useAudioPlayer();
+
+    // Handling album colors /styles
+    const [imageLoaded, setImageLoaded] = useState<boolean>(false);
+    const handleImageLoad = () => {
+        setImageLoaded(true);
+    };
+    
+    useEffect(() => {
+        if (imageLoaded) {
+            const imageElement = document.querySelector('.liked-songs-playlist-img') as HTMLImageElement;
+            
+            extractGradientColors(imageElement, (colors) => {
+                document.documentElement.style.setProperty('--primary-image-bg-r', colors[0][0].toString());
+                document.documentElement.style.setProperty('--primary-image-bg-g', colors[0][1].toString());
+                document.documentElement.style.setProperty('--primary-image-bg-b', colors[0][2].toString());
+                document.documentElement.style.setProperty('--secondary-image-bg-r', colors[1][0].toString());
+                document.documentElement.style.setProperty('--secondary-image-bg-g', colors[1][1].toString());
+                document.documentElement.style.setProperty('--secondary-image-bg-b', colors[1][2].toString());
+            });
+        }
+    }, [user?.userId, imageLoaded]);
+    
 
     useEffect(() => {
         const fetchPlaylist = async () => {
